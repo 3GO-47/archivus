@@ -1,0 +1,35 @@
+/* ARCHIVUS — Era definitions.
+   Visual bands are sequential (non-overlapping) so they can be painted
+   across the timeline. Negative years = BCE. */
+window.ARCHIVUS_ERAS = [
+  { id: "prehistory",  name: "Prehistory",              start: -450000, end: -9600,
+    blurb: "Anatomically modern humans emerge, master fire and symbol, and people every continent." },
+  { id: "neolithic",   name: "Neolithic Revolution",    start: -9600,  end: -3300,
+    blurb: "Farming, villages, pottery and the first temples remake human life after the Ice Age." },
+  { id: "bronze",      name: "Bronze Age",              start: -3300,  end: -1200,
+    blurb: "Writing, cities, kingship and bronze metallurgy rise along the great river valleys." },
+  { id: "iron",        name: "Iron Age",                start: -1200,  end: -800,
+    blurb: "Collapse and reinvention: iron tools, alphabets, and new peoples on the move." },
+  { id: "axial",       name: "Axial Age",               start: -800,   end: -480,
+    blurb: "Buddha, Confucius, the Hebrew prophets and Greek philosophers rethink the human condition." },
+  { id: "classical",   name: "Classical Antiquity",     start: -480,   end: 330,
+    blurb: "Persia, Greece, Rome, the Maurya and the Han bind vast worlds into empire." },
+  { id: "lateantique", name: "Late Antiquity",          start: 330,    end: 630,
+    blurb: "Rome fractures, universal religions spread, and new orders form on old foundations." },
+  { id: "medieval",    name: "Post-Classical Age",      start: 630,    end: 1450,
+    blurb: "Islam, the Tang and Song, Mongols, cathedrals and caravans knit Afro-Eurasia together." },
+  { id: "renaissance", name: "Renaissance & Discovery", start: 1450,   end: 1600,
+    blurb: "Print, perspective and the caravel: Europe rediscovers the ancients and finds two new continents." },
+  { id: "earlymodern", name: "Early Modern Age",        start: 1600,   end: 1760,
+    blurb: "Gunpowder empires, the Scientific Revolution and the first truly global trade." },
+  { id: "revolutions", name: "Age of Revolutions & Industry", start: 1760, end: 1914,
+    blurb: "Steam, steel, rights of man: politics and production are violently reinvented." },
+  { id: "worldwars",   name: "World Wars",              start: 1914,   end: 1945,
+    blurb: "Industrial total war twice engulfs the planet and ends the old imperial order." },
+  { id: "coldwar",     name: "Cold War",                start: 1945,   end: 1991,
+    blurb: "Two superpowers, one atom bomb, and a decolonizing world in between." },
+  { id: "digital",     name: "Digital & Contemporary",  start: 1991,   end: 2026,
+    blurb: "The networked age: the web, genomics, climate reckoning and machine intelligence." },
+  { id: "horizon",     name: "The Horizon — Anticipated", start: 2026,  end: 2140,
+    blurb: "What the calculations, the calendars and the forecasts say is coming — orbits are certain, projections are not, and the archive marks the difference." }
+];
