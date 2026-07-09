@@ -90,6 +90,21 @@
   .pn-xcard.pn-x-p { border-left-color:#4fae9c; }
   .pn-xcard .xk { display:block; font-family:var(--mono); font-size:8.5px; letter-spacing:.1em;
     text-transform:uppercase; color:#59617c; margin-bottom:2px; }
+
+  /* pocket pantheons: domain & jump chips become swipeable strips, the skies get the screen */
+  @media (max-width: 760px) {
+    #pn-toolbar { flex-wrap:nowrap; gap:5px; padding:6px 8px; overflow:hidden; }
+    #pn-search { flex:0 1 140px; min-width:105px; }
+    #pn-jumps { display:flex; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:4px; scrollbar-width:none; }
+    #pn-jumps::-webkit-scrollbar { display:none; }
+    #pn-jumps .chip, #pn-jumps .tool-btn { flex:0 0 auto; white-space:nowrap; font-size:10px; padding:4px 9px; }
+    #pn-dombar { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:5px 8px; scrollbar-width:none; }
+    #pn-dombar::-webkit-scrollbar { display:none; }
+    #pn-domains { flex-wrap:nowrap !important; }
+    #pn-domains .chip { flex:0 0 auto; white-space:nowrap; font-size:10px; padding:4px 9px; }
+    #pn-legend { display:none; }
+    #pn-panel { width:100vw; max-width:100vw; }
+  }
 </style>
 </head>
 <body>

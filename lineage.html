@@ -47,6 +47,17 @@
   .bl-bridge-o { stroke:#9b6fc3; }
   .bl-bridge-s { stroke:#c9a227; stroke-dasharray:8 5; }
   .bl-bridge-p { stroke:#4fae9c; stroke-dasharray:2 6; }
+
+  /* pocket bloodline: chip rows become swipeable strips, the tree gets the screen */
+  @media (max-width: 760px) {
+    #bl-toolbar { flex-direction:column; align-items:stretch; gap:5px; padding:6px 8px; }
+    #bl-search { width:100%; flex:none; }
+    #bl-jumps, #bl-houses { display:flex; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:4px; padding-bottom:3px; scrollbar-width:none; }
+    #bl-jumps::-webkit-scrollbar, #bl-houses::-webkit-scrollbar { display:none; }
+    #bl-jumps .tool-btn, #bl-houses .chip { flex:0 0 auto; white-space:nowrap; font-size:10px; padding:4px 9px; }
+    #bl-hint, #bl-mini { display:none; }
+    #bl-panel { width:100vw; max-width:100vw; }
+  }
   .bl-tier { stroke:#141926; stroke-width:1; }
   .bl-tierband { fill:rgba(124,154,201,0.016); pointer-events:none; }
   .bl-gen { font-family:"IBM Plex Mono",monospace; font-size:9px; fill:#3d4661; }
