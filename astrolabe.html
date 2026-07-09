@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Astrolabe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<style>
+  html, body { height:100%; }
+  body { display:flex; flex-direction:column; overflow:hidden; }
+
+  #as-stage { flex:1; position:relative; min-height:0;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 46%, rgba(24,32,58,.55) 0%, transparent 60%),
+      radial-gradient(ellipse 120% 90% at 50% 110%, rgba(20,14,4,.8) 0%, transparent 55%),
+      #07090f; }
+  #as-canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  #as-svg { position:absolute; inset:0; width:100%; height:100%; cursor:grab; user-select:none; touch-action:none; }
+  #as-svg.spinning { cursor:grabbing; }
+
+  .as-ring { fill:none; stroke:#1c2334; stroke-width:1; }
+  .as-ring.major { stroke:#2a3350; }
+  .as-ring-label { font-family:var(--mono); font-size:8.5px; fill:#4a5878; }
+  .as-age { fill:none; stroke:#4a4030; stroke-width:1; stroke-dasharray:1 5; opacity:.75; cursor:pointer; pointer-events:stroke; }
+  .as-age:hover { stroke:#c9a227; opacity:1; }
+  .as-age-name { font-family:"Space Grotesk",sans-serif; font-weight:500; font-size:9px; letter-spacing:.42em;
+    fill:#7a6a3a; cursor:pointer; }
+  .as-age-name:hover { fill:#e8c455; }
+  .as-bezel-name { font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:10px; letter-spacing:.34em; fill:#8a7433; }
+  .as-spoke { stroke:#141a28; stroke-width:1; }
+  .as-ecliptic { fill:none; stroke:#6e5c1f; stroke-width:.9; stroke-dasharray:1 6; opacity:.55; }
+  .as-dust { fill:#2c3550; }
+  .as-ring.future { stroke:#3d4a66; stroke-dasharray:2 5; }
+  .as-outer { fill:none; stroke:#6e5c1f; stroke-width:2.4; }
+  .as-outer2 { fill:none; stroke:#3a3626; stroke-width:1; }
+  .as-tick { stroke:#5c4d1e; stroke-width:1; }
+
+  .as-meridian { stroke:url(#as-mgrad); stroke-width:1.6; pointer-events:none; }
+  .as-meridian-cap { font-family:var(--display); font-weight:600; font-size:10px; letter-spacing:.32em; fill:#c9a227; }
+
+  .as-star { cursor:pointer; }
+  .as-star circle.core { stroke:none; }
+  .as-star.approx circle.core { stroke:#0a0c12; stroke-width:.6; }
+  .as-star circle.halo { fill:none; opacity:0; }
+  .as-star:hover circle.halo, .as-star.sel circle.halo { opacity:.9; }
+  .as-star.dim { opacity:.12; }
+  .as-star.kin circle.halo { opacity:.55; }
+  .as-star.future circle.core { fill:#0a1020; stroke:#dce8ff; stroke-width:1.1; }
+  .as-star.future text { fill:#9fb8dc; font-style:italic; }
+  .as-star text { font-family:var(--mono); font-size:var(--lbfs, 8.5px); fill:#8f96ad; pointer-events:none; display:none; }
+  .as-star.L10 text { display:block; }
+  #as-svg.z1 .as-star.L8 text { display:block; }
+  #as-svg.z2 .as-star.L6 text { display:block; }
+  #as-svg.z3 .as-star text { display:block; }
+  .as-star.sel text { fill:#e8c455; }
+  .as-flare { fill:none; stroke:#e8c455; stroke-width:1.4; opacity:0; pointer-events:none; }
+  .as-flare.on { animation:as-flare 1.6s ease-out forwards; }
+  @keyframes as-flare { 0% { opacity:.95; r:4; stroke-width:2.4; } 100% { opacity:0; r:34; stroke-width:.3; } }
+
+  .as-comet-hit { fill:none; pointer-events:all; stroke:none; cursor:pointer; }
+  .as-core-ring { fill:none; stroke:#c9a227; stroke-width:1.4; opacity:.85; animation:as-breathe 5s ease-in-out infinite; }
+  @keyframes as-breathe { 0%,100% { stroke-opacity:.45; } 50% { stroke-opacity:1; } }
+  .as-core-label { font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:.4em; fill:#e8c455; }
+  .as-core-sub { font-family:var(--mono); font-size:7.5px; letter-spacing:.2em; fill:#6e5c1f; }
+  .as-blood { cursor:pointer; }
+  .as-blood text { font-family:var(--mono); font-size:8px; fill:#c9a227; opacity:.8; }
+  .as-blood:hover text { opacity:1; fill:#e8c455; }
+
+  /* HUD */
+  #as-bar { display:flex; align-items:center; gap:8px; padding:7px 16px; border-bottom:1px solid var(--line-faint); flex-wrap:wrap; }
+  #as-readout { margin-left:auto; text-align:right; font-family:var(--mono); font-size:10px; color:#59617c; line-height:1.5; }
+  #as-readout b { color:var(--gold); font-weight:400; }
+  #as-feed { position:absolute; left:14px; bottom:14px; width:330px; max-height:170px; overflow:hidden;
+    font-family:var(--mono); font-size:10.5px; color:#8f96ad; pointer-events:none; z-index:6;
+    display:flex; flex-direction:column-reverse; gap:3px;
+    mask-image:linear-gradient(to top, #000 55%, transparent); -webkit-mask-image:linear-gradient(to top, #000 55%, transparent); }
+  #as-feed .ln { animation:as-ln .5s ease-out; }
+  #as-feed .ln b { color:#e8c455; font-weight:400; }
+  @keyframes as-ln { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  #as-age-oracle { position:absolute; right:14px; bottom:14px; width:300px; z-index:6; pointer-events:none;
+    background:rgba(10,12,18,.78); border:1px solid #3a3050; border-radius:4px; padding:10px 13px;
+    font-size:12px; line-height:1.55; color:var(--paper-dim); display:none; }
+  #as-age-oracle .k { font-family:var(--mono); font-size:9px; letter-spacing:.22em; color:#9b6fc3; display:block; margin-bottom:4px; }
+  #as-hint { position:absolute; left:50%; transform:translateX(-50%); bottom:10px; z-index:5;
+    font-family:var(--mono); font-size:9.5px; color:#3d4763; pointer-events:none; }
+
+  /* record panel */
+  #as-panel { position:absolute; right:0; top:0; bottom:0; width:340px; max-width:88vw; z-index:20;
+    background:var(--panel-bg); backdrop-filter:blur(6px); border-left:1px solid var(--line);
+    box-shadow:-24px 0 60px rgba(0,0,0,.55); padding:44px 22px 30px; overflow-y:auto;
+    transform:translateX(103%); transition:transform .3s cubic-bezier(.22,1,.36,1); }
+  #as-panel.open { transform:translateX(0); }
+  #as-close { position:absolute; top:10px; right:12px; width:30px; height:30px; background:transparent;
+    border:1px solid var(--line); border-radius:4px; color:var(--paper-dim); font-size:18px; cursor:pointer; }
+  #as-close:hover { border-color:var(--gold-dim); color:var(--gold-bright); }
+  #as-p-kicker { font-family:var(--mono); font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:#59617c; margin-bottom:6px; }
+  #as-p-title { font-family:var(--display); font-weight:600; font-size:18px; line-height:1.35; }
+  #as-p-date { font-family:var(--mono); font-size:11px; color:var(--gold); margin:5px 0 12px; }
+  #as-p-desc { font-size:13px; line-height:1.62; color:var(--paper); }
+  #as-p-links { margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+  #as-p-links a { color:var(--gold); font-size:12.5px; text-decoration:none; }
+  #as-p-links a:hover { color:var(--gold-bright); }
+
+  /* pocket instrument */
+  @media (max-width: 700px) {
+    #masthead { padding:8px 12px; } #masthead h1 { font-size:14px; } .tagline { display:none; }
+    #as-bar { padding:5px 8px; gap:5px; } #as-bar .tool-btn { padding:5px 8px; font-size:10px; }
+    #as-bar #pn-link { padding:5px 7px; font-size:9.5px; }
+    #as-readout { display:none; }
+    #as-feed { width:62vw; max-height:96px; font-size:9px; }
+    #as-hint { display:none; }
+    #as-age-oracle { width:70vw; right:8px; bottom:8px; font-size:11px; }
+    #as-panel { width:100vw; max-width:100vw; padding:40px 16px 24px; }
+  }
+</style>
+</head>
+<body>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE ASTROLABE</h1>
+      <p class="tagline">the heavens wound into a clock — all recorded history in differential rotation about the present</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="as-bar">
+    <button id="as-play" class="tool-btn accent" title="Cycle the rotation speed (Space)">⟳ 1×</button>
+    <button id="as-still" class="tool-btn" title="Absorb all angular momentum (0)">Still the heavens</button>
+    <button id="as-fit" class="tool-btn" title="Reset the frame">Fit</button>
+    <a id="pn-link" href="codex.html">Codex</a>
+    <a id="pn-link" href="pantheons.html">Pantheons</a>
+    <a id="pn-link" href="lineage.html">Bloodline</a>
+    <a id="pn-link" href="transmissions.html">Transmissions</a>
+    <div id="as-readout">
+      <div>ω <b id="as-om">0.0</b> mrad·s⁻¹ · L <b id="as-L">conserved</b></div>
+      <div>meridian epoch <b id="as-epoch">—</b></div>
+    </div>
+  </nav>
+
+  <main id="as-stage">
+    <canvas id="as-canvas"></canvas>
+    <svg id="as-svg"></svg>
+    <div id="as-feed"></div>
+    <div id="as-age-oracle"><span class="k"></span><span class="t"></span></div>
+    <div id="as-hint">drag = spin (with momentum) · scroll = zoom — the sky locks, crowds disperse, names resolve · shift-drag = pan · double-click a star = theme lens · comets are the Transmissions · Space = speed</div>
+    <aside id="as-panel">
+      <button id="as-close">&times;</button>
+      <div id="as-p-kicker"></div>
+      <div id="as-p-title"></div>
+      <div id="as-p-date"></div>
+      <p id="as-p-desc"></p>
+      <div id="as-p-links"></div>
+    </aside>
+  </main>
+
+  <script src="src/data/eras.js"></script>
+  <script src="src/data/themes.js"></script>
+  <script src="src/data/events.js"></script>
+  <script src="src/data/events2.js"></script>
+  <script src="src/data/geo.js"></script>
+  <script src="src/data/uncertainty.js"></script>
+  <script src="src/data/events3.js"></script>
+  <script src="src/data/events4.js"></script>
+  <script src="src/data/events5.js"></script>
+  <script src="src/data/events6.js"></script>
+  <script src="src/data/transmissions.js"></script>
+  <script src="src/astrolabe-app.js"></script>
+</body>
+</html>

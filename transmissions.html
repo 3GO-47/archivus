@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Transmissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<style>
+  /* ---- Transmissions codex — page-specific ---- */
+  body { overflow: auto; }
+  #tx-main {
+    flex: 1;
+    max-width: 1060px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 28px 24px 80px;
+  }
+  .tx-epigraph {
+    border-left: 2px solid var(--gold-dim);
+    padding: 14px 20px;
+    margin-bottom: 10px;
+    color: var(--paper-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .tx-epigraph em { color: var(--gold-bright); font-style: normal; }
+  .tx-thesis {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #59617c;
+    margin: 0 0 26px 22px;
+  }
+  #tx-filters { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+  #tx-count { font-family: var(--mono); font-size: 11px; color: #59617c; margin: 4px 0 22px 2px; }
+
+  .tx-card {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(201,162,39,0.035), transparent 90px), var(--obsidian-2);
+    margin-bottom: 22px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .tx-card:hover { border-color: var(--gold-dim); box-shadow: 0 0 24px rgba(201,162,39,0.08); }
+  .tx-card.hi { border-color: var(--gold); box-shadow: 0 0 30px rgba(201,162,39,0.22); scroll-margin-top: 20px; }
+  .tx-head {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--line-faint);
+  }
+  .tx-cat {
+    font-family: var(--display); font-weight: 600; font-size: 9.5px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 3px;
+    border: 1px solid var(--c, var(--gold-dim));
+    color: var(--c, var(--gold));
+  }
+  .tx-title { font-family: var(--display); font-weight: 600; font-size: 16.5px; color: var(--paper); }
+  .tx-gap { margin-left: auto; font-family: var(--mono); font-size: 10px; color: #59617c; }
+  .tx-body { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 760px) { .tx-body { grid-template-columns: 1fr; } }
+  .tx-col { padding: 16px 20px 18px; }
+  .tx-col + .tx-col { border-left: 1px solid var(--line-faint); }
+  .tx-col h3 {
+    font-family: var(--display); font-weight: 600; font-size: 10px;
+    letter-spacing: 0.26em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .tx-claim h3 { color: #9b6fc3; }
+  .tx-record h3 { color: #3fa7c4; }
+  .tx-field { margin-bottom: 9px; font-size: 13.5px; line-height: 1.55; color: var(--paper); }
+  .tx-field .k {
+    display: block; font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: #59617c; margin-bottom: 2px;
+  }
+  .tx-quote {
+    font-style: italic; color: var(--paper-dim); font-size: 13px;
+    border-left: 2px solid rgba(155,111,195,0.4);
+    padding-left: 10px; margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  .tx-foot {
+    padding: 12px 20px 15px;
+    border-top: 1px solid var(--line-faint);
+    font-size: 12.5px; color: var(--paper-dim); line-height: 1.6;
+  }
+  .tx-foot .k {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #59617c; display: block; margin-bottom: 3px;
+  }
+  .tx-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tx-links a, .tx-links .tx-ref {
+    font-family: var(--display); font-weight: 500; font-size: 10.5px;
+    letter-spacing: 0.06em; text-decoration: none;
+    border: 1px solid var(--line); border-radius: 3px;
+    padding: 4px 10px; color: var(--paper-dim);
+    transition: all 0.15s; cursor: pointer;
+  }
+  .tx-links a:hover, .tx-links .tx-ref:hover { border-color: var(--gold-dim); color: var(--gold-bright); }
+  .tx-links .tx-ref { color: var(--gold); }
+  #masthead a.back {
+    font-family: var(--display); font-size: 11px; letter-spacing: 0.1em;
+    color: var(--gold); text-decoration: none; margin-left: auto;
+    border: 1px solid var(--gold-dim); border-radius: 4px; padding: 7px 14px;
+    transition: all 0.18s;
+  }
+  #masthead a.back:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.2); }
+</style>
+</head>
+<body>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE TRANSMISSIONS</h1>
+      <p class="tagline">claims of taught knowledge, against the documented record</p>
+    </div>
+    <a class="back" href="codex.html">The Codex</a>
+    <a class="back" href="pantheons.html" style="margin-left:8px">The Pantheons</a>
+    <a class="back" href="lineage.html" style="margin-left:8px">The Bloodline</a>
+    <a class="back" href="index.html" style="margin-left:8px">⟵ The Archive</a>
+  </header>
+
+  <main id="tx-main">
+    <div class="tx-epigraph">
+      Across esoteric literature runs one persistent claim: that innovation is not invented but <em>transmitted</em> —
+      taught by Watcher, god, bound demon, dream, or rite. Azazel hands down the metallurgy of war and the use of antimony;
+      Oannes rises daily from the sea with the whole Uruk package; the elixir furnace answers Taoist immortalists with gunpowder;
+      a snake seizes its tail and benzene closes into a ring; and in Pasadena a man chants the Hymn to Pan over the test pits,
+      then casts the solid fuel that will one day lift boosters off the pad.
+      <br><br>
+      Each leaf of this codex holds both ledgers: <em>the claim</em> — its text, its date, its transmitter — and
+      <em>the record</em> — the innovation's documented first attestation and its first-principles mechanism.
+    </div>
+    <p class="tx-thesis">The archive takes no position on daimons. It takes positions on dates.</p>
+
+    <div id="tx-filters"></div>
+    <div id="tx-count"></div>
+    <div id="tx-list"></div>
+  </main>
+
+  <script src="src/data/transmissions.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const TX = window.ARCHIVUS_TRANSMISSIONS.slice().sort((a, b) => a.claimYear - b.claimYear);
+    const CATS = {
+      angelic:    { name: "Angelic",    color: "#d4a437", blurb: "the Watchers and their kin" },
+      divine:     { name: "Divine",     color: "#7c9ac9", blurb: "gods and culture-heroes" },
+      daimonic:   { name: "Daimonic",   color: "#9b6fc3", blurb: "demons, spirits, received voices" },
+      alchemical: { name: "Alchemical", color: "#5faa5f", blurb: "occult pursuit, real discovery" },
+      oneiric:    { name: "Oneiric",    color: "#d4738f", blurb: "dreams and visions" }
+    };
+    let active = new Set();
+
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const fmtY = y => Math.abs(y) >= 10000
+      ? Math.abs(y).toLocaleString("en-US") + (y < 0 ? " BCE" : " CE")
+      : Math.abs(y) + (y < 0 ? " BCE" : " CE");
+
+    function gapText(t) {
+      const d = t.claimYear - t.record.year;
+      if (Math.abs(d) < 30) return "claim and craft coincide";
+      if (d > 0) return "the myth trails the craft by ~" + d.toLocaleString("en-US") + " years";
+      return "the claim precedes the record by ~" + (-d).toLocaleString("en-US") + " years";
+    }
+
+    function render() {
+      const list = document.getElementById("tx-list");
+      list.innerHTML = "";
+      let shown = 0;
+      TX.forEach(t => {
+        if (active.size && !active.has(t.category)) return;
+        shown++;
+        const cat = CATS[t.category];
+        const card = document.createElement("article");
+        card.className = "tx-card";
+        card.id = t.id;
+        card.innerHTML =
+          '<div class="tx-head">' +
+            '<span class="tx-cat" style="--c:' + cat.color + '">' + cat.name + "</span>" +
+            '<span class="tx-title">' + esc(t.transmitter) + "</span>" +
+            '<span class="tx-gap">' + gapText(t) + "</span>" +
+          "</div>" +
+          '<div class="tx-body">' +
+            '<div class="tx-col tx-claim"><h3>The Claim</h3>' +
+              '<div class="tx-field"><span class="k">What was taught</span>' + esc(t.taught) + "</div>" +
+              '<div class="tx-field"><span class="k">Source · date of claim</span>' + esc(t.claimSource) + " · " + esc(t.claimDate) + "</div>" +
+              (t.quote ? '<p class="tx-quote">' + esc(t.quote) + "</p>" : "") +
+            "</div>" +
+            '<div class="tx-col tx-record"><h3>The Record</h3>' +
+              '<div class="tx-field"><span class="k">Documented innovation</span>' + esc(t.record.innovation) + "</div>" +
+              '<div class="tx-field"><span class="k">First attestation</span>' + esc(t.record.date) + " · " + esc(t.record.place) + "</div>" +
+              '<div class="tx-field"><span class="k">First principles</span>' + esc(t.record.principles) + "</div>" +
+            "</div>" +
+          "</div>" +
+          '<div class="tx-foot"><span class="k">Epistemic note</span>' + esc(t.note) +
+            '<div class="tx-links">' +
+              '<a href="' + t.links.claim + '" target="_blank" rel="noopener">Claim source ↗</a>' +
+              '<a href="' + t.links.record + '" target="_blank" rel="noopener">Record ↗</a>' +
+              (t.eventRefs || []).map(id =>
+                '<a class="tx-ref" href="index.html#e=' + id + '">' + id + " → Chronicle</a>").join("") +
+            "</div>" +
+          "</div>";
+        list.appendChild(card);
+      });
+      document.getElementById("tx-count").textContent =
+        shown + " of " + TX.length + " transmission claims · ordered by date of claim";
+    }
+
+    const filters = document.getElementById("tx-filters");
+    Object.entries(CATS).forEach(([id, c]) => {
+      const b = document.createElement("button");
+      b.className = "chip";
+      b.style.setProperty("--c", c.color);
+      b.innerHTML = '<span class="dot"></span>' + c.name + " — " + c.blurb;
+      b.addEventListener("click", () => {
+        if (active.has(id)) active.delete(id); else active.add(id);
+        b.classList.toggle("active", active.has(id));
+        document.querySelectorAll("#tx-filters .chip").forEach(ch =>
+          ch.classList.toggle("dimmed", active.size > 0 && !ch.classList.contains("active")));
+        render();
+      });
+      filters.appendChild(b);
+    });
+
+    render();
+
+    /* arriving from the Chronicle with #entry-id: scroll to it and light it */
+    function focusHash() {
+      const h = location.hash.slice(1);
+      if (!h) return;
+      const card = document.getElementById(h);
+      if (!card) return;
+      document.querySelectorAll(".tx-card.hi").forEach(c => c.classList.remove("hi"));
+      card.classList.add("hi");
+      card.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+    focusHash();
+    window.addEventListener("hashchange", focusHash);
+  })();
+  </script>
+</body>
+</html>

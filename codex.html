@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Codex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@300;400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<style>
+  html, body { height:100%; }
+  body { display:flex; flex-direction:column; overflow:hidden; }
+
+  /* ---- the reading desk ---- */
+  #cx-stage { flex:1; min-height:0; display:flex; align-items:center; justify-content:center;
+    padding:18px 12px 8px; position:relative;
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 30%, rgba(30,26,16,.55) 0%, transparent 65%),
+      radial-gradient(ellipse 140% 100% at 50% 115%, rgba(0,0,0,.75) 0%, transparent 60%),
+      #0a0c12; }
+
+  /* ---- the book ---- */
+  #cx-book { position:relative; width:min(1180px, 96vw); height:min(76vh, 780px);
+    display:flex; perspective:2200px; filter:drop-shadow(0 26px 50px rgba(0,0,0,.65)); }
+  .cx-page { flex:1; position:relative; padding:34px 38px 44px; overflow:hidden;
+    background:
+      radial-gradient(ellipse 120% 60% at 50% -20%, rgba(120,90,40,.10) 0%, transparent 60%),
+      linear-gradient(105deg, #efe6cf 0%, #e9dfc4 45%, #e4d8ba 100%);
+    color:#2b2317; }
+  .cx-page.left  { border-radius:8px 2px 2px 8px; border-right:1px solid #b9a97e;
+    box-shadow:inset -26px 0 34px -22px rgba(80,60,20,.55), inset 4px 0 0 #cbbd93, inset 8px 0 0 #d8ccA5; }
+  .cx-page.right { border-radius:2px 8px 8px 2px; border-left:1px solid #b9a97e;
+    box-shadow:inset 26px 0 34px -22px rgba(80,60,20,.55), inset -4px 0 0 #cbbd93, inset -8px 0 0 #d8cca5; }
+  .cx-page.turning-f { animation:cx-turn-f .38s ease; }
+  .cx-page.turning-b { animation:cx-turn-b .38s ease; }
+  @keyframes cx-turn-f { from { transform:rotateY(-9deg); opacity:.35; } to { transform:none; opacity:1; } }
+  @keyframes cx-turn-b { from { transform:rotateY(9deg); opacity:.35; } to { transform:none; opacity:1; } }
+
+  /* the river of time: a winding gilt path down the inner margin of each page */
+  .cx-river { position:absolute; top:0; bottom:0; width:56px; pointer-events:none; }
+  .cx-page.left  .cx-river { left:6px; }
+  .cx-page.right .cx-river { left:6px; }
+  .cx-river path { fill:none; stroke:#a8862a; stroke-width:1.6; opacity:.7; }
+  .cx-river .arrow { fill:#a8862a; opacity:.75; }
+  .cx-page-inner { position:absolute; inset:30px 34px 42px 66px; overflow:hidden; }
+
+  /* ---- entries ---- */
+  .cx-ev { position:relative; padding:7px 0 9px; border-bottom:1px solid rgba(90,70,30,.16); }
+  .cx-ev:last-child { border-bottom:none; }
+  .cx-ev.lit { background:linear-gradient(90deg, rgba(201,162,39,.16), transparent 75%); outline:1px solid rgba(168,134,42,.4);
+    outline-offset:2px; border-radius:3px; }
+  .cx-when { font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em; color:#8a6a1c; }
+  .cx-when .imp { color:#b09660; }
+  .cx-title { font-family:"EB Garamond",serif; font-weight:600; font-size:17.5px; line-height:1.25; color:#241c10; margin:1px 0 2px; }
+  .cx-title .fut { font-family:"IBM Plex Mono",monospace; font-size:9px; letter-spacing:.14em; color:#4a6a8a;
+    border:1px solid #7a97b5; border-radius:3px; padding:1px 5px; vertical-align:2px; margin-left:7px; }
+  .cx-blurb { font-family:"EB Garamond",serif; font-size:13.8px; line-height:1.5; color:#3a3020; }
+  .cx-meta { font-family:"IBM Plex Mono",monospace; font-size:9px; letter-spacing:.08em; color:#7d6a45; margin-top:3px; }
+  .cx-meta .dot { display:inline-block; width:7px; height:7px; border-radius:50%; vertical-align:-1px; margin-right:4px; }
+  .cx-threads { margin-top:4px; font-family:"Inter",sans-serif; font-size:10.5px; line-height:1.7; }
+  .cx-threads b { font-family:"IBM Plex Mono",monospace; font-weight:400; font-size:8.5px; letter-spacing:.16em; color:#96814f; }
+  .cx-threads a { color:#6a4f12; text-decoration:none; border-bottom:1px dotted #a8862a; cursor:pointer; margin-right:9px; white-space:nowrap; }
+  .cx-threads a:hover { color:#a8862a; }
+  .cx-threads a.tx { color:#6a3a7a; border-bottom-color:#9b6fc3; }
+  .cx-links { position:absolute; top:8px; right:0; font-family:"IBM Plex Mono",monospace; font-size:9px; }
+  .cx-links a { color:#96814f; text-decoration:none; margin-left:8px; }
+  .cx-links a:hover { color:#6a4f12; }
+
+  /* chapter (era) headings */
+  .cx-era { padding:20px 0 14px; text-align:center; }
+  .cx-era .rule { height:1px; background:linear-gradient(90deg, transparent, #a8862a, transparent); margin:8px 18%; }
+  .cx-era .nm { font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:16px; letter-spacing:.34em; color:#6a4f12; text-transform:uppercase; }
+  .cx-era .span { font-family:"IBM Plex Mono",monospace; font-size:10px; color:#8a6a1c; margin-top:3px; }
+  .cx-era .blurb { font-family:"EB Garamond",serif; font-style:italic; font-size:13.5px; color:#4a3d26; margin-top:7px; padding:0 8%; line-height:1.5; }
+
+  /* folio footer */
+  .cx-folio { position:absolute; bottom:14px; font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.18em; color:#8a744a; }
+  .cx-page.left .cx-folio { left:64px; }
+  .cx-page.right .cx-folio { right:36px; }
+
+  /* page-corner click zones */
+  .cx-corner { position:absolute; bottom:0; width:88px; height:88px; cursor:pointer; z-index:5; }
+  .cx-corner.prev { left:0; border-radius:0 100% 0 8px; }
+  .cx-corner.next { right:0; border-radius:100% 0 8px 0; }
+  .cx-corner:hover { background:radial-gradient(circle at 0% 100%, rgba(168,134,42,.22), transparent 70%); }
+  .cx-corner.next:hover { background:radial-gradient(circle at 100% 100%, rgba(168,134,42,.22), transparent 70%); }
+
+  /* ---- toolbar ---- */
+  #cx-bar { display:flex; align-items:center; gap:8px; padding:7px 16px; border-bottom:1px solid var(--line-faint); flex-wrap:wrap; }
+  #cx-search { flex:0 1 230px; background:var(--obsidian-3); border:1px solid var(--line); color:var(--paper);
+    font-family:var(--sans); font-size:13px; padding:7px 12px; border-radius:4px; outline:none; }
+  #cx-search:focus { border-color:var(--gold-dim); }
+  #cx-bar select { background:var(--obsidian-3); border:1px solid var(--line); color:var(--paper-dim);
+    font-family:var(--mono); font-size:10.5px; padding:6px 6px; border-radius:4px; outline:none; max-width:150px; }
+  #cx-bar select:focus, #cx-bar select:hover { border-color:var(--gold-dim); color:var(--paper); }
+  #cx-where { margin-left:auto; font-family:var(--mono); font-size:10.5px; color:#59617c; text-align:right; }
+  #cx-where b { color:var(--gold); font-weight:400; }
+
+  /* table of contents overlay */
+  #cx-toc { position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:30; width:min(560px, 92vw);
+    background:rgba(12,14,20,.96); border:1px solid var(--gold-dim); border-radius:6px; padding:18px 22px;
+    box-shadow:0 30px 70px rgba(0,0,0,.7); }
+  #cx-toc .kicker { font-family:var(--mono); font-size:9px; letter-spacing:.3em; color:var(--gold); margin-bottom:10px; }
+  #cx-toc a { display:flex; justify-content:space-between; gap:12px; padding:5px 2px; color:var(--paper-dim);
+    text-decoration:none; font-size:13px; border-bottom:1px solid var(--line-faint); }
+  #cx-toc a:hover { color:var(--gold-bright); }
+  #cx-toc a .fol { font-family:var(--mono); font-size:10px; color:#59617c; }
+  #cx-hint { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); font-family:var(--mono);
+    font-size:9.5px; color:#3d4763; pointer-events:none; }
+
+  @media (max-width: 760px) {
+    #cx-book { height:78vh; }
+    .cx-page.right { display:none; }
+    .cx-page.left { border-radius:6px; box-shadow:none; }
+    #masthead h1 { font-size:14px; } .tagline { display:none; }
+    #cx-bar { padding:5px 8px; } #cx-where { display:none; }
+    #cx-hint { display:none; }
+  }
+</style>
+</head>
+<body>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE CODEX</h1>
+      <p class="tagline">every record of the archive, legible — a book bound along the winding path of time</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="cx-bar">
+    <button id="cx-toc-btn" class="tool-btn accent">Contents</button>
+    <button id="cx-first" class="tool-btn" title="First folio">|◀</button>
+    <button id="cx-prev" class="tool-btn" title="Previous spread (←)">◀</button>
+    <button id="cx-next" class="tool-btn" title="Next spread (→)">▶</button>
+    <button id="cx-last" class="tool-btn" title="Last folio">▶|</button>
+    <input id="cx-search" type="search" placeholder="Find a record… ⏎">
+    <select id="cx-era"><option value="">All eras</option></select>
+    <select id="cx-theme"><option value="">All themes</option></select>
+    <select id="cx-region"><option value="">All regions</option></select>
+    <a id="pn-link" href="astrolabe.html">Astrolabe</a>
+    <a id="pn-link" href="lineage.html">Bloodline</a>
+    <a id="pn-link" href="pantheons.html">Pantheons</a>
+    <a id="pn-link" href="transmissions.html">Transmissions</a>
+    <div id="cx-where"><b id="cx-era-now">—</b><br><span id="cx-folio-now">—</span></div>
+  </nav>
+
+  <main id="cx-stage">
+    <div id="cx-book">
+      <div class="cx-page left">
+        <svg class="cx-river"></svg>
+        <div class="cx-page-inner"></div>
+        <div class="cx-folio"></div>
+      </div>
+      <div class="cx-page right">
+        <svg class="cx-river"></svg>
+        <div class="cx-page-inner"></div>
+        <div class="cx-folio"></div>
+      </div>
+      <div class="cx-corner prev" title="Previous spread (←)"></div>
+      <div class="cx-corner next" title="Next spread (→)"></div>
+    </div>
+    <div id="cx-toc" hidden></div>
+    <div id="cx-hint">← → turn the pages · click a thread to follow a causation · click page corners · ⏎ in search jumps to a record</div>
+  </main>
+
+  <script src="src/data/eras.js"></script>
+  <script src="src/data/themes.js"></script>
+  <script src="src/data/events.js"></script>
+  <script src="src/data/events2.js"></script>
+  <script src="src/data/geo.js"></script>
+  <script src="src/data/uncertainty.js"></script>
+  <script src="src/data/events3.js"></script>
+  <script src="src/data/events4.js"></script>
+  <script src="src/data/events5.js"></script>
+  <script src="src/data/events6.js"></script>
+  <script src="src/data/transmissions.js"></script>
+  <script src="src/codex-app.js"></script>
+</body>
+</html>

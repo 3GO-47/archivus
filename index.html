@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — Oracle of Recorded History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+</head>
+<body class="app">
+
+  <!-- single compact command bar -->
+  <header id="bar">
+    <div class="sigil mini" aria-hidden="true"></div>
+    <h1 id="bar-title">ARCHIVUS</h1>
+    <div id="view-switch" role="group" aria-label="View mode">
+      <button class="view-btn active" data-view="chronicle" title="Timeline (1)">Chronicle</button>
+      <button class="view-btn" data-view="atlas" title="World map (2)">Atlas</button>
+      <button class="view-btn" data-view="wheel" title="Radial wheel (3)">Wheel</button>
+      <a class="view-btn" href="astrolabe.html" title="The transit instrument — history in Keplerian rotation (4)" style="text-decoration:none; display:inline-flex; align-items:center;">Astrolabe</a>
+    </div>
+    <button id="drawer-toggle" class="tool-btn" title="Filters, lanes & legend (F)">☰ Filters</button>
+    <input id="search" type="search" placeholder="Search the archive  ( / )" autocomplete="off" spellcheck="false">
+    <div class="toolbar-spacer"></div>
+    <button id="tours-btn" class="tool-btn accent" title="Narrative tours — the oracle walks you along a thread (T)">Tours</button>
+    <button id="oracle-btn" class="tool-btn accent" title="Ask the oracle about this window (O)">Oracle</button>
+    <button id="export-btn" class="tool-btn" title="Export current view as PNG">&#10515;</button>
+    <button id="reset" class="tool-btn" title="Reset everything">Reset</button>
+    <a id="tx-link" href="transmissions.html" title="Claims of taught knowledge vs the record">Transmissions</a>
+    <a id="bl-link" href="lineage.html" title="The family tree — pantheon to Messiah">Bloodline</a>
+    <a id="pn-link" href="pantheons.html" title="Seven divine family trees and the roads between religions">Pantheons</a>
+    <a id="cx-link" href="codex.html" title="Read the whole archive as a book (5)">Codex</a>
+    <div class="masthead-readout">
+      <div id="readout-era" class="readout-line">—</div>
+      <div id="readout-span" class="readout-line mono">—</div>
+    </div>
+  </header>
+
+  <!-- collapsible filter drawer (overlay — costs the chart nothing) -->
+  <aside id="drawer">
+    <div class="d-section">
+      <div class="d-title">Range</div>
+      <div class="d-row">
+        <button id="zoom-out" class="tool-btn" title="Zoom out (-)">&minus;</button>
+        <button id="zoom-in" class="tool-btn" title="Zoom in (+)">+</button>
+        <button id="fit-recorded" class="tool-btn wide" title="Fit recorded history">Recorded</button>
+        <button id="fit-all" class="tool-btn wide" title="Fit deep past">Deep Past</button>
+      </div>
+    </div>
+    <div class="d-section">
+      <div class="d-title">Filters</div>
+      <div class="d-row">
+        <select id="era-filter"><option value="">All eras</option></select>
+        <select id="region-filter"><option value="">All regions</option></select>
+        <select id="lens" title="What the horizontal lanes represent">
+          <option value="theme">Lanes: Themes</option>
+          <option value="region">Lanes: Regions</option>
+        </select>
+      </div>
+    </div>
+    <div class="d-section">
+      <div class="d-title">Themes</div>
+      <div id="theme-chips" role="group" aria-label="Theme filters"></div>
+    </div>
+    <div class="d-section">
+      <div class="d-title">Legend</div>
+      <div class="d-legend">
+        <span class="legend-item"><svg width="26" height="14"><circle cx="7" cy="7" r="4" fill="#d4a437"/></svg>event · size = weight</span>
+        <span class="legend-item"><svg width="34" height="14"><line x1="4" y1="7" x2="30" y2="7" stroke="#d4a437" stroke-width="5" stroke-linecap="round" opacity="0.85"/></svg>spanning event</span>
+        <span class="legend-item"><svg width="26" height="14"><circle cx="7" cy="7" r="4" fill="none" stroke="#d4a437" stroke-width="1.5" stroke-dasharray="2 2"/></svg>approximate (c.)</span>
+        <span class="legend-item"><svg width="34" height="14"><rect x="3" y="3" width="28" height="8" rx="4" fill="#d4a437" opacity="0.18"/><circle cx="17" cy="7" r="3" fill="#d4a437"/></svg>dating uncertainty</span>
+        <span class="legend-item"><svg width="26" height="14"><circle cx="13" cy="7" r="3" fill="#3fa7c4"/><circle cx="13" cy="7" r="6" fill="none" stroke="#dce8ff" stroke-width="1" stroke-dasharray="1 2.6"/></svg>white ring = anticipated (the Horizon)</span>
+        <span class="legend-item"><svg width="30" height="14"><line x1="3" y1="11" x2="27" y2="3" stroke="#c9a227" stroke-width="0.8" opacity="0.4"/></svg>relation thread</span>
+        <span class="legend-item mono">scroll = zoom · drag = pan · click = inspect<br>era band = enter era · time runs log-scaled</span>
+      </div>
+    </div>
+  </aside>
+
+  <main id="stage">
+    <div id="chart-wrap">
+      <svg id="chart" role="img" aria-label="Interactive timeline of human history"></svg>
+      <div id="tooltip" hidden></div>
+      <div id="status"><span id="event-count" class="mono"></span></div>
+      <button id="play-btn" class="tool-btn" hidden title="Play (Space)">▶ Play the Atlas</button>
+      <button id="play-speed" class="tool-btn" hidden title="Playback speed">1×</button>
+      <div id="play-era" hidden></div>
+      <div id="play-feed" hidden></div>
+      <div id="tours-menu" hidden></div>
+      <div id="help-overlay" hidden>
+        <div class="kicker">The Instrument's Keys</div>
+        <table>
+          <tr><td>1 / 2 / 3</td><td>Chronicle · Atlas · Wheel</td></tr>
+          <tr><td>Space</td><td>Play the Atlas / Spin the Wheel</td></tr>
+          <tr><td>T</td><td>Narrative tours</td></tr>
+          <tr><td>O</td><td>Consult the Oracle</td></tr>
+          <tr><td>F</td><td>Filters drawer</td></tr>
+          <tr><td>/</td><td>Search (Enter flies to best match)</td></tr>
+          <tr><td>+ − ← →</td><td>Zoom · pan time</td></tr>
+          <tr><td>↑ ↓</td><td>Step a tour</td></tr>
+          <tr><td>Esc</td><td>Stop / close / deselect</td></tr>
+          <tr><td>?</td><td>This card</td></tr>
+        </table>
+        <div class="hint mono">scroll = zoom · drag = pan · click = inspect · era band = enter era<br>time runs log-scaled · dashed nodes = approximate dates</div>
+      </div>
+      <div id="tour-card" hidden>
+        <div id="tour-kicker" class="kicker"></div>
+        <div id="tour-note"></div>
+        <div id="tour-nav">
+          <button id="tour-prev" class="tool-btn">◀</button>
+          <span id="tour-step" class="mono"></span>
+          <button id="tour-next" class="tool-btn accent">Next ▶</button>
+          <button id="tour-end" class="tool-btn">End</button>
+        </div>
+      </div>
+    </div>
+
+    <aside id="panel" aria-live="polite">
+      <button id="panel-close" title="Close (Esc)" aria-label="Close panel">&times;</button>
+      <div id="panel-content" hidden>
+        <div id="panel-kicker" class="kicker"></div>
+        <h2 id="panel-title"></h2>
+        <div id="panel-date" class="mono"></div>
+        <div id="panel-meta"></div>
+        <p id="panel-desc"></p>
+        <div id="panel-importance"></div>
+        <a id="panel-source" href="#" target="_blank" rel="noopener">Consult source &#8599;</a>
+        <div id="panel-related-wrap">
+          <div class="kicker">Threads of causation</div>
+          <div id="panel-related"></div>
+        </div>
+        <div id="panel-tx"></div>
+      </div>
+      <div id="panel-oracle" hidden></div>
+    </aside>
+  </main>
+
+  <!-- Data layer (plain script tags so the app works from file:// with no server) -->
+  <script src="src/data/eras.js"></script>
+  <script src="src/data/themes.js"></script>
+  <script src="src/data/events.js"></script>
+  <script src="src/data/events2.js"></script>
+  <script src="src/data/geo.js"></script>
+  <script src="src/data/uncertainty.js"></script>
+  <script src="src/data/events3.js"></script>
+  <script src="src/data/events4.js"></script>
+  <script src="src/data/events5.js"></script>
+  <script src="src/data/events6.js"></script>
+  <script src="src/data/tours.js"></script>
+  <script src="src/data/transmissions.js"></script>
+  <script src="assets/world.js"></script>
+  <script src="src/core.js"></script>
+  <script>
+  /* drawer toggle — independent of the core engine */
+  (function () {
+    const drawer = document.getElementById("drawer");
+    const btn = document.getElementById("drawer-toggle");
+    function toggle(force) {
+      const open = force != null ? force : !drawer.classList.contains("open");
+      drawer.classList.toggle("open", open);
+      btn.classList.toggle("accent", open);
+    }
+    btn.addEventListener("click", () => toggle());
+    window.addEventListener("keydown", e => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      if (e.key === "f" || e.key === "F") toggle();
+    });
+    /* clicking the chart closes the drawer */
+    document.getElementById("chart").addEventListener("pointerdown", () => toggle(false));
+  })();
+  </script>
+</body>
+</html>
