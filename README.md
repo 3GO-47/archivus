@@ -1,19 +1,20 @@
 # A R C H I V U S
 *An oracle of all recorded history.*
 
-Archivus is a local, self-contained instrument for exploring the whole arc of human history — four linked instruments over one hand-curated, fully-sourced archive:
+**Live: https://3go-47.github.io/archivus/**
+
+Archivus is a self-contained instrument for exploring the whole arc of human history — six linked instruments over one hand-curated, fully-sourced archive of 548 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus:
 
 | Instrument | File | What it holds |
 |---|---|---|
-| **The Archive** — Chronicle · Atlas · Codex Wheel | `index.html` | 481 historical events (480 with coordinates), 779 relation threads, 14 eras, 10 themes, 11 regions |
+| **The Archive** — Chronicle · Atlas · Codex Wheel | `index.html` | 548 events (all placed or guttered on the map), 800+ relation threads, 15 eras, 11 themes, 11 regions — log-scaled time, era records, the Oracle, narrative tours, time-play |
 | **The Transmissions** | `transmissions.html` | 37 claims from esoteric & occult literature that knowledge was *taught* — Azazel's metallurgy to Parsons' rocketry — each paired against the documented record |
 | **The Bloodline** | `lineage.html` | 558 figures across ~80 generations — the Mesopotamian pantheon through the Table of Nations to Jesus, Muhammad and the living successions of every faith, now with all seven divine pantheons grafted into the mythic stratum (`lineage3.js`): 28 cross-tradition bridges (shared PIE origin / documented syncretism / parallel archetype) tie Ugarit, the Ennead, Olympus, Asgard, the Vedic sky and Mexica heaven back to the Apsu–Tiamat root, each god carrying domains and first-attestation dates |
 | **The Pantheons** | `pantheons.html` | 97 gods in seven divine family trees (Mesopotamian, Canaanite, Egyptian, Greek, Norse, Vedic, Aztec), 20 domain sigils, 26 typed cross-religion arcs, and ⛩ worship horizons — earliest cult evidence vs earliest text |
 | **The Astrolabe** | `astrolabe.html` | A transit instrument: all 548 events as fixed stars on a log-time plate in true Keplerian differential rotation (ω ∝ r^−3/2) about the golden NOW core — and the 40 anticipated events as ghost-stars *inside* the event horizon. Constellation names and the Great Year's ages engraved into the brass; the Transmissions as comets; the Bloodline as one golden thread; drag to spin with real angular momentum; zoom locks the shear, disperses crowds, resolves names |
-
-The archive runs to 548 records across 11 themes and 15 eras, ending in **The Horizon — Anticipated** (2026–2140). Anticipated events are not a separate theme: they live in their real categories (a fusion plant is Science, a sea-level projection is Climate) and wear a dashed spectral-white ring in every view — `event.future` is a flag, filterable via the Horizon era. Each carries its epistemic grade: orbital mechanics is certain (Apophis 2029, Halley 2061, Venus 2117), schedules slip (Artemis, Mars), projections carry ranges (IPCC, UN), and claims (the Singularity) are recorded as claims, filed beside the prophecies they descend from. Every future record is wired to its historical ancestors — Fusion back to the Manhattan Project, AMR back to Fleming, the urban century back to Uruk.
-
 | **The Codex** | `codex.html` | The whole archive as an open book: all 548 records in chronological order on parchment spreads, era chapter headings, a winding gilt river of time down every margin, and causation threads (⟵ what it grew from / ⟶ what grew from it) that flip the book when clicked. Era/theme/region filters re-bind the book live (threads escape a filter gracefully); search, table of contents, folio navigation, swipe to turn, deep links |
+
+The archive ends in **The Horizon — Anticipated** (2026–2140). Anticipated events are not a separate theme: they live in their real categories (a fusion plant is Science, a sea-level projection is Climate) and wear a dashed spectral-white ring in every view — `event.future` is a flag, filterable via the Horizon era. Each carries its epistemic grade: orbital mechanics is certain (Apophis 2029, Halley 2061, Venus 2117), schedules slip (Artemis, Mars), projections carry ranges (IPCC, UN), and claims (the Singularity) are recorded as claims, filed beside the prophecies they descend from. Every future record is wired to its historical ancestors — Fusion back to the Manhattan Project, AMR back to Fleming, the urban century back to Uruk.
 
 **Sharing:** see `SHARE.md` — any single `mobile/*.html` file can be sent directly; `exports/archivus-site.zip` is a deploy-ready static site (Netlify Drop / tiiny.host / GitHub Pages give an instant public URL).
 
