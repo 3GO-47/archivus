@@ -34,6 +34,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body { height: 100%; }
+body { height: 100dvh; }        /* dynamic viewport: tracks the phone's address bar */
 
 body {
   background:
@@ -848,6 +849,10 @@ select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
 
 /* ============ the pocket archive: phones & small screens ============ */
 @media (max-width: 700px) {
+  /* the page may always scroll on a phone — never trap the user */
+  body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  main, #stage { min-height: 64dvh; }
+  #panel, #drawer, #bl-panel, #pn-panel, #as-panel { -webkit-overflow-scrolling: touch; }
   #bar { flex-wrap: wrap; padding: 6px 8px; gap: 5px; row-gap: 5px; }
   #bar-title { font-size: 13px; letter-spacing: 0.2em; }
   #bar .tool-btn, #view-switch .view-btn { padding: 5px 8px; font-size: 10px; }
@@ -860,17 +865,7 @@ select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
   #masthead { padding: 8px 12px; flex-wrap: wrap; gap: 6px; }
   #masthead h1 { font-size: 14px; }
   #masthead .tagline { display: none; }
-  #play-feed { width: 58vw; font-size: 9px; }
-  #play-era { font-size: 11px; }
-  #status { font-size: 9px; }
-  #help-overlay { width: 92vw; }
-  #tour-card { width: 90vw; left: 5vw; }
-  #bl-panel, #pn-panel { width: 100vw; max-width: 100vw; }
-  #bl-toolbar, #pn-toolbar { padding: 6px 8px; gap: 4px; }
-  #bl-mini { display: none; }
-  #bl-hint, #pn-legend { display: none; }
-}
-
+  #play-feed { width: 58vw
 </style>
 <style>
   #bl-toolbar { display:flex; align-items:center; gap:8px; padding:8px 16px; border-bottom:1px solid var(--line-faint); flex-wrap:wrap; }
