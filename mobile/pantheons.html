@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Pantheons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ARCHIVUS — v0.5 "Lens"
+   Dark observatory. Modern instrument typography:
+   Space Grotesk (structure) · Inter (reading) · IBM Plex Mono (data)
+   ============================================================ */
+
+:root {
+  --obsidian:      #0a0c12;
+  --obsidian-2:    #0e1119;
+  --obsidian-3:    #131826;
+  --paper:         #e6e1d3;
+  --paper-dim:     #a8a494;
+  --gold:          #c9a227;
+  --gold-bright:   #e8c455;
+  --gold-dim:      #6e5c1f;
+  --indigo:        #7c9ac9;
+  --line:          #262c3b;
+  --line-faint:    #181d29;
+  --panel-bg:      #10131dfa;
+  --sans: "Inter", system-ui, sans-serif;
+  --display: "Space Grotesk", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background:
+    radial-gradient(ellipse 130% 75% at 50% -12%, #151d33 0%, transparent 55%),
+    radial-gradient(ellipse 85% 55% at 88% 112%, #1c1324 0%, transparent 60%),
+    var(--obsidian);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mono { font-family: var(--mono); font-size: 0.82em; letter-spacing: 0.03em; }
+
+/* ============ motion ============ */
+@keyframes glowpulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(201,162,39,0.35); }
+  50%      { box-shadow: 0 0 20px rgba(232,196,85,0.7); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes twinkle { 0%, 100% { opacity: 0.04; } 50% { opacity: 0.45; } }
+@keyframes condense { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes flow { to { stroke-dashoffset: -24; } }
+@keyframes reveal-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* ============ masthead ============ */
+#masthead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 22px 10px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(201,162,39,0.05), transparent);
+  position: relative;
+}
+#masthead::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 25%, var(--gold) 50%, var(--gold-dim) 75%, transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* pure-geometry sigil: ring, orbit, nucleus */
+.sigil {
+  position: relative;
+  width: 34px; height: 34px;
+  border: 1px solid rgba(201,162,39,0.55);
+  border-radius: 50%;
+  animation: glowpulse 6s ease-in-out infinite;
+}
+.sigil::before {
+  content: "";
+  position: absolute; inset: -5px;
+  border: 1px dashed rgba(201,162,39,0.3);
+  border-radius: 50%;
+  animation: spin 50s linear infinite;
+}
+.sigil::after {
+  content: "";
+  position: absolute; left: 50%; top: 50%;
+  width: 6px; height: 6px; margin: -3px 0 0 -3px;
+  background: var(--gold-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--gold-bright);
+}
+
+#masthead h1 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: 0.34em;
+  color: var(--gold-bright);
+}
+.tagline {
+  color: var(--paper-dim);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  margin-top: 1px;
+}
+
+#tx-link {
+  margin-left: auto;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  padding: 7px 14px;
+  transition: all 0.18s;
+}
+#tx-link:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.22); }
+#bl-link, #pn-link, #cx-link {
+  margin-left: 8px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  padding: 7px 14px;
+  transition: all 0.18s;
+}
+#bl-link:hover, #pn-link:hover, #cx-link:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.22); }
+
+.masthead-readout { margin-left: 16px; text-align: right; }
+.readout-line { font-family: var(--display); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+.readout-line.mono { font-family: var(--mono); color: var(--paper-dim); font-size: 11px; margin-top: 3px; text-transform: none; }
+
+/* ============ single command bar (main app) ============ */
+#bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(201,162,39,0.05), transparent);
+  position: relative;
+  z-index: 30;
+  flex-wrap: nowrap;
+}
+#bar::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 25%, var(--gold) 50%, var(--gold-dim) 75%, transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+#bar-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: var(--gold-bright);
+  margin-right: 4px;
+}
+.sigil.mini { width: 24px; height: 24px; }
+.sigil.mini::before { inset: -4px; }
+.sigil.mini::after { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; }
+#bar .masthead-readout { margin-left: 4px; }
+#bar #search { flex: 0 1 220px; }
+#bar #tx-link, #bar #bl-link, #bar #pn-link, #bar #cx-link { margin-left: 0; padding: 6px 10px; font-size: 10.5px; }
+
+/* ============ collapsible drawer ============ */
+#drawer {
+  position: fixed;
+  left: 0; top: 48px; bottom: 0;
+  width: 300px;
+  max-width: 85vw;
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  border-right: 1px solid var(--line);
+  box-shadow: 24px 0 60px rgba(0,0,0,0.5);
+  padding: 18px 16px 30px;
+  overflow-y: auto;
+  z-index: 25;
+  transform: translateX(-104%);
+  transition: transform 0.3s cubic-bezier(.22,1,.36,1);
+}
+#drawer.open { transform: translateX(0); }
+.d-section { margin-bottom: 20px; }
+.d-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 9px;
+}
+.d-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.d-row select { max-width: 100%; flex: 1 1 120px; }
+#drawer #theme-chips { display: flex; flex-direction: column; gap: 6px; padding: 0; border: none; }
+#drawer .chip { justify-content: flex-start; }
+.d-legend { display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: var(--paper-dim); }
+.d-legend .legend-item { display: inline-flex; align-items: center; gap: 7px; line-height: 1.5; }
+
+/* atlas time-play + narrative tours */
+#play-btn {
+  position: absolute;
+  left: 10px; bottom: 46px;
+  z-index: 6;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.5), 0 0 14px rgba(201,162,39,0.15);
+}
+#tours-menu {
+  position: absolute;
+  right: 12px; top: 8px;
+  z-index: 40;
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 10px;
+  width: 340px;
+  max-width: 90vw;
+  box-shadow: 0 14px 44px rgba(0,0,0,0.6);
+}
+.tour-item {
+  padding: 9px 10px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(255,255,255,0.02);
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tour-item:hover { background: rgba(201,162,39,0.1); border-left-color: var(--gold); }
+.tour-item .tt { font-family: var(--display); font-weight: 600; font-size: 12.5px; color: var(--gold-bright); }
+.tour-item .tb { font-size: 11.5px; color: var(--paper-dim); margin-top: 2px; line-height: 1.45; }
+#tour-card {
+  position: absolute;
+  left: 50%; bottom: 52px;
+  transform: translateX(-50%);
+  z-index: 35;
+  width: 560px; max-width: 92%;
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.65), 0 0 24px rgba(201,162,39,0.1);
+  animation: reveal-up 0.25s ease-out;
+}
+#tour-note { font-size: 14px; line-height: 1.6; color: var(--paper); margin: 6px 0 10px; }
+#tour-nav { display: flex; align-items: center; gap: 8px; }
+#tour-step { font-size: 10.5px; color: #59617c; margin: 0 auto 0 4px; }
+.map-year-big {
+  font-family: "IBM Plex Mono", monospace;
+  fill: var(--gold-bright);
+  font-size: 34px;
+  letter-spacing: 0.06em;
+  paint-order: stroke; stroke: rgba(10,12,18,0.85); stroke-width: 6px;
+}
+.ignite { pointer-events: none; }
+#play-speed { position: absolute; left: 150px; bottom: 46px; z-index: 6; }
+#play-era {
+  position: absolute; left: 10px; bottom: 88px; z-index: 6;
+  font-family: var(--display); font-weight: 700;
+  font-size: 21px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold-bright);
+  text-shadow: 0 0 18px rgba(201,162,39,0.5), 0 2px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+#play-era.flash { animation: era-flash 0.9s ease-out; }
+@keyframes era-flash {
+  0% { transform: scale(1.5); opacity: 0; letter-spacing: 0.5em; }
+  100% { transform: scale(1); opacity: 1; letter-spacing: 0.24em; }
+}
+#play-feed {
+  position: absolute; left: 10px; top: 46px; z-index: 6;
+  width: 320px; max-width: 44vw;
+  display: flex; flex-direction: column; gap: 4px;
+  pointer-events: none;
+}
+.feed-item {
+  background: rgba(10,12,18,0.72);
+  border-left: 3px solid var(--c, var(--gold));
+  border-radius: 0 3px 3px 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--paper);
+  animation: reveal-up 0.3s ease-out;
+}
+.feed-item .fy { font-family: var(--mono); font-size: 9.5px; color: var(--gold-bright); display: block; }
+.feed-item:nth-child(n+4) { opacity: 0.55; }
+.feed-item:nth-child(n+6) { opacity: 0.28; }
+.wheel-hand { stroke: var(--gold-bright); stroke-width: 1.6; filter: drop-shadow(0 0 8px rgba(232,196,85,0.8)); pointer-events: none; }
+.wheel-hand-tip { fill: var(--gold-bright); filter: drop-shadow(0 0 10px rgba(232,196,85,0.9)); pointer-events: none; }
+.wheel-year-big {
+  font-family: "IBM Plex Mono", monospace;
+  fill: var(--gold-bright); font-size: 22px;
+  paint-order: stroke; stroke: rgba(10,12,18,0.85); stroke-width: 5px;
+}
+
+/* floating status chip inside the chart */
+#status {
+  position: absolute;
+  right: 10px; bottom: 8px;
+  font-size: 10.5px;
+  color: #59617c;
+  background: rgba(10,12,18,0.55);
+  border: 1px solid var(--line-faint);
+  border-radius: 3px;
+  padding: 3px 9px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ============ toolbar ============ */
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 22px;
+  border-bottom: 1px solid var(--line-faint);
+}
+
+#view-switch {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.view-btn {
+  background: var(--obsidian-3);
+  border: none;
+  border-right: 1px solid var(--line);
+  color: var(--paper-dim);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.view-btn:last-child { border-right: none; }
+.view-btn:hover { color: var(--gold-bright); }
+.view-btn.active {
+  background: rgba(201,162,39,0.15);
+  color: var(--gold-bright);
+  box-shadow: inset 0 -2px 0 var(--gold);
+}
+
+#search {
+  flex: 0 1 280px;
+  background: var(--obsidian-3);
+  border: 1px solid var(--line);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+#search:focus { border-color: var(--gold-dim); box-shadow: 0 0 12px rgba(201,162,39,0.2); }
+#search::placeholder { color: #5c637a; }
+
+select {
+  background: var(--obsidian-3);
+  border: 1px solid var(--line);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  padding: 8px 8px;
+  border-radius: 4px;
+  max-width: 170px;
+  transition: border-color 0.18s;
+}
+select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
+
+.toolbar-spacer { flex: 1; }
+
+.tool-btn {
+  background: var(--obsidian-3);
+  border: 1px solid var(--line);
+  color: var(--paper-dim);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 34px;
+  transition: all 0.18s;
+}
+.tool-btn:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold-bright);
+  box-shadow: 0 0 10px rgba(201,162,39,0.16);
+}
+.tool-btn.accent { border-color: var(--gold-dim); color: var(--gold); }
+.tool-btn.wide { padding: 8px 14px; }
+
+/* ============ theme chips ============ */
+#theme-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 22px 9px;
+  border-bottom: 1px solid var(--line-faint);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--paper-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 4px 11px;
+  cursor: pointer;
+  transition: all 0.18s;
+  user-select: none;
+}
+.chip .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--c, var(--gold));
+  box-shadow: 0 0 7px var(--c, var(--gold));
+}
+.chip:hover { border-color: var(--gold-dim); color: var(--paper); }
+.chip.active {
+  border-color: var(--c, var(--gold));
+  color: var(--paper);
+  background: color-mix(in srgb, var(--c, var(--gold)) 14%, transparent);
+}
+.chip.dimmed { opacity: 0.35; }
+
+/* ============ stage ============ */
+#stage { flex: 1; display: flex; min-height: 0; position: relative; }
+
+#chart-wrap { flex: 1; position: relative; min-width: 0; }
+
+#chart {
+  width: 100%; height: 100%; display: block;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+#chart.panning { cursor: grabbing; }
+
+/* --- SVG vocabulary --- */
+.era-band { cursor: pointer; transition: filter 0.18s; }
+.era-band:hover { filter: brightness(1.8); }
+.era-band-label {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 500;
+  fill: #8f9ab5;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+.era-boundary { stroke: var(--line-faint); stroke-width: 1; }
+.axis-tick-label { font-family: "IBM Plex Mono", monospace; fill: #66708c; font-size: 10px; }
+.axis-line { stroke: var(--line); }
+.meridian { stroke: var(--gold-dim); stroke-width: 1; stroke-dasharray: 3 4; }
+.meridian-label { font-family: "Space Grotesk", sans-serif; fill: var(--gold-dim); font-size: 9px; letter-spacing: 0.16em; }
+.lane-label {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 500;
+  fill: #4d5670;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.lane-line { stroke: var(--line-faint); stroke-dasharray: 1 5; }
+
+.evt { cursor: pointer; }
+.evt .node-core { transition: r 0.16s cubic-bezier(.34,1.56,.64,1); }
+.evt-label {
+  font-family: "Inter", system-ui, sans-serif;
+  fill: var(--paper-dim);
+  font-size: 10.5px;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: rgba(10,12,18,0.88);
+  stroke-width: 3px;
+}
+.evt-label.major { fill: var(--paper); font-size: 11.5px; font-weight: 500; }
+
+.enter .evt {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: condense 0.5s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+/* the standing web of relations */
+.web-line {
+  stroke: var(--gold);
+  stroke-width: 0.6;
+  opacity: 0.10;
+  pointer-events: none;
+}
+/* the ignited thread */
+.constellation {
+  stroke: var(--gold-bright);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: flow 1.6s linear infinite;
+}
+
+.star { fill: #b8c4e8; pointer-events: none; }
+.star.twinkle { animation-name: twinkle; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+
+.time-cursor { stroke: rgba(232,196,85,0.3); stroke-width: 1; pointer-events: none; }
+.time-cursor-label {
+  font-family: "IBM Plex Mono", monospace;
+  fill: var(--gold-bright); font-size: 10px;
+  pointer-events: none;
+  paint-order: stroke; stroke: rgba(10,12,18,0.9); stroke-width: 3px;
+}
+
+.ov-bg { fill: var(--obsidian-2); stroke: var(--line-faint); }
+.ov-brush {
+  fill: rgba(201,162,39,0.15);
+  stroke: var(--gold-dim);
+  stroke-width: 1;
+  cursor: ew-resize;
+  transition: fill 0.18s;
+}
+.ov-brush:hover { fill: rgba(201,162,39,0.26); }
+.ov-dot { pointer-events: none; }
+.ov-hit { fill: transparent; cursor: pointer; }
+
+/* atlas */
+.map-frame { fill: rgba(124,154,201,0.02); stroke: var(--line); stroke-width: 1; }
+.graticule { stroke: var(--line-faint); stroke-width: 0.6; }
+.graticule.equator { stroke: var(--gold-dim); stroke-dasharray: 2 5; opacity: 0.5; }
+.map-land { fill: rgba(230,225,211,0.11); stroke: #6b7899; stroke-width: 0.9; }
+.map-border { fill: none; stroke: #3a445c; stroke-width: 0.6; stroke-dasharray: 2 2; opacity: 0.7; }
+.map-caption {
+  font-family: "Space Grotesk", sans-serif;
+  fill: var(--gold-dim); font-size: 10px; letter-spacing: 0.16em;
+}
+
+/* wheel */
+.wheel-ring { fill: none; stroke: var(--line-faint); stroke-dasharray: 1 5; }
+.wheel-era { transition: filter 0.18s; }
+.wheel-era:hover { filter: brightness(1.9); }
+.wheel-era-label {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 500;
+  fill: #8f9ab5; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  pointer-events: none;
+}
+.wheel-center-disc { fill: rgba(201,162,39,0.05); stroke: var(--gold-dim); stroke-width: 0.8; stroke-dasharray: 2 4; }
+.wheel-center-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  fill: var(--gold-bright); font-size: 12px; letter-spacing: 0.3em;
+}
+.wheel-center-sub { font-family: "IBM Plex Mono", monospace; fill: var(--paper-dim); font-size: 9px; }
+
+/* ============ tooltip ============ */
+#tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #151927f5;
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  padding: 8px 12px;
+  max-width: 280px;
+  z-index: 30;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  animation: reveal-up 0.14s ease-out;
+}
+#tooltip .tt-title { font-family: var(--display); font-weight: 500; font-size: 12.5px; color: var(--gold-bright); }
+#tooltip .tt-date { font-family: var(--mono); font-size: 10px; color: var(--paper-dim); margin-top: 3px; }
+
+/* ============ slide-in panel ============ */
+#panel {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 360px;
+  max-width: 88vw;
+  border-left: 1px solid var(--line);
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  padding: 48px 24px 30px;
+  overflow-y: auto;
+  z-index: 20;
+  transform: translateX(102%);
+  transition: transform 0.32s cubic-bezier(.22,1,.36,1);
+  box-shadow: -24px 0 60px rgba(0,0,0,0.55);
+}
+#panel.open { transform: translateX(0); }
+#panel::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, var(--gold-dim), transparent 40%, transparent 60%, var(--gold-dim));
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+#panel-close {
+  position: absolute;
+  top: 10px; right: 12px;
+  width: 30px; height: 30px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--paper-dim);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.18s;
+  z-index: 2;
+}
+#panel-close:hover { border-color: var(--gold-dim); color: var(--gold-bright); }
+
+#panel-content, #panel-oracle { animation: reveal-up 0.28s ease-out; }
+
+.kicker {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+#panel-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.25;
+  color: var(--paper);
+  margin-bottom: 8px;
+}
+
+#panel-date { color: var(--gold-bright); font-size: 12px; margin-bottom: 14px; }
+
+#panel-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.meta-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3px 8px;
+  color: var(--paper-dim);
+}
+.meta-tag.theme-tag { border-color: var(--c, var(--line)); color: var(--c, var(--paper-dim)); }
+
+#panel-desc { font-size: 14.5px; line-height: 1.65; color: var(--paper); margin-bottom: 18px; }
+
+#panel-importance { margin-bottom: 18px; }
+#panel-importance .label {
+  display: block; font-family: var(--display); font-weight: 500; font-size: 9.5px;
+  letter-spacing: 0.2em; text-transform: uppercase; color: #59617c; margin-bottom: 6px;
+}
+.imp-track {
+  display: block; height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+.imp-fill {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright));
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(201,162,39,0.5);
+}
+
+#panel-source {
+  display: inline-block;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--gold-dim);
+  padding: 7px 14px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  transition: all 0.18s;
+}
+#panel-source:hover {
+  background: rgba(201,162,39,0.12);
+  color: var(--gold-bright);
+}
+
+#panel-related { display: flex; flex-direction: column; gap: 6px; }
+.related-link {
+  font-size: 13px;
+  color: var(--paper-dim);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.16s;
+}
+.related-link:hover {
+  color: var(--gold-bright);
+  background: rgba(201,162,39,0.09);
+  border-left-color: var(--gold);
+  transform: translateX(3px);
+}
+.related-link .rl-date { font-family: var(--mono); font-size: 9.5px; color: #59617c; display: block; }
+
+/* ============ oracle & era records ============ */
+#panel-oracle .o-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--gold-bright);
+  margin-bottom: 4px;
+}
+#panel-oracle .o-span { font-family: var(--mono); font-size: 11px; color: var(--paper-dim); margin-bottom: 16px; }
+#panel-oracle .o-prose { font-size: 14.5px; line-height: 1.68; color: var(--paper); margin-bottom: 18px; }
+#panel-oracle .o-prose em { color: var(--gold-bright); font-style: normal; font-weight: 500; }
+#panel-oracle .o-section { margin-bottom: 18px; }
+#panel-oracle .o-evt {
+  display: block;
+  font-size: 13px;
+  color: var(--paper-dim);
+  cursor: pointer;
+  padding: 5px 10px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(255,255,255,0.02);
+  margin-bottom: 5px;
+  transition: all 0.16s;
+}
+#panel-oracle .o-evt:hover {
+  color: var(--gold-bright);
+  background: rgba(201,162,39,0.09);
+  border-left-color: var(--gold);
+  transform: translateX(3px);
+}
+#panel-oracle .o-evt .oe-date { font-family: var(--mono); font-size: 9.5px; color: #59617c; display: block; }
+.o-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.o-bar-name { font-family: var(--mono); font-size: 9.5px; color: var(--paper-dim); width: 108px; flex: none; text-align: right; }
+.o-bar-track { flex: 1; height: 7px; background: rgba(255,255,255,0.04); border-radius: 3px; overflow: hidden; }
+.o-bar-fill {
+  display: block;
+  height: 100%; border-radius: 3px;
+  box-shadow: 0 0 8px var(--c, var(--gold));
+  background: var(--c, var(--gold));
+  transition: width 0.6s cubic-bezier(.22,1,.36,1);
+}
+.o-bar-n { font-family: var(--mono); font-size: 9.5px; color: #59617c; width: 22px; }
+.o-divider { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
+
+/* cross-instrument jump links + help overlay */
+.tx-jump {
+  display: block;
+  font-size: 12.5px;
+  color: var(--gold);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(201,162,39,0.04);
+  margin-bottom: 5px;
+  transition: all 0.16s;
+}
+.tx-jump:hover { color: var(--gold-bright); background: rgba(201,162,39,0.1); transform: translateX(3px); }
+#panel-tx { margin-top: 18px; }
+#help-overlay {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  background: var(--panel-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 18px 22px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 30px rgba(201,162,39,0.1);
+  animation: reveal-up 0.2s ease-out;
+}
+#help-overlay table { border-collapse: collapse; margin: 6px 0 10px; }
+#help-overlay td { padding: 3px 14px 3px 0; font-size: 13px; color: var(--paper); }
+#help-overlay td:first-child { font-family: var(--mono); color: var(--gold-bright); font-size: 11.5px; white-space: nowrap; }
+#help-overlay .hint { font-size: 10px; color: #59617c; line-height: 1.6; }
+
+/* ============ legend ============ */
+#legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 6px 22px;
+  border-top: 1px solid var(--line);
+  background: var(--obsidian-2);
+  font-size: 11.5px;
+  color: var(--paper-dim);
+}
+.legend-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 9.5px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold-dim);
+}
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+#event-count { margin-left: auto; color: #59617c; }
+
+/* ============ responsive & a11y ============ */
+@media (max-width: 900px) {
+  #masthead h1 { font-size: 16px; letter-spacing: 0.22em; }
+  .masthead-readout { display: none; }
+  #search { flex-basis: 150px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--obsidian); }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+/* ============ the pocket archive: phones & small screens ============ */
+@media (max-width: 700px) {
+  #bar { flex-wrap: wrap; padding: 6px 8px; gap: 5px; row-gap: 5px; }
+  #bar-title { font-size: 13px; letter-spacing: 0.2em; }
+  #bar .tool-btn, #view-switch .view-btn { padding: 5px 8px; font-size: 10px; }
+  #bar #tx-link, #bar #bl-link, #bar #pn-link { padding: 5px 7px; font-size: 9px; }
+  #search { flex: 1 1 110px; min-width: 90px; font-size: 12px; padding: 6px 9px; }
+  .masthead-readout { display: none; }
+  .toolbar-spacer { display: none; }
+  #drawer { width: 100vw; max-width: 100vw; }
+  #panel { width: 100vw; max-width: 100vw; }
+  #masthead { padding: 8px 12px; flex-wrap: wrap; gap: 6px; }
+  #masthead h1 { font-size: 14px; }
+  #masthead .tagline { display: none; }
+  #play-feed { width: 58vw; font-size: 9px; }
+  #play-era { font-size: 11px; }
+  #status { font-size: 9px; }
+  #help-overlay { width: 92vw; }
+  #tour-card { width: 90vw; left: 5vw; }
+  #bl-panel, #pn-panel { width: 100vw; max-width: 100vw; }
+  #bl-toolbar, #pn-toolbar { padding: 6px 8px; gap: 4px; }
+  #bl-mini { display: none; }
+  #bl-hint, #pn-legend { display: none; }
+}
+
+</style>
+<style>
+  #pn-toolbar { display:flex; align-items:center; gap:8px; padding:8px 16px; border-bottom:1px solid var(--line-faint); flex-wrap:wrap; }
+  #pn-search { flex:0 1 200px; background:var(--obsidian-3); border:1px solid var(--line); color:var(--paper);
+    font-family:var(--sans); font-size:13px; padding:7px 12px; border-radius:4px; outline:none; }
+  #pn-search:focus { border-color:var(--gold-dim); }
+  #pn-jumps { display:flex; flex-wrap:wrap; gap:5px; }
+  #pn-dombar { display:flex; flex-wrap:wrap; gap:5px; padding:7px 16px 9px; border-bottom:1px solid var(--line-faint); }
+  .pn-domchip svg { width:13px; height:13px; stroke:var(--gold); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .pn-domchip.active { border-color:var(--gold); background:rgba(201,162,39,0.14); color:var(--paper); }
+  #pn-stage { flex:1; position:relative; min-height:0; }
+  #pn-svg { width:100%; height:100%; display:block; cursor:grab; user-select:none; touch-action:none;
+    background: radial-gradient(ellipse 120% 70% at 50% -10%, #141b30 0%, transparent 55%); }
+  #pn-svg.panning { cursor:grabbing; }
+
+  .pn-plate { fill:rgba(124,154,201,0.03); stroke:var(--line-faint); }
+  .pn-plate-title { font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:15px; letter-spacing:.3em; opacity:.85; }
+  .pn-plate-horizon { font-family:"IBM Plex Mono",monospace; font-size:8.5px; fill:#59617c; }
+  #pn-svg.far .pn-plate-horizon { display:none; }
+  .pn-edge { fill:none; stroke-width:1.2; opacity:.4; }
+  .pn-union { fill:none; stroke:#c874a6; stroke-width:.9; stroke-dasharray:2 5; opacity:.6; }
+
+  .pn-node { cursor:pointer; }
+  .pn-card { fill:color-mix(in srgb, var(--pc,#8f9ab5) 10%, #10141f); stroke:var(--pc,#8f9ab5); stroke-width:1.1;
+    transition: filter .15s; }
+  .pn-node:hover .pn-card, .pn-node.hov .pn-card { filter:brightness(1.6) drop-shadow(0 0 8px var(--pc,#c9a227)); }
+  .pn-node.sel .pn-card { stroke:#e8c455; stroke-width:2; filter:drop-shadow(0 0 12px rgba(232,196,85,.85)); }
+  .pn-node.dim { opacity:.13; }
+  .pn-node.lit .pn-card { filter:drop-shadow(0 0 10px var(--pc,#c9a227)); }
+  .pn-name { font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:11.5px; fill:var(--paper); pointer-events:none; }
+  .pn-sub { font-family:"Inter",sans-serif; font-size:8px; fill:var(--paper-dim); font-style:italic; pointer-events:none; }
+  .pn-ic path { stroke:var(--gold); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  #pn-svg.far .pn-name, #pn-svg.far .pn-sub, #pn-svg.far .pn-ic { display:none; }
+  #pn-svg.far .pn-card { rx:14; }
+
+  .pn-x { fill:none; stroke-width:1.4; opacity:.5; cursor:pointer; transition:opacity .15s; }
+  .pn-x:hover, .pn-x.hov { opacity:1; stroke-width:2.4; }
+  .pn-x.sel { opacity:1; stroke-width:2.6; filter:drop-shadow(0 0 6px currentColor); }
+  .pn-x.dim { opacity:.08; }
+  .pn-x-o { stroke:#9b6fc3; }
+  .pn-x-s { stroke:#c9a227; stroke-dasharray:7 4; }
+  .pn-x-p { stroke:#4fae9c; stroke-dasharray:2 5; }
+
+  #pn-legend { position:absolute; left:12px; bottom:12px; z-index:6;
+    background:rgba(10,12,18,.72); border:1px solid var(--line-faint); border-radius:4px;
+    padding:8px 12px; font-size:11px; color:var(--paper-dim); display:flex; flex-direction:column; gap:5px; pointer-events:none; }
+  #pn-legend .li { display:flex; align-items:center; gap:8px; }
+  #pn-legend svg { width:34px; height:8px; }
+
+  #pn-panel { position:absolute; right:0; top:0; bottom:0; width:350px; max-width:90vw;
+    background:var(--panel-bg); backdrop-filter:blur(6px); border-left:1px solid var(--line);
+    box-shadow:-24px 0 60px rgba(0,0,0,.55); padding:46px 22px 30px; overflow-y:auto; z-index:20;
+    transform:translateX(103%); transition:transform .3s cubic-bezier(.22,1,.36,1); }
+  #pn-panel.open { transform:translateX(0); }
+  #pn-close { position:absolute; top:10px; right:12px; width:30px; height:30px; background:transparent;
+    border:1px solid var(--line); border-radius:4px; color:var(--paper-dim); font-size:18px; cursor:pointer; }
+  #pn-close:hover { border-color:var(--gold-dim); color:var(--gold-bright); }
+  .pn-chip { display:inline-block; font-family:var(--display); font-weight:600; font-size:9.5px;
+    letter-spacing:.18em; text-transform:uppercase; padding:3px 9px; border-radius:3px;
+    border:1px solid var(--pc,var(--gold-dim)); color:var(--pc,var(--gold)); margin-bottom:10px; }
+  .pn-x-o-chip { border-color:#9b6fc3; color:#9b6fc3; }
+  .pn-x-s-chip { border-color:#c9a227; color:#c9a227; }
+  .pn-x-p-chip { border-color:#4fae9c; color:#4fae9c; }
+  #pn-p-name { font-family:var(--display); font-weight:600; font-size:19px; line-height:1.3; }
+  #pn-p-sub { font-size:12px; color:var(--paper-dim); font-style:italic; margin:2px 0 12px; }
+  #pn-p-dom { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .pn-dom { display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px;
+    border:1px solid var(--line); border-radius:3px; padding:3px 8px; color:var(--paper-dim); }
+  .pn-dom svg { width:13px; height:13px; stroke:var(--gold); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .pn-rel { font-size:13px; color:var(--paper-dim); margin-bottom:4px; }
+  #pn-p-rels b { color:#59617c; font-family:var(--mono); font-weight:400; font-size:9.5px;
+    letter-spacing:.08em; text-transform:uppercase; display:block; margin-top:10px; }
+  #pn-panel a { color:var(--gold); cursor:pointer; text-decoration:none; }
+  #pn-panel a:hover { color:var(--gold-bright); }
+  #pn-p-note { font-size:13px; line-height:1.62; color:var(--paper); margin-top:12px; padding-top:10px;
+    border-top:1px solid var(--line-faint); }
+  #pn-p-x { margin-top:14px; }
+  .pn-xcard { font-size:12.5px; line-height:1.55; color:var(--paper-dim);
+    border-left:2px solid var(--line); padding:6px 10px; margin-bottom:7px; background:rgba(255,255,255,.02); }
+  .pn-xcard.pn-x-o { border-left-color:#9b6fc3; }
+  .pn-xcard.pn-x-s { border-left-color:#c9a227; }
+  .pn-xcard.pn-x-p { border-left-color:#4fae9c; }
+  .pn-xcard .xk { display:block; font-family:var(--mono); font-size:8.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:#59617c; margin-bottom:2px; }
+</style>
+</head>
+<body>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE PANTHEONS</h1>
+      <p class="tagline">seven divine family trees — and the roads between the religions</p>
+    </div>
+    <a id="tx-link" href="codex.html">The Codex</a>
+    <a id="bl-link" href="lineage.html">The Bloodline</a>
+    <a id="pn-link" href="transmissions.html">The Transmissions</a>
+    <a id="cx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="pn-toolbar">
+    <input id="pn-search" type="search" placeholder="Find a god… ⏎">
+    <div id="pn-jumps"></div>
+  </nav>
+  <div id="pn-dombar"><div id="pn-domains" style="display:flex;flex-wrap:wrap;gap:5px"></div></div>
+
+  <main id="pn-stage">
+    <svg id="pn-svg"></svg>
+    <div id="pn-legend">
+      <div class="li"><svg><line x1="2" y1="4" x2="32" y2="4" stroke="#9b6fc3" stroke-width="2"/></svg>shared origin — the same Proto-Indo-European god, aged</div>
+      <div class="li"><svg><line x1="2" y1="4" x2="32" y2="4" stroke="#c9a227" stroke-width="2" stroke-dasharray="7 4"/></svg>documented syncretism — cult chains &amp; named fusions</div>
+      <div class="li"><svg><line x1="2" y1="4" x2="32" y2="4" stroke="#4fae9c" stroke-width="2" stroke-dasharray="2 5"/></svg>parallel archetype — the same office, independently staffed</div>
+      <div class="li" style="color:#59617c">click a domain sigil above to light one office across all seven skies · click any arc for its story</div>
+    </div>
+    <aside id="pn-panel">
+      <button id="pn-close">&times;</button>
+      <div id="pn-p-house"></div>
+      <div id="pn-p-name"></div>
+      <div id="pn-p-sub"></div>
+      <div id="pn-p-dom"></div>
+      <div id="pn-p-rels"></div>
+      <div id="pn-p-note"></div>
+      <div id="pn-p-x"></div>
+    </aside>
+  </main>
+
+  <script>
+/* ARCHIVUS — THE PANTHEONS
+   Seven divine family trees, with domains and the connections between
+   religions. Three kinds of cross-links:
+     o = shared origin (Proto-Indo-European inheritance — the same god, aged)
+     s = documented syncretism (cult chains, interpretatio, named fusions)
+     p = parallel archetype (the same office, independently staffed)
+   Node: id, pa (pantheon), n (name), sub (equivalents/epithets), d (domain ids),
+         p (parents), u (consort id), t (note), gen (tier within pantheon). */
+window.ARCHIVUS_PANTHEONS = {
+  pantheons: {
+    meso:  { name: "Mesopotamian",       color: "#c9a227" },
+    canaan:{ name: "Canaanite / Ugarit", color: "#c87f3a" },
+    egypt: { name: "Egyptian (Ennead)",  color: "#a67c00" },
+    greek: { name: "Greek · Roman",      color: "#7c9ac9" },
+    norse: { name: "Norse",              color: "#5bc8dd" },
+    vedic: { name: "Vedic · Hindu",      color: "#d4738f" },
+    aztec: { name: "Aztec / Mexica",     color: "#5faa5f" }
+  },
+  /* worship horizons: earliest CULT evidence — as distinct from earliest text */
+  horizons: {
+    meso:  "⛩ Worship horizon: temple sequence at Eridu from c. 5400 BCE — cult precedes writing here by ~3,000 years.",
+    canaan:"⛩ Worship horizon: Bronze-Age Levantine shrines; the name El inherited from older Semitic ʾil, in personal names at Ebla by c. 2500 BCE.",
+    egypt: "⛩ Worship horizon: predynastic Nile burials and the Hierakonpolis shrine, c. 4000–3500 BCE.",
+    greek: "⛩ Worship horizon: PIE steppe religion c. 4500–2500 BCE (kurgan rites) meeting Minoan–Mycenaean sanctuaries; Dodona's oak oracle claimed from c. 2000 BCE.",
+    norse: "⛩ Worship horizon: the same PIE stock; Scandinavian bog offerings and rock-art sun-ships from c. 1500 BCE.",
+    vedic: "⛩ Worship horizon: Indo-Iranian fire ritual and horse sacrifice on the steppe c. 2000 BCE (Sintashta) — the Veda memorized long before writing.",
+    aztec: "⛩ Worship horizon: Mesoamerican deep stock — Olmec ritual c. 1200 BCE; Tlaloc and the Feathered Serpent at Teotihuacan by 200 CE."
+  },
+  domains: {
+    sky:    "Sky / Heavens",   storm: "Storm / Thunder",  sun:  "Sun",
+    moon:   "Moon",            sea:   "Sea / Waters",     earth:"Earth",
+    death:  "Death / Underworld", war: "War",             love: "Love / Fertility",
+    wisdom: "Wisdom / Magic",  craft: "Craft / Smithing", harvest:"Harvest / Grain",
+    fire:   "Fire",            justice:"Justice / Law",   trickster:"Trickster",
+    king:   "Kingship",        messenger:"Messenger / Psychopomp", home:"Hearth / Home",
+    hunt:   "Hunt / Wild",     serpent:"Serpent / Chaos"
+  },
+  gods: [
+  /* ---- Mesopotamian ---- */
+  { id:"apsu", pa:"meso", n:"Apsu", d:["sea"], p:[], gen:0, t:"The fresh-water abyss beneath the world; first begetter of the Enuma Elish." },
+  { id:"tiamat", pa:"meso", n:"Tiamat", d:["sea","serpent"], p:[], u:"apsu", gen:0, t:"Salt sea and dragon-mother; from her split body, sky and earth." },
+  { id:"anshar", pa:"meso", n:"Anshar", sub:"whole sky", d:["sky"], p:["apsu","tiamat"], gen:1 },
+  { id:"kishar", pa:"meso", n:"Kishar", sub:"whole earth", d:["earth"], p:["apsu","tiamat"], u:"anshar", gen:1 },
+  { id:"anu", pa:"meso", n:"Anu", sub:"An — Sky Father", d:["sky","king"], p:["anshar","kishar"], gen:2, t:"Remote high king of heaven; his 'anutu' is kingship itself." },
+  { id:"enlil", pa:"meso", n:"Enlil", sub:"Lord Wind", d:["storm","king"], p:["anu"], gen:3, t:"Holder of the Tablet of Destinies; his word is the storm." },
+  { id:"enki", pa:"meso", n:"Enki / Ea", sub:"Lord of the Deep", d:["sea","wisdom","craft"], p:["anu"], gen:3, t:"Keeper of the ME, friend of mankind — the Bloodline's engineer and the Transmissions' first suspect." },
+  { id:"ninhursag", pa:"meso", n:"Ninhursag", sub:"Lady of the Mountain", d:["earth","love"], p:[], u:"enki", gen:3 },
+  { id:"nanna", pa:"meso", n:"Nanna / Sin", d:["moon"], p:["enlil"], gen:4, t:"Moon-lord of Ur — the city of the Bloodline's patriarchs." },
+  { id:"utu", pa:"meso", n:"Utu / Shamash", d:["sun","justice"], p:["nanna"], gen:5, t:"The sun who sees everything; giver of Hammurabi's law." },
+  { id:"inanna", pa:"meso", n:"Inanna / Ishtar", sub:"Queen of Heaven", d:["love","war"], p:["nanna"], gen:5, t:"Morning and evening star; stole the ME from Enki; descended to the dead and returned." },
+  { id:"ereshkigal", pa:"meso", n:"Ereshkigal", d:["death"], p:["nanna"], gen:5, t:"Queen of the great below, from whom no traveler returns unmarked." },
+  { id:"nergal", pa:"meso", n:"Nergal", d:["war","death","fire"], p:["enlil"], gen:4, u:"ereshkigal" },
+  { id:"marduk", pa:"meso", n:"Marduk", sub:"Bel — lord of Babylon", d:["storm","king","serpent"], p:["enki"], gen:4, t:"Slew Tiamat and built the world from her body — the Chaoskampf's first full script." },
+  { id:"nabu", pa:"meso", n:"Nabu", d:["wisdom","messenger"], p:["marduk"], gen:5, t:"Scribe of destinies, patron of writing." },
+
+  /* ---- Canaanite / Ugaritic ---- */
+  { id:"el", pa:"canaan", n:"El", sub:"the Bull, father of years", d:["sky","king"], p:[], gen:0, t:"The seated grey-bearded high god of Ugarit; his name is simply 'God' — and it survives inside El-ohim, Isra-el, Beth-el." },
+  { id:"asherah", pa:"canaan", n:"Asherah", sub:"Lady of the Sea", d:["love","sea"], p:[], u:"el", gen:0, t:"Mother of the seventy gods; her poles stood beside early Israelite altars." },
+  { id:"baal", pa:"canaan", n:"Baal Hadad", sub:"Rider on the Clouds", d:["storm","king"], p:["el","asherah"], gen:1, t:"Defeats Sea and Death to win kingship — the storm-king pattern Israel's neighbors knew by heart." },
+  { id:"anat", pa:"canaan", n:"Anat", d:["war","love"], p:["el","asherah"], gen:1, t:"Baal's ferocious sister-ally, wading in the blood of armies." },
+  { id:"yam", pa:"canaan", n:"Yam", sub:"Sea / River", d:["sea","serpent"], p:["el","asherah"], gen:1, t:"The raging sea, Baal's first enemy — Tiamat's western cousin." },
+  { id:"mot", pa:"canaan", n:"Mot", sub:"Death", d:["death"], p:["el","asherah"], gen:1, t:"Swallows Baal; the dry season is his reign." },
+  { id:"shapash", pa:"canaan", n:"Shapash", d:["sun","justice"], p:["el","asherah"], gen:1, t:"Torch of the gods, who travels the underworld nightly." },
+
+  /* ---- Egyptian (Heliopolitan Ennead + court) ---- */
+  { id:"nun", pa:"egypt", n:"Nun", d:["sea"], p:[], gen:0, t:"The dark primeval waters before the first sunrise." },
+  { id:"atum", pa:"egypt", n:"Atum-Ra", sub:"the self-created", d:["sun","king"], p:["nun"], gen:1, t:"Rose from Nun on the first mound; the sun as first cause." },
+  { id:"shu", pa:"egypt", n:"Shu", sub:"air", d:["sky"], p:["atum"], gen:2 },
+  { id:"tefnut", pa:"egypt", n:"Tefnut", sub:"moisture", d:["sea"], p:["atum"], u:"shu", gen:2 },
+  { id:"geb", pa:"egypt", n:"Geb", d:["earth"], p:["shu","tefnut"], gen:3, t:"The earth is a god lying beneath his sister the sky — Egypt inverts everyone else's marriage." },
+  { id:"nut", pa:"egypt", n:"Nut", d:["sky"], p:["shu","tefnut"], u:"geb", gen:3, t:"Star-bodied sky, arched over Geb; swallows the sun each dusk and births it each dawn." },
+  { id:"osiris", pa:"egypt", n:"Osiris", d:["death","harvest","king"], p:["geb","nut"], gen:4, t:"Murdered, dismembered, reassembled — the first to die and rule beyond it; every pharaoh becomes him." },
+  { id:"isis", pa:"egypt", n:"Isis", sub:"great of magic", d:["wisdom","love"], p:["geb","nut"], u:"osiris", gen:4, t:"Rebuilt her husband and tricked Ra's true name from him; her cult later spans the whole Roman sea." },
+  { id:"set", pa:"egypt", n:"Set", d:["storm","trickster","war"], p:["geb","nut"], gen:4, t:"Desert, chaos and the murder of Osiris — yet he alone can slay Apophis nightly." },
+  { id:"nephthys", pa:"egypt", n:"Nephthys", d:["death","home"], p:["geb","nut"], u:"set", gen:4 },
+  { id:"horus", pa:"egypt", n:"Horus", d:["sky","king","sun"], p:["osiris","isis"], gen:5, t:"The falcon whose eyes are sun and moon; the living pharaoh's own name." },
+  { id:"anubis", pa:"egypt", n:"Anubis", d:["death","messenger"], p:["set","nephthys"], gen:5, t:"Jackal of the scales, who weighs the heart against the feather." },
+  { id:"thoth", pa:"egypt", n:"Thoth", sub:"Djehuty", d:["wisdom","moon","messenger"], p:[], gen:4, t:"Ibis-scribe of the gods, inventor of writing — the Transmissions' original teacher." },
+  { id:"hathor", pa:"egypt", n:"Hathor", d:["love","sky"], p:["atum"], gen:4, t:"Golden cow of joy, music and drunkenness; Ra's eye when the sun turns wrathful." },
+
+  /* ---- Greek (Roman equivalents as sub-labels) ---- */
+  { id:"chaos", pa:"greek", n:"Chaos", d:["sky","serpent"], p:[], gen:0, t:"Not disorder but the yawning gap — the first thing to exist (Hesiod)." },
+  { id:"gaia", pa:"greek", n:"Gaia", sub:"≡ Terra", d:["earth"], p:["chaos"], gen:1, t:"Earth herself, mother and ground of every later god." },
+  { id:"uranus", pa:"greek", n:"Uranus", sub:"≡ Caelus", d:["sky"], p:["gaia"], u:"gaia", gen:1, t:"Sky fathered on Earth; unmanned by his own son with a sickle of adamant." },
+  { id:"cronus", pa:"greek", n:"Cronus", sub:"≡ Saturn", d:["harvest","king"], p:["uranus","gaia"], gen:2, t:"Ate his children to keep the throne; his festival became Saturnalia, then Christmas' season." },
+  { id:"rhea", pa:"greek", n:"Rhea", sub:"≡ Ops", d:["earth","love"], p:["uranus","gaia"], u:"cronus", gen:2 },
+  { id:"iapetus", pa:"greek", n:"Iapetus", d:["death"], p:["uranus","gaia"], gen:2, t:"Titan father of Prometheus and Atlas — the board equates him with Japheth, son of Noah." },
+  { id:"prometheus", pa:"greek", n:"Prometheus", d:["fire","craft","trickster"], p:["iapetus"], gen:3, t:"Stole fire in a fennel stalk and paid on the rock — the Transmissions' punished teacher." },
+  { id:"zeus", pa:"greek", n:"Zeus", sub:"≡ Jupiter", d:["sky","storm","king","justice"], p:["cronus","rhea"], gen:3, t:"Zeus Patēr — the Sky Father by his oldest, inherited name; thunder as verdict." },
+  { id:"hera", pa:"greek", n:"Hera", sub:"≡ Juno", d:["love","king","home"], p:["cronus","rhea"], u:"zeus", gen:3 },
+  { id:"poseidon", pa:"greek", n:"Poseidon", sub:"≡ Neptune", d:["sea","storm"], p:["cronus","rhea"], gen:3, t:"Earth-shaker; his trident stirs both sea and ground." },
+  { id:"hades", pa:"greek", n:"Hades", sub:"≡ Pluto", d:["death","king"], p:["cronus","rhea"], gen:3, t:"The Unseen; so feared the Greeks called him 'the Wealthy One' instead." },
+  { id:"hestia", pa:"greek", n:"Hestia", sub:"≡ Vesta", d:["home","fire"], p:["cronus","rhea"], gen:3, t:"First-born, first-fed: every hearth-flame is her altar." },
+  { id:"demeter", pa:"greek", n:"Demeter", sub:"≡ Ceres", d:["harvest","earth"], p:["cronus","rhea"], gen:3, t:"Her grief makes winter; her daughter's return, spring. 'Cereal' is her name." },
+  { id:"athena", pa:"greek", n:"Athena", sub:"≡ Minerva", d:["wisdom","war","craft"], p:["zeus"], gen:4, t:"Born armored from Zeus' split skull; strategy against Ares' slaughter." },
+  { id:"apollo", pa:"greek", n:"Apollo", sub:"≡ Apollo", d:["sun","wisdom","justice"], p:["zeus"], gen:4, t:"Oracle, plague, music, light — Delphi's voice in the Transmissions." },
+  { id:"artemis", pa:"greek", n:"Artemis", sub:"≡ Diana", d:["moon","hunt"], p:["zeus"], gen:4 },
+  { id:"hermes", pa:"greek", n:"Hermes", sub:"≡ Mercury", d:["messenger","trickster","wisdom"], p:["zeus"], gen:4, t:"Guide of souls, god of roads, thieves and eloquence — fused with Thoth as Trismegistus." },
+  { id:"ares", pa:"greek", n:"Ares", sub:"≡ Mars", d:["war"], p:["zeus","hera"], gen:4, t:"Rage of battle, despised at Athens — but Mars, in Rome, fathers the city itself." },
+  { id:"hephaestus", pa:"greek", n:"Hephaestus", sub:"≡ Vulcan", d:["craft","fire"], p:["hera"], gen:4, t:"Lame smith of Olympus; the board's Tubal-Cain is 'the Vulcan' after his Roman name." },
+  { id:"aphrodite", pa:"greek", n:"Aphrodite", sub:"≡ Venus", d:["love"], p:["uranus"], gen:4, t:"Foam-born of Uranus' fall — or Ishtar come west via Cyprus, as the cult trail shows." },
+  { id:"dionysus", pa:"greek", n:"Dionysus", sub:"≡ Bacchus", d:["harvest","trickster"], p:["zeus"], gen:4, t:"Twice-born god of the vine, mask and ecstasy; Herodotus saw Osiris in him." },
+  { id:"persephone", pa:"greek", n:"Persephone", sub:"≡ Proserpina", d:["death","harvest"], p:["zeus","demeter"], u:"hades", gen:4, t:"Queen below for the pomegranate's sake; the seasons hinge on her commute." },
+
+  /* ---- Norse ---- */
+  { id:"ymir", pa:"norse", n:"Ymir", d:["earth","serpent"], p:[], gen:0, t:"Frost-giant of the void; the world is his butchered body — sky his skull, sea his blood. Tiamat's northern echo." },
+  { id:"buri", pa:"norse", n:"Búri", d:["king"], p:[], gen:0, t:"Licked free of the ice by the primeval cow Auðumbla." },
+  { id:"borr", pa:"norse", n:"Borr", d:["king"], p:["buri"], gen:1 },
+  { id:"bestla", pa:"norse", n:"Bestla", d:["earth"], p:["ymir"], u:"borr", gen:1, t:"Giant-daughter — every Aesir god carries Ymir's blood through her." },
+  { id:"odin", pa:"norse", n:"Odin", sub:"Wōden — All-Father", d:["wisdom","war","king","messenger"], p:["borr","bestla"], gen:2, t:"Traded an eye for a drink of wisdom, hanged himself for the runes; Rome read him as Mercury — hence Wednesday." },
+  { id:"frigg", pa:"norse", n:"Frigg", d:["love","home","wisdom"], p:[], u:"odin", gen:2, t:"Knows every fate and tells none; Friday bears her name." },
+  { id:"thor", pa:"norse", n:"Thor", sub:"Þunraz — Thunder", d:["storm","war"], p:["odin"], gen:3, t:"Mjölnir against the World-Serpent — the Chaoskampf still running at Ragnarök; Thursday is his." },
+  { id:"baldr", pa:"norse", n:"Baldr", d:["sun","justice"], p:["odin","frigg"], gen:3, t:"The shining innocent, killed by a mistletoe dart and a trickster's aim — the whitest grief in the north." },
+  { id:"tyr", pa:"norse", n:"Týr", sub:"*Tīwaz", d:["war","justice"], p:["odin"], gen:3, t:"Fed his sword-hand to the wolf to seal an oath; the old PIE sky-god demoted to Tuesday." },
+  { id:"heimdall", pa:"norse", n:"Heimdallr", d:["sky","justice"], p:["odin"], gen:3, t:"Nine mothers, gold teeth, hears grass grow; his horn opens the last battle." },
+  { id:"loki", pa:"norse", n:"Loki", d:["trickster","fire"], p:[], gen:2, t:"Blood-brother to Odin, father of monsters, engineer of Baldr's death — bound with his son's entrails until the end." },
+  { id:"hel", pa:"norse", n:"Hel", d:["death"], p:["loki"], gen:3, t:"Half fair, half corpse-blue; her name became the English word for the place." },
+  { id:"jormungandr", pa:"norse", n:"Jörmungandr", d:["sea","serpent"], p:["loki"], gen:3, t:"The Midgard Serpent, girdling the world with its tail in its teeth — the ouroboros Kekulé dreamed." },
+  { id:"fenrir", pa:"norse", n:"Fenrir", d:["war","serpent"], p:["loki"], gen:3, t:"The wolf that will swallow Odin; bound by a ribbon made of impossible things." },
+  { id:"njord", pa:"norse", n:"Njörðr", d:["sea","harvest"], p:[], gen:2, t:"Vanir hostage of the gods' first war — wealth, wind and fair sailing." },
+  { id:"freyr", pa:"norse", n:"Freyr", d:["harvest","love","sun"], p:["njord"], gen:3, t:"Gave away his sword for love and will fight Ragnarök with an antler." },
+  { id:"freyja", pa:"norse", n:"Freyja", d:["love","war","wisdom"], p:["njord"], gen:3, t:"Takes half the battle-slain before Odin picks; taught the Aesir seiðr magic — Inanna's northern sister." },
+
+  /* ---- Vedic · Hindu ---- */
+  { id:"dyaus", pa:"vedic", n:"Dyaus Pitar", sub:"Sky Father", d:["sky"], p:[], gen:0, t:"*Dyēus Ph₂tḗr in Sanskrit — the exact same name as Zeus Patēr and Ju-piter, three thousand miles apart." },
+  { id:"prithvi", pa:"vedic", n:"Prithvi", sub:"Earth Mother", d:["earth"], p:[], u:"dyaus", gen:0 },
+  { id:"indra", pa:"vedic", n:"Indra", d:["storm","war","king"], p:["dyaus","prithvi"], gen:1, t:"Vajra in hand, slew the serpent Vritra to free the waters — the Rigveda's central deed and the Chaoskampf's eastern verse." },
+  { id:"agni", pa:"vedic", n:"Agni", d:["fire","messenger"], p:["dyaus","prithvi"], gen:1, t:"Fire as the mouth of the gods — every offering travels by him. The Rigveda's first word is his name." },
+  { id:"surya", pa:"vedic", n:"Surya", d:["sun"], p:["dyaus","prithvi"], gen:1, t:"The seven-horsed sun; the Gayatri mantra salutes his light." },
+  { id:"ushas", pa:"vedic", n:"Ushas", d:["sun","love"], p:["dyaus","prithvi"], gen:1, t:"Dawn, cognate with Eos and Aurora — the loveliest survival of the old sky family." },
+  { id:"varuna", pa:"vedic", n:"Varuna", d:["sea","justice","sky"], p:["dyaus","prithvi"], gen:1, t:"Keeper of ṛta, the cosmic order; sees every lie by the light of a thousand eyes." },
+  { id:"yama", pa:"vedic", n:"Yama", d:["death","justice"], p:["surya"], gen:2, t:"First mortal to die, therefore first king of the dead — the path-finder everyone follows." },
+  { id:"brahma", pa:"vedic", n:"Brahma", d:["wisdom","king"], p:[], gen:2, t:"Creator of the Trimurti; his consort Saraswati carries the Vedic river-goddess forward." },
+  { id:"saraswati", pa:"vedic", n:"Saraswati", d:["wisdom"], p:[], u:"brahma", gen:2, t:"River become goddess of speech, learning and music — patron of every scribe in this archive." },
+  { id:"vishnu", pa:"vedic", n:"Vishnu", d:["king","justice","sun"], p:[], gen:2, t:"The preserver, descending as avatar whenever order fails — Rama, Krishna, and more to come." },
+  { id:"lakshmi", pa:"vedic", n:"Lakshmi", d:["love","harvest"], p:[], u:"vishnu", gen:2, t:"Fortune churned from the ocean of milk." },
+  { id:"shiva", pa:"vedic", n:"Shiva", sub:"Rudra", d:["storm","death","wisdom"], p:[], gen:2, t:"Vedic Rudra grown vast: destroyer, ascetic, lord of the dance that ends and renews the world." },
+  { id:"parvati", pa:"vedic", n:"Parvati", sub:"Durga · Kali", d:["love","war","earth"], p:[], u:"shiva", gen:2, t:"Mountain-daughter whose fiercer faces ride tigers and wear skulls." },
+  { id:"ganesha", pa:"vedic", n:"Ganesha", d:["wisdom","trickster"], p:["shiva","parvati"], gen:3, t:"Elephant-headed remover of obstacles; scribe of the Mahabharata — he broke off his own tusk to keep writing." },
+  { id:"kartikeya", pa:"vedic", n:"Kartikeya", sub:"Skanda · Murugan", d:["war"], p:["shiva","parvati"], gen:3 },
+
+  /* ---- Aztec / Mexica ---- */
+  { id:"ometeotl", pa:"aztec", n:"Ometeotl", sub:"Two-God", d:["sky","king"], p:[], gen:0, t:"The dual lord-and-lady of the highest heaven, beyond worship — pure generative polarity." },
+  { id:"quetzalcoatl", pa:"aztec", n:"Quetzalcoatl", sub:"Feathered Serpent", d:["wisdom","sky","serpent","craft"], p:["ometeotl"], gen:1, t:"Wind, learning, the calendar and maize — a benevolent serpent, where the Old World's dragons are enemies. No contact: pure convergence. See the Transmissions." },
+  { id:"tezcatlipoca", pa:"aztec", n:"Tezcatlipoca", sub:"Smoking Mirror", d:["trickster","war","death"], p:["ometeotl"], gen:1, t:"Quetzalcoatl's rival and mirror; night, sorcery and the fate of kings." },
+  { id:"huitzilopochtli", pa:"aztec", n:"Huitzilopochtli", d:["sun","war"], p:["ometeotl"], gen:1, t:"Hummingbird of the South, who led the Mexica to the eagle on the cactus — Tenochtitlan's own god." },
+  { id:"tlaloc", pa:"aztec", n:"Tlaloc", d:["storm","harvest"], p:["ometeotl"], gen:1, t:"Goggle-eyed giver of rain, oldest god in the valley — his temple shared the Templo Mayor's summit." },
+  { id:"mictlantecuhtli", pa:"aztec", n:"Mictlantecuhtli", d:["death"], p:["ometeotl"], gen:1, t:"Skeletal lord of Mictlan, nine layers down; Quetzalcoatl stole mankind's bones from him." }
+  ],
+
+  /* ---- the connections between religions ---- */
+  xlinks: [
+    { a:"dyaus", b:"zeus", k:"o", t:"*Dyēus Ph₂tḗr — 'Sky Father'. Dyaus Pitar, Zeus Patēr, Ju-piter: one inherited name, three thousand miles and years apart. The single strongest proof of the Indo-European family." },
+    { a:"tyr", b:"zeus", k:"o", t:"*Dyēus again: Norse Týr (*Tīwaz) is the same old sky-god, demoted to war and Tuesday." },
+    { a:"indra", b:"thor", k:"o", t:"The *Perkʷunos thread: thunder-weapon in hand, each slays the great serpent — vajra on Vritra, Mjölnir on Jörmungandr." },
+    { a:"ushas", b:"aphrodite", k:"o", t:"Ushas is cognate with Greek Eos and Roman Aurora — dawn as radiant maiden across the whole family." },
+    { a:"marduk", b:"baal", k:"p", t:"Chaoskampf, act one and two: Marduk splits Tiamat, Baal breaks Yam — the storm-king earns his throne by killing the sea." },
+    { a:"baal", b:"zeus", k:"p", t:"Chaoskampf, act three: Zeus against Typhon. The storm-god's dragon-fight travels the whole ancient world." },
+    { a:"tiamat", b:"yam", k:"p", t:"The sea as the enemy: salt chaos personified, needing a champion's victory before the world can be ordered." },
+    { a:"tiamat", b:"ymir", k:"p", t:"World from monster's corpse: Marduk builds from Tiamat's halves; Odin's line builds from Ymir's body. Same blueprint, different butcher." },
+    { a:"inanna", b:"aphrodite", k:"s", t:"Documented cult chain: Inanna → Ishtar → Phoenician Astarte → Cypriot Aphrodite. The morning star's westward migration, port by port." },
+    { a:"inanna", b:"freyja", k:"p", t:"Love and war in one goddess, taking her share of the slain — the office recurs at the family's far northern edge." },
+    { a:"thoth", b:"hermes", k:"s", t:"Fused in Ptolemaic Alexandria as Hermes Trismegistus — the thrice-great teacher whose Emerald Tablet anchors the Transmissions codex." },
+    { a:"hermes", b:"odin", k:"s", t:"Interpretatio: Rome read Wōden as Mercury — psychopomp, wanderer, wisdom-trader. Dies Mercurii became Wednesday, Wōden's day." },
+    { a:"hermes", b:"anubis", k:"s", t:"Guides of the dead, later literally merged as Hermanubis in Roman Egypt." },
+    { a:"osiris", b:"dionysus", k:"s", t:"Identified by Herodotus (Histories 2.42): the dying and returning god of vegetal life and ecstatic rite." },
+    { a:"isis", b:"demeter", k:"s", t:"Herodotus' other equation — the searching mother. Isis' cult later absorbed the whole Mediterranean's goddesses." },
+    { a:"el", b:"anu", k:"p", t:"The seated high father, remote and presiding — and El's name flows on into the Bloodline's own scriptures: Elohim, Israel." },
+    { a:"ereshkigal", b:"hades", k:"p", t:"Sovereigns, not fiends: the underworld as a kingdom with a throne, law and a queen or king upon it." },
+    { a:"hades", b:"hel", k:"p", t:"The same dark office at the family's northern end — and Hel's name became the English word for the place." },
+    { a:"utu", b:"shapash", k:"p", t:"The sun as circuit judge — seeing all by day, traveling the underworld by night, giving law at noon." },
+    { a:"utu", b:"surya", k:"p", t:"The all-seeing charioteer of the sky, witness to every oath." },
+    { a:"enki", b:"prometheus", k:"p", t:"The crafty water-deep benefactor who sides with mankind against the high god's wrath — and pays for it." },
+    { a:"enki", b:"quetzalcoatl", k:"p", t:"Convergence with no possible contact: the wise serpent-associated craftsman-god who gives mankind its arts — the Transmissions' pattern, independently invented." },
+    { a:"loki", b:"set", k:"p", t:"The insider-enemy: kin to the gods, killer of the shining one (Baldr / Osiris), indispensable and bound." },
+    { a:"zeus", b:"indra", k:"o", t:"Storm-king of the middle air, wielder of the bolt, chief by force of weather — the Indo-European throne itself." },
+    { a:"nabu", b:"thoth", k:"p", t:"The divine scribe: writing is so uncanny every pantheon assigns it a god — see the Transmissions on Penemue." },
+    { a:"hephaestus", b:"enki", k:"p", t:"The smith-craftsman under the king: the maker's office. The board's Tubal-Cain 'the Vulcan' carries it into the Bloodline." }
+  ]
+};
+
+</script>
+  <script>
+/* ============================================================
+   ARCHIVUS — THE PANTHEONS renderer
+   Seven divine family trees side by side; every god carries
+   hand-drawn domain sigils; three kinds of arc run between the
+   religions (shared origin · documented syncretism · parallel
+   archetype). Click a domain to see one office lit across all
+   seven skies.
+   ============================================================ */
+(function () {
+  "use strict";
+  const P = window.ARCHIVUS_PANTHEONS;
+  const GODS = P.gods, PAN = P.pantheons, DOM = P.domains, XL = P.xlinks;
+  const byId = {};
+  GODS.forEach(g => byId[g.id] = g);
+
+  /* ---- hand-drawn domain sigils (24×24 stroke paths) ---- */
+  const ICONS = {
+    sky:     "M3 17a9 9 0 0 1 18 0 M12 4v2 M6 7l1.5 1.5 M18 7l-1.5 1.5",
+    storm:   "M13 2 6 13h5l-2 9 8-13h-5l1-7z",
+    sun:     "M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z M12 2v2.5 M12 19.5V22 M2 12h2.5 M19.5 12H22 M4.5 4.5l1.8 1.8 M17.7 17.7l1.8 1.8 M19.5 4.5l-1.8 1.8 M6.3 17.7l-1.8 1.8",
+    moon:    "M20 13A8.5 8.5 0 1 1 11 4a7 7 0 0 0 9 9z",
+    sea:     "M2 10c2.5-3 5-3 7.5 0s5 3 7.5 0 3.5-2 5 0 M2 16c2.5-3 5-3 7.5 0s5 3 7.5 0 3.5-2 5 0",
+    earth:   "M2 19 9 7l4.5 7 3-4.5L22 19z",
+    death:   "M12 3a7.5 7.5 0 0 0-7.5 7.5V15l3 2.2V21h9v-3.8l3-2.2v-4.5A7.5 7.5 0 0 0 12 3z M9.2 11.5h.01 M14.8 11.5h.01",
+    war:     "M4 20 13 11 M13 11l5-7 2 2-7 5 M6 15l3 3 M17 20l-6-6",
+    love:    "M12 20.5S4 15.5 2.5 10.5A4.8 4.8 0 0 1 12 7a4.8 4.8 0 0 1 9.5 3.5C20 15.5 12 20.5 12 20.5z",
+    wisdom:  "M2 12s4-6.5 10-6.5S22 12 22 12s-4 6.5-10 6.5S2 12 2 12z M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z",
+    craft:   "M5 4l7 7 M8 6.5 16.5 15l-2.5 2.5L5.5 9z M14 16l6 6",
+    harvest: "M12 22V7 M12 9C8.5 9 6.5 7 6.5 3.5 10 3.5 12 5.5 12 9z M12 9c3.5 0 5.5-2 5.5-5.5C14 3.5 12 5.5 12 9z M12 15c-3.5 0-5.5-2-5.5-5.5 3.5 0 5.5 2 5.5 5.5z M12 15c3.5 0 5.5-2 5.5-5.5-3.5 0-5.5 2-5.5 5.5z",
+    fire:    "M12 2c1 4.5 5.5 5.5 5.5 10.5a5.5 5.5 0 0 1-11 0C6.5 9 9 8 9 4.5c1.7 1 3 2.5 3 2.5S12 4 12 2z",
+    justice: "M12 3v18 M4.5 7h15 M7 7l-3.2 6a3.7 3.7 0 0 0 6.4 0z M17 7l-3.2 6a3.7 3.7 0 0 0 6.4 0z M8 21h8",
+    trickster:"M4 6c0 10.5 4 15 8 15s8-4.5 8-15c-3 2-5 2-8 0-3 2-5 2-8 0z M9 11h.01 M15 11h.01 M9 15c1.5 1.5 4.5 1.5 6 0",
+    king:    "M3 18h18 M4 18 3 8l5.5 4L12 4l3.5 8L21 8l-1 10",
+    messenger:"M3 16c6.5 1 14.5-1 18.5-9-6.5 0-9 1.5-12 5 M7 21c5.5 0 10-2.5 12-8",
+    home:    "M4 21V10l8-6.5L20 10v11h-5.5v-6h-5v6z",
+    hunt:    "M5 3c8.5 2.5 13 8.5 14 17 M5 3c-1 8.5 3.5 14.5 14 17 M5 3l14 17 M16 17l3 3v-4z",
+    serpent: "M4 16.5c0-4 4.5-4.5 8.5-4.5s7.5-.5 7.5-4-3.5-4-6-4h-3 M4 16.5c0 3.5 3.5 4 7.5 4h3 M15 20.5h.01"
+  };
+
+  /* ---- layout: clusters in two banked rows so the fitted view fills the sky ---- */
+  const NW = 122, NH = 36, TIER = 108, SLOT = NW + 16, CLUSTER_GAP = 170, BANK_GAP = 190;
+  const order = Object.keys(PAN);
+  const pos = {};                 /* id → {x, y} */
+  const clusterX = {}, clusterW = {}, clusterY = {}, clusterH = {}, tiersOf = {};
+  /* measure every cluster first */
+  order.forEach(pa => {
+    const tiers = {};
+    GODS.filter(g => g.pa === pa).forEach(g => (tiers[g.gen] = tiers[g.gen] || []).push(g));
+    tiersOf[pa] = tiers;
+    clusterW[pa] = Math.max(...Object.values(tiers).map(t => t.length)) * SLOT;
+    clusterH[pa] = 90 + Math.max(...Object.keys(tiers).map(Number)) * TIER + 60;
+  });
+  /* split the ordered clusters into two banks of roughly equal width */
+  const totalW = order.reduce((s, pa) => s + clusterW[pa] + CLUSTER_GAP, 0);
+  const banks = [[], []];
+  let acc = 0;
+  order.forEach(pa => { banks[acc >= totalW / 2 ? 1 : 0].push(pa); acc += clusterW[pa] + CLUSTER_GAP; });
+  const bankH = banks.map(b => Math.max(...b.map(pa => clusterH[pa])));
+  const bankW = banks.map(b => b.reduce((s, pa) => s + clusterW[pa] + CLUSTER_GAP, -CLUSTER_GAP));
+  const fullW = Math.max(...bankW);
+  banks.forEach((bank, bi) => {
+    let cx0 = (fullW - bankW[bi]) / 2;           /* center the narrower bank */
+    const y0 = bi === 0 ? 0 : bankH[0] + BANK_GAP;
+    bank.forEach(pa => {
+      clusterX[pa] = cx0; clusterY[pa] = y0;
+      Object.entries(tiersOf[pa]).forEach(([gen, list]) => {
+        const rowW = list.length * SLOT;
+        list.forEach((g, i) => {
+          pos[g.id] = { x: cx0 + (clusterW[pa] - rowW) / 2 + i * SLOT + SLOT / 2, y: y0 + 90 + (+gen) * TIER };
+        });
+      });
+      cx0 += clusterW[pa] + CLUSTER_GAP;
+    });
+  });
+  const minX = -60, maxX = fullW + 60, minY = 0, maxY = bankH[0] + BANK_GAP + bankH[1] + 60;
+
+  /* ---- svg scaffolding ---- */
+  const svg = document.getElementById("pn-svg");
+  const NS = "http://www.w3.org/2000/svg";
+  const world = document.createElementNS(NS, "g");
+  svg.appendChild(world);
+  const el = (t, a, p) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); (p || world).appendChild(n); return n; };
+
+  /* cluster plates + titles */
+  order.forEach(pa => {
+    el("rect", { class: "pn-plate", x: clusterX[pa] - 26, y: clusterY[pa] + 20, width: clusterW[pa] + 52, height: clusterH[pa] - 10, rx: 10 });
+    const t = el("text", { class: "pn-plate-title", x: clusterX[pa] + clusterW[pa] / 2, y: clusterY[pa] + 52, "text-anchor": "middle" });
+    t.textContent = PAN[pa].name.toUpperCase();
+    t.style.fill = PAN[pa].color;
+    /* worship horizon — earliest cult evidence, beneath the title */
+    const hz = (P.horizons || {})[pa];
+    if (hz) {
+      const s = el("text", { class: "pn-plate-horizon", x: clusterX[pa] + clusterW[pa] / 2, y: clusterY[pa] + 68, "text-anchor": "middle" });
+      const short = hz.replace("⛩ Worship horizon: ", "");
+      s.textContent = "⛩ " + (short.length > 88 ? short.slice(0, 87) + "…" : short);
+    }
+  });
+
+  /* ---- cross-religion arcs (beneath the trees) ---- */
+  const KIND = { o: ["pn-x-o", "Shared origin — Proto-Indo-European"], s: ["pn-x-s", "Documented syncretism"], p: ["pn-x-p", "Parallel archetype"] };
+  const arcEls = [];
+  XL.forEach((x, i) => {
+    const A = pos[x.a], B = pos[x.b];
+    if (!A || !B) return;
+    const lift = 90 + Math.abs(B.x - A.x) * 0.09 + (i % 5) * 22;
+    const my = Math.min(A.y, B.y) - lift;
+    const a = el("path", {
+      class: "pn-x " + KIND[x.k][0],
+      d: `M${A.x} ${A.y - NH / 2} Q ${(A.x + B.x) / 2} ${my}, ${B.x} ${B.y - NH / 2}`,
+      "data-a": x.a, "data-b": x.b, "data-i": i
+    });
+    a.addEventListener("click", e => { e.stopPropagation(); selectLink(i); });
+    a.addEventListener("mouseenter", () => { a.classList.add("hov"); nodeEls[x.a].classList.add("hov"); nodeEls[x.b].classList.add("hov"); });
+    a.addEventListener("mouseleave", () => { a.classList.remove("hov"); nodeEls[x.a].classList.remove("hov"); nodeEls[x.b].classList.remove("hov"); });
+    arcEls.push(a);
+  });
+
+  /* ---- family edges ---- */
+  GODS.forEach(g => (g.p || []).forEach(pid => {
+    const A = pos[pid], B = pos[g.id];
+    if (!A || !B) return;
+    el("path", {
+      class: "pn-edge",
+      d: `M${A.x} ${A.y + NH / 2} C ${A.x} ${(A.y + B.y) / 2}, ${B.x} ${(A.y + B.y) / 2}, ${B.x} ${B.y - NH / 2}`
+    }).style.stroke = PAN[g.pa].color;
+  }));
+  GODS.forEach(g => {
+    if (!g.u || !pos[g.u]) return;
+    const A = pos[g.id], B = pos[g.u];
+    el("path", { class: "pn-union", d: `M${A.x} ${A.y} Q ${(A.x + B.x) / 2} ${A.y - 26}, ${B.x} ${B.y}` });
+  });
+
+  /* ---- god cards ---- */
+  const nodeEls = {};
+  GODS.forEach(g => {
+    const { x, y } = pos[g.id];
+    const c = PAN[g.pa].color;
+    const grp = el("g", { class: "pn-node" });
+    grp.style.setProperty("--pc", c);
+    el("rect", { class: "pn-card", x: x - NW / 2, y: y - NH / 2, width: NW, height: NH, rx: 6 }, grp);
+    const nm = el("text", { class: "pn-name", x: x - NW / 2 + 9, y: y - 2 }, grp);
+    nm.textContent = g.n.length > 15 ? g.n.slice(0, 14) + "…" : g.n;
+    if (g.sub) {
+      const sb = el("text", { class: "pn-sub", x: x - NW / 2 + 9, y: y + 11 }, grp);
+      sb.textContent = g.sub.length > 21 ? g.sub.slice(0, 20) + "…" : g.sub;
+    }
+    /* domain sigils, top-right of the card */
+    (g.d || []).slice(0, 3).forEach((dm, i) => {
+      const ic = el("g", { class: "pn-ic", transform: `translate(${x + NW / 2 - 14 - i * 13}, ${y - NH / 2 + 3}) scale(0.42)` }, grp);
+      (ICONS[dm] || "").split(" M").forEach((seg, j) => {
+        el("path", { d: (j ? "M" : "") + seg, fill: "none" }, ic);
+      });
+      el("title", {}, ic).textContent = DOM[dm];
+    });
+    grp.addEventListener("click", e => { e.stopPropagation(); selectGod(g.id); });
+    nodeEls[g.id] = grp;
+  });
+
+  /* ---- pan / zoom ---- */
+  let k = 1, tx = 0, ty = 0;
+  function apply() {
+    world.setAttribute("transform", `translate(${tx},${ty}) scale(${k})`);
+    svg.classList.toggle("far", k < 0.34);
+  }
+  const rectOf = () => svg.getBoundingClientRect();
+  function fit() {
+    const r = rectOf();
+    k = Math.min(1.1, Math.min(r.width / (maxX - minX), r.height / (maxY - minY)));
+    tx = -minX * k + (r.width - (maxX - minX) * k) / 2;
+    ty = -minY * k + (r.height - (maxY - minY) * k) / 2;
+    apply();
+  }
+  function centerOn(x, y, kk) {
+    const r = rectOf();
+    if (kk) k = kk;
+    tx = r.width / 2 - x * k;
+    ty = r.height / 2 - y * k;
+    apply();
+  }
+  svg.addEventListener("wheel", e => {
+    e.preventDefault();
+    const r = rectOf();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    const k2 = Math.max(0.1, Math.min(3, k * Math.pow(1.0016, -e.deltaY)));
+    tx = mx - (mx - tx) * (k2 / k);
+    ty = my - (my - ty) * (k2 / k);
+    k = k2;
+    apply();
+  }, { passive: false });
+  let pan = null;
+  const pts = new Map(); let pinch = null;   /* touch pinch */
+  svg.addEventListener("pointerdown", e => {
+    pts.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pts.size === 2) {
+      pan = null;
+      const [q1, q2] = [...pts.values()], r = rectOf();
+      pinch = { d0: Math.hypot(q1[0] - q2[0], q1[1] - q2[1]) || 1, k0: k, tx0: tx, ty0: ty,
+        mx: (q1[0] + q2[0]) / 2 - r.left, my: (q1[1] + q2[1]) / 2 - r.top };
+      return;
+    }
+    pan = { x: e.clientX, y: e.clientY, tx, ty, moved: false };
+  });
+  svg.addEventListener("pointermove", e => {
+    if (pts.has(e.pointerId)) pts.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pinch && pts.size === 2) {
+      const [q1, q2] = [...pts.values()];
+      const k2 = Math.max(0.1, Math.min(3, pinch.k0 * ((Math.hypot(q1[0] - q2[0], q1[1] - q2[1]) || 1) / pinch.d0)));
+      tx = pinch.mx - (pinch.mx - pinch.tx0) * (k2 / pinch.k0);
+      ty = pinch.my - (pinch.my - pinch.ty0) * (k2 / pinch.k0);
+      k = k2; apply();
+      return;
+    }
+    if (!pan) return;
+    const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+    if (!pan.moved && Math.hypot(dx, dy) > 4) { pan.moved = true; svg.setPointerCapture(e.pointerId); svg.classList.add("panning"); }
+    if (!pan.moved) return;
+    tx = pan.tx + dx; ty = pan.ty + dy; apply();
+  });
+  svg.addEventListener("pointerup", e => {
+    pts.delete(e.pointerId); if (pts.size < 2) pinch = null;
+    const moved = pan && pan.moved;
+    pan = null; svg.classList.remove("panning");
+    if (!moved && e.target === svg) closePanel();
+  });
+  svg.addEventListener("pointercancel", e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; pan = null; svg.classList.remove("panning"); });
+
+  /* ---- selection panel ---- */
+  const panel = document.getElementById("pn-panel");
+  function closePanel() { panel.classList.remove("open"); document.querySelectorAll(".pn-node.sel").forEach(n => n.classList.remove("sel")); arcEls.forEach(a => a.classList.remove("sel")); }
+  document.getElementById("pn-close").addEventListener("click", closePanel);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const link = id => '<a data-go="' + id + '">' + esc(byId[id].n) + "</a>";
+  function wirePanelLinks() {
+    panel.querySelectorAll("a[data-go]").forEach(a =>
+      a.addEventListener("click", () => { const g = a.dataset.go; centerOn(pos[g].x, pos[g].y, Math.max(k, 0.9)); selectGod(g); }));
+  }
+  function selectGod(id) {
+    closePanel();
+    const g = byId[id];
+    nodeEls[id].classList.add("sel");
+    const c = PAN[g.pa].color;
+    document.getElementById("pn-p-house").innerHTML =
+      '<span class="pn-chip" style="--pc:' + c + '">' + PAN[g.pa].name + "</span>";
+    document.getElementById("pn-p-name").textContent = g.n;
+    document.getElementById("pn-p-sub").textContent = g.sub || "";
+    document.getElementById("pn-p-dom").innerHTML = (g.d || []).map(dm =>
+      '<span class="pn-dom"><svg viewBox="0 0 24 24">' +
+      (ICONS[dm] || "").split(" M").map((s, j) => '<path fill="none" d="' + (j ? "M" : "") + s + '"/>').join("") +
+      "</svg>" + esc(DOM[dm]) + "</span>").join("");
+    const parents = (g.p || []).filter(p => byId[p]);
+    const kids = GODS.filter(o => (o.p || []).includes(id)).map(o => o.id);
+    const consorts = [g.u, ...GODS.filter(o => o.u === id).map(o => o.id)].filter(Boolean);
+    let rels = "";
+    if (parents.length) rels += "<b>Born of</b>" + parents.map(p => '<div class="pn-rel">' + link(p) + "</div>").join("");
+    if (consorts.length) rels += "<b>Consort</b>" + consorts.map(p => '<div class="pn-rel">' + link(p) + "</div>").join("");
+    if (kids.length) rels += "<b>Issue</b>" + kids.map(p => '<div class="pn-rel">' + link(p) + "</div>").join("");
+    document.getElementById("pn-p-rels").innerHTML = rels;
+    document.getElementById("pn-p-note").textContent = g.t || "";
+    const conns = XL.map((x, i) => ({ x, i })).filter(o => o.x.a === id || o.x.b === id);
+    document.getElementById("pn-p-x").innerHTML = conns.length
+      ? '<div class="kicker">Across the religions</div>' + conns.map(o => {
+          const other = o.x.a === id ? o.x.b : o.x.a;
+          return '<div class="pn-xcard ' + KIND[o.x.k][0] + '"><span class="xk">' + KIND[o.x.k][1] + "</span>" +
+            link(other) + " — " + esc(o.x.t) + "</div>";
+        }).join("")
+      : "";
+    panel.classList.add("open");
+    wirePanelLinks();
+    conns.forEach(o => arcEls[o.i] && arcEls[o.i].classList.add("sel"));
+  }
+  function selectLink(i) {
+    closePanel();
+    const x = XL[i];
+    arcEls[i].classList.add("sel");
+    nodeEls[x.a].classList.add("sel"); nodeEls[x.b].classList.add("sel");
+    document.getElementById("pn-p-house").innerHTML =
+      '<span class="pn-chip ' + KIND[x.k][0] + '-chip">' + KIND[x.k][1] + "</span>";
+    document.getElementById("pn-p-name").textContent = byId[x.a].n + "  ⟷  " + byId[x.b].n;
+    document.getElementById("pn-p-sub").textContent = PAN[byId[x.a].pa].name + " · " + PAN[byId[x.b].pa].name;
+    document.getElementById("pn-p-dom").innerHTML = "";
+    document.getElementById("pn-p-rels").innerHTML = "";
+    document.getElementById("pn-p-note").textContent = x.t;
+    document.getElementById("pn-p-x").innerHTML =
+      '<div class="pn-rel">' + link(x.a) + "</div>" + '<div class="pn-rel">' + link(x.b) + "</div>";
+    panel.classList.add("open");
+    wirePanelLinks();
+  }
+
+  /* ---- domain highlighting: one office, lit across all skies ---- */
+  const activeDoms = new Set();
+  function applyDomFilter() {
+    const on = activeDoms.size > 0;
+    GODS.forEach(g => {
+      const hit = !on || (g.d || []).some(d => activeDoms.has(d));
+      nodeEls[g.id].classList.toggle("dim", on && !hit);
+      nodeEls[g.id].classList.toggle("lit", on && hit);
+    });
+    arcEls.forEach(a => a.classList.toggle("dim", on));
+  }
+  const domBox = document.getElementById("pn-domains");
+  Object.entries(DOM).forEach(([id, name]) => {
+    const b = document.createElement("button");
+    b.className = "chip pn-domchip";
+    b.innerHTML = '<svg viewBox="0 0 24 24">' +
+      (ICONS[id] || "").split(" M").map((s, j) => '<path fill="none" d="' + (j ? "M" : "") + s + '"/>').join("") +
+      "</svg>" + name;
+    b.addEventListener("click", () => {
+      if (activeDoms.has(id)) activeDoms.delete(id); else activeDoms.add(id);
+      b.classList.toggle("active", activeDoms.has(id));
+      applyDomFilter();
+    });
+    domBox.appendChild(b);
+  });
+
+  /* pantheon jump chips */
+  const jb = document.getElementById("pn-jumps");
+  order.forEach(pa => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.style.setProperty("--c", PAN[pa].color);
+    b.innerHTML = '<span class="dot"></span>' + PAN[pa].name;
+    b.addEventListener("click", () => centerOn(clusterX[pa] + clusterW[pa] / 2, clusterY[pa] + clusterH[pa] / 2, 0.62));
+    jb.appendChild(b);
+  });
+  const fitBtn = document.createElement("button");
+  fitBtn.className = "tool-btn";
+  fitBtn.textContent = "Fit all";
+  fitBtn.addEventListener("click", fit);
+  jb.appendChild(fitBtn);
+
+  /* ---- search ---- */
+  const search = document.getElementById("pn-search");
+  search.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    const q = search.value.trim().toLowerCase();
+    if (!q) return;
+    const hit = GODS.find(g => (g.n + " " + (g.sub || "")).toLowerCase().includes(q));
+    if (hit) { centerOn(pos[hit.id].x, pos[hit.id].y, Math.max(k, 0.95)); selectGod(hit.id); }
+  });
+
+  fit();
+  window.addEventListener("resize", fit);
+})();
+
+</script>
+</body>
+</html>

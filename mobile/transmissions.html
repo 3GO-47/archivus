@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Transmissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ARCHIVUS — v0.5 "Lens"
+   Dark observatory. Modern instrument typography:
+   Space Grotesk (structure) · Inter (reading) · IBM Plex Mono (data)
+   ============================================================ */
+
+:root {
+  --obsidian:      #0a0c12;
+  --obsidian-2:    #0e1119;
+  --obsidian-3:    #131826;
+  --paper:         #e6e1d3;
+  --paper-dim:     #a8a494;
+  --gold:          #c9a227;
+  --gold-bright:   #e8c455;
+  --gold-dim:      #6e5c1f;
+  --indigo:        #7c9ac9;
+  --line:          #262c3b;
+  --line-faint:    #181d29;
+  --panel-bg:      #10131dfa;
+  --sans: "Inter", system-ui, sans-serif;
+  --display: "Space Grotesk", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background:
+    radial-gradient(ellipse 130% 75% at 50% -12%, #151d33 0%, transparent 55%),
+    radial-gradient(ellipse 85% 55% at 88% 112%, #1c1324 0%, transparent 60%),
+    var(--obsidian);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mono { font-family: var(--mono); font-size: 0.82em; letter-spacing: 0.03em; }
+
+/* ============ motion ============ */
+@keyframes glowpulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(201,162,39,0.35); }
+  50%      { box-shadow: 0 0 20px rgba(232,196,85,0.7); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes twinkle { 0%, 100% { opacity: 0.04; } 50% { opacity: 0.45; } }
+@keyframes condense { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes flow { to { stroke-dashoffset: -24; } }
+@keyframes reveal-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* ============ masthead ============ */
+#masthead {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 22px 10px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(201,162,39,0.05), transparent);
+  position: relative;
+}
+#masthead::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 25%, var(--gold) 50%, var(--gold-dim) 75%, transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* pure-geometry sigil: ring, orbit, nucleus */
+.sigil {
+  position: relative;
+  width: 34px; height: 34px;
+  border: 1px solid rgba(201,162,39,0.55);
+  border-radius: 50%;
+  animation: glowpulse 6s ease-in-out infinite;
+}
+.sigil::before {
+  content: "";
+  position: absolute; inset: -5px;
+  border: 1px dashed rgba(201,162,39,0.3);
+  border-radius: 50%;
+  animation: spin 50s linear infinite;
+}
+.sigil::after {
+  content: "";
+  position: absolute; left: 50%; top: 50%;
+  width: 6px; height: 6px; margin: -3px 0 0 -3px;
+  background: var(--gold-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--gold-bright);
+}
+
+#masthead h1 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: 0.34em;
+  color: var(--gold-bright);
+}
+.tagline {
+  color: var(--paper-dim);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  margin-top: 1px;
+}
+
+#tx-link {
+  margin-left: auto;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  padding: 7px 14px;
+  transition: all 0.18s;
+}
+#tx-link:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.22); }
+#bl-link, #pn-link, #cx-link {
+  margin-left: 8px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  padding: 7px 14px;
+  transition: all 0.18s;
+}
+#bl-link:hover, #pn-link:hover, #cx-link:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.22); }
+
+.masthead-readout { margin-left: 16px; text-align: right; }
+.readout-line { font-family: var(--display); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+.readout-line.mono { font-family: var(--mono); color: var(--paper-dim); font-size: 11px; margin-top: 3px; text-transform: none; }
+
+/* ============ single command bar (main app) ============ */
+#bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(201,162,39,0.05), transparent);
+  position: relative;
+  z-index: 30;
+  flex-wrap: nowrap;
+}
+#bar::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 25%, var(--gold) 50%, var(--gold-dim) 75%, transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+#bar-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: var(--gold-bright);
+  margin-right: 4px;
+}
+.sigil.mini { width: 24px; height: 24px; }
+.sigil.mini::before { inset: -4px; }
+.sigil.mini::after { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; }
+#bar .masthead-readout { margin-left: 4px; }
+#bar #search { flex: 0 1 220px; }
+#bar #tx-link, #bar #bl-link, #bar #pn-link, #bar #cx-link { margin-left: 0; padding: 6px 10px; font-size: 10.5px; }
+
+/* ============ collapsible drawer ============ */
+#drawer {
+  position: fixed;
+  left: 0; top: 48px; bottom: 0;
+  width: 300px;
+  max-width: 85vw;
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  border-right: 1px solid var(--line);
+  box-shadow: 24px 0 60px rgba(0,0,0,0.5);
+  padding: 18px 16px 30px;
+  overflow-y: auto;
+  z-index: 25;
+  transform: translateX(-104%);
+  transition: transform 0.3s cubic-bezier(.22,1,.36,1);
+}
+#drawer.open { transform: translateX(0); }
+.d-section { margin-bottom: 20px; }
+.d-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 9px;
+}
+.d-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.d-row select { max-width: 100%; flex: 1 1 120px; }
+#drawer #theme-chips { display: flex; flex-direction: column; gap: 6px; padding: 0; border: none; }
+#drawer .chip { justify-content: flex-start; }
+.d-legend { display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: var(--paper-dim); }
+.d-legend .legend-item { display: inline-flex; align-items: center; gap: 7px; line-height: 1.5; }
+
+/* atlas time-play + narrative tours */
+#play-btn {
+  position: absolute;
+  left: 10px; bottom: 46px;
+  z-index: 6;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.5), 0 0 14px rgba(201,162,39,0.15);
+}
+#tours-menu {
+  position: absolute;
+  right: 12px; top: 8px;
+  z-index: 40;
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 10px;
+  width: 340px;
+  max-width: 90vw;
+  box-shadow: 0 14px 44px rgba(0,0,0,0.6);
+}
+.tour-item {
+  padding: 9px 10px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(255,255,255,0.02);
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tour-item:hover { background: rgba(201,162,39,0.1); border-left-color: var(--gold); }
+.tour-item .tt { font-family: var(--display); font-weight: 600; font-size: 12.5px; color: var(--gold-bright); }
+.tour-item .tb { font-size: 11.5px; color: var(--paper-dim); margin-top: 2px; line-height: 1.45; }
+#tour-card {
+  position: absolute;
+  left: 50%; bottom: 52px;
+  transform: translateX(-50%);
+  z-index: 35;
+  width: 560px; max-width: 92%;
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.65), 0 0 24px rgba(201,162,39,0.1);
+  animation: reveal-up 0.25s ease-out;
+}
+#tour-note { font-size: 14px; line-height: 1.6; color: var(--paper); margin: 6px 0 10px; }
+#tour-nav { display: flex; align-items: center; gap: 8px; }
+#tour-step { font-size: 10.5px; color: #59617c; margin: 0 auto 0 4px; }
+.map-year-big {
+  font-family: "IBM Plex Mono", monospace;
+  fill: var(--gold-bright);
+  font-size: 34px;
+  letter-spacing: 0.06em;
+  paint-order: stroke; stroke: rgba(10,12,18,0.85); stroke-width: 6px;
+}
+.ignite { pointer-events: none; }
+#play-speed { position: absolute; left: 150px; bottom: 46px; z-index: 6; }
+#play-era {
+  position: absolute; left: 10px; bottom: 88px; z-index: 6;
+  font-family: var(--display); font-weight: 700;
+  font-size: 21px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold-bright);
+  text-shadow: 0 0 18px rgba(201,162,39,0.5), 0 2px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+#play-era.flash { animation: era-flash 0.9s ease-out; }
+@keyframes era-flash {
+  0% { transform: scale(1.5); opacity: 0; letter-spacing: 0.5em; }
+  100% { transform: scale(1); opacity: 1; letter-spacing: 0.24em; }
+}
+#play-feed {
+  position: absolute; left: 10px; top: 46px; z-index: 6;
+  width: 320px; max-width: 44vw;
+  display: flex; flex-direction: column; gap: 4px;
+  pointer-events: none;
+}
+.feed-item {
+  background: rgba(10,12,18,0.72);
+  border-left: 3px solid var(--c, var(--gold));
+  border-radius: 0 3px 3px 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--paper);
+  animation: reveal-up 0.3s ease-out;
+}
+.feed-item .fy { font-family: var(--mono); font-size: 9.5px; color: var(--gold-bright); display: block; }
+.feed-item:nth-child(n+4) { opacity: 0.55; }
+.feed-item:nth-child(n+6) { opacity: 0.28; }
+.wheel-hand { stroke: var(--gold-bright); stroke-width: 1.6; filter: drop-shadow(0 0 8px rgba(232,196,85,0.8)); pointer-events: none; }
+.wheel-hand-tip { fill: var(--gold-bright); filter: drop-shadow(0 0 10px rgba(232,196,85,0.9)); pointer-events: none; }
+.wheel-year-big {
+  font-family: "IBM Plex Mono", monospace;
+  fill: var(--gold-bright); font-size: 22px;
+  paint-order: stroke; stroke: rgba(10,12,18,0.85); stroke-width: 5px;
+}
+
+/* floating status chip inside the chart */
+#status {
+  position: absolute;
+  right: 10px; bottom: 8px;
+  font-size: 10.5px;
+  color: #59617c;
+  background: rgba(10,12,18,0.55);
+  border: 1px solid var(--line-faint);
+  border-radius: 3px;
+  padding: 3px 9px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ============ toolbar ============ */
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 22px;
+  border-bottom: 1px solid var(--line-faint);
+}
+
+#view-switch {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.view-btn {
+  background: var(--obsidian-3);
+  border: none;
+  border-right: 1px solid var(--line);
+  color: var(--paper-dim);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.view-btn:last-child { border-right: none; }
+.view-btn:hover { color: var(--gold-bright); }
+.view-btn.active {
+  background: rgba(201,162,39,0.15);
+  color: var(--gold-bright);
+  box-shadow: inset 0 -2px 0 var(--gold);
+}
+
+#search {
+  flex: 0 1 280px;
+  background: var(--obsidian-3);
+  border: 1px solid var(--line);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+#search:focus { border-color: var(--gold-dim); box-shadow: 0 0 12px rgba(201,162,39,0.2); }
+#search::placeholder { color: #5c637a; }
+
+select {
+  background: var(--obsidian-3);
+  border: 1px solid var(--line);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  padding: 8px 8px;
+  border-radius: 4px;
+  max-width: 170px;
+  transition: border-color 0.18s;
+}
+select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
+
+.toolbar-spacer { flex: 1; }
+
+.tool-btn {
+  background: var(--obsidian-3);
+  border: 1px solid var(--line);
+  color: var(--paper-dim);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 34px;
+  transition: all 0.18s;
+}
+.tool-btn:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold-bright);
+  box-shadow: 0 0 10px rgba(201,162,39,0.16);
+}
+.tool-btn.accent { border-color: var(--gold-dim); color: var(--gold); }
+.tool-btn.wide { padding: 8px 14px; }
+
+/* ============ theme chips ============ */
+#theme-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 22px 9px;
+  border-bottom: 1px solid var(--line-faint);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--paper-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 4px 11px;
+  cursor: pointer;
+  transition: all 0.18s;
+  user-select: none;
+}
+.chip .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--c, var(--gold));
+  box-shadow: 0 0 7px var(--c, var(--gold));
+}
+.chip:hover { border-color: var(--gold-dim); color: var(--paper); }
+.chip.active {
+  border-color: var(--c, var(--gold));
+  color: var(--paper);
+  background: color-mix(in srgb, var(--c, var(--gold)) 14%, transparent);
+}
+.chip.dimmed { opacity: 0.35; }
+
+/* ============ stage ============ */
+#stage { flex: 1; display: flex; min-height: 0; position: relative; }
+
+#chart-wrap { flex: 1; position: relative; min-width: 0; }
+
+#chart {
+  width: 100%; height: 100%; display: block;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+#chart.panning { cursor: grabbing; }
+
+/* --- SVG vocabulary --- */
+.era-band { cursor: pointer; transition: filter 0.18s; }
+.era-band:hover { filter: brightness(1.8); }
+.era-band-label {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 500;
+  fill: #8f9ab5;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+.era-boundary { stroke: var(--line-faint); stroke-width: 1; }
+.axis-tick-label { font-family: "IBM Plex Mono", monospace; fill: #66708c; font-size: 10px; }
+.axis-line { stroke: var(--line); }
+.meridian { stroke: var(--gold-dim); stroke-width: 1; stroke-dasharray: 3 4; }
+.meridian-label { font-family: "Space Grotesk", sans-serif; fill: var(--gold-dim); font-size: 9px; letter-spacing: 0.16em; }
+.lane-label {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 500;
+  fill: #4d5670;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.lane-line { stroke: var(--line-faint); stroke-dasharray: 1 5; }
+
+.evt { cursor: pointer; }
+.evt .node-core { transition: r 0.16s cubic-bezier(.34,1.56,.64,1); }
+.evt-label {
+  font-family: "Inter", system-ui, sans-serif;
+  fill: var(--paper-dim);
+  font-size: 10.5px;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: rgba(10,12,18,0.88);
+  stroke-width: 3px;
+}
+.evt-label.major { fill: var(--paper); font-size: 11.5px; font-weight: 500; }
+
+.enter .evt {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: condense 0.5s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+/* the standing web of relations */
+.web-line {
+  stroke: var(--gold);
+  stroke-width: 0.6;
+  opacity: 0.10;
+  pointer-events: none;
+}
+/* the ignited thread */
+.constellation {
+  stroke: var(--gold-bright);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: flow 1.6s linear infinite;
+}
+
+.star { fill: #b8c4e8; pointer-events: none; }
+.star.twinkle { animation-name: twinkle; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+
+.time-cursor { stroke: rgba(232,196,85,0.3); stroke-width: 1; pointer-events: none; }
+.time-cursor-label {
+  font-family: "IBM Plex Mono", monospace;
+  fill: var(--gold-bright); font-size: 10px;
+  pointer-events: none;
+  paint-order: stroke; stroke: rgba(10,12,18,0.9); stroke-width: 3px;
+}
+
+.ov-bg { fill: var(--obsidian-2); stroke: var(--line-faint); }
+.ov-brush {
+  fill: rgba(201,162,39,0.15);
+  stroke: var(--gold-dim);
+  stroke-width: 1;
+  cursor: ew-resize;
+  transition: fill 0.18s;
+}
+.ov-brush:hover { fill: rgba(201,162,39,0.26); }
+.ov-dot { pointer-events: none; }
+.ov-hit { fill: transparent; cursor: pointer; }
+
+/* atlas */
+.map-frame { fill: rgba(124,154,201,0.02); stroke: var(--line); stroke-width: 1; }
+.graticule { stroke: var(--line-faint); stroke-width: 0.6; }
+.graticule.equator { stroke: var(--gold-dim); stroke-dasharray: 2 5; opacity: 0.5; }
+.map-land { fill: rgba(230,225,211,0.11); stroke: #6b7899; stroke-width: 0.9; }
+.map-border { fill: none; stroke: #3a445c; stroke-width: 0.6; stroke-dasharray: 2 2; opacity: 0.7; }
+.map-caption {
+  font-family: "Space Grotesk", sans-serif;
+  fill: var(--gold-dim); font-size: 10px; letter-spacing: 0.16em;
+}
+
+/* wheel */
+.wheel-ring { fill: none; stroke: var(--line-faint); stroke-dasharray: 1 5; }
+.wheel-era { transition: filter 0.18s; }
+.wheel-era:hover { filter: brightness(1.9); }
+.wheel-era-label {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 500;
+  fill: #8f9ab5; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  pointer-events: none;
+}
+.wheel-center-disc { fill: rgba(201,162,39,0.05); stroke: var(--gold-dim); stroke-width: 0.8; stroke-dasharray: 2 4; }
+.wheel-center-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  fill: var(--gold-bright); font-size: 12px; letter-spacing: 0.3em;
+}
+.wheel-center-sub { font-family: "IBM Plex Mono", monospace; fill: var(--paper-dim); font-size: 9px; }
+
+/* ============ tooltip ============ */
+#tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #151927f5;
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  padding: 8px 12px;
+  max-width: 280px;
+  z-index: 30;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  animation: reveal-up 0.14s ease-out;
+}
+#tooltip .tt-title { font-family: var(--display); font-weight: 500; font-size: 12.5px; color: var(--gold-bright); }
+#tooltip .tt-date { font-family: var(--mono); font-size: 10px; color: var(--paper-dim); margin-top: 3px; }
+
+/* ============ slide-in panel ============ */
+#panel {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 360px;
+  max-width: 88vw;
+  border-left: 1px solid var(--line);
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  padding: 48px 24px 30px;
+  overflow-y: auto;
+  z-index: 20;
+  transform: translateX(102%);
+  transition: transform 0.32s cubic-bezier(.22,1,.36,1);
+  box-shadow: -24px 0 60px rgba(0,0,0,0.55);
+}
+#panel.open { transform: translateX(0); }
+#panel::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, var(--gold-dim), transparent 40%, transparent 60%, var(--gold-dim));
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+#panel-close {
+  position: absolute;
+  top: 10px; right: 12px;
+  width: 30px; height: 30px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--paper-dim);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.18s;
+  z-index: 2;
+}
+#panel-close:hover { border-color: var(--gold-dim); color: var(--gold-bright); }
+
+#panel-content, #panel-oracle { animation: reveal-up 0.28s ease-out; }
+
+.kicker {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+#panel-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.25;
+  color: var(--paper);
+  margin-bottom: 8px;
+}
+
+#panel-date { color: var(--gold-bright); font-size: 12px; margin-bottom: 14px; }
+
+#panel-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.meta-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3px 8px;
+  color: var(--paper-dim);
+}
+.meta-tag.theme-tag { border-color: var(--c, var(--line)); color: var(--c, var(--paper-dim)); }
+
+#panel-desc { font-size: 14.5px; line-height: 1.65; color: var(--paper); margin-bottom: 18px; }
+
+#panel-importance { margin-bottom: 18px; }
+#panel-importance .label {
+  display: block; font-family: var(--display); font-weight: 500; font-size: 9.5px;
+  letter-spacing: 0.2em; text-transform: uppercase; color: #59617c; margin-bottom: 6px;
+}
+.imp-track {
+  display: block; height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+.imp-fill {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright));
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(201,162,39,0.5);
+}
+
+#panel-source {
+  display: inline-block;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--gold-dim);
+  padding: 7px 14px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  transition: all 0.18s;
+}
+#panel-source:hover {
+  background: rgba(201,162,39,0.12);
+  color: var(--gold-bright);
+}
+
+#panel-related { display: flex; flex-direction: column; gap: 6px; }
+.related-link {
+  font-size: 13px;
+  color: var(--paper-dim);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.16s;
+}
+.related-link:hover {
+  color: var(--gold-bright);
+  background: rgba(201,162,39,0.09);
+  border-left-color: var(--gold);
+  transform: translateX(3px);
+}
+.related-link .rl-date { font-family: var(--mono); font-size: 9.5px; color: #59617c; display: block; }
+
+/* ============ oracle & era records ============ */
+#panel-oracle .o-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--gold-bright);
+  margin-bottom: 4px;
+}
+#panel-oracle .o-span { font-family: var(--mono); font-size: 11px; color: var(--paper-dim); margin-bottom: 16px; }
+#panel-oracle .o-prose { font-size: 14.5px; line-height: 1.68; color: var(--paper); margin-bottom: 18px; }
+#panel-oracle .o-prose em { color: var(--gold-bright); font-style: normal; font-weight: 500; }
+#panel-oracle .o-section { margin-bottom: 18px; }
+#panel-oracle .o-evt {
+  display: block;
+  font-size: 13px;
+  color: var(--paper-dim);
+  cursor: pointer;
+  padding: 5px 10px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(255,255,255,0.02);
+  margin-bottom: 5px;
+  transition: all 0.16s;
+}
+#panel-oracle .o-evt:hover {
+  color: var(--gold-bright);
+  background: rgba(201,162,39,0.09);
+  border-left-color: var(--gold);
+  transform: translateX(3px);
+}
+#panel-oracle .o-evt .oe-date { font-family: var(--mono); font-size: 9.5px; color: #59617c; display: block; }
+.o-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.o-bar-name { font-family: var(--mono); font-size: 9.5px; color: var(--paper-dim); width: 108px; flex: none; text-align: right; }
+.o-bar-track { flex: 1; height: 7px; background: rgba(255,255,255,0.04); border-radius: 3px; overflow: hidden; }
+.o-bar-fill {
+  display: block;
+  height: 100%; border-radius: 3px;
+  box-shadow: 0 0 8px var(--c, var(--gold));
+  background: var(--c, var(--gold));
+  transition: width 0.6s cubic-bezier(.22,1,.36,1);
+}
+.o-bar-n { font-family: var(--mono); font-size: 9.5px; color: #59617c; width: 22px; }
+.o-divider { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
+
+/* cross-instrument jump links + help overlay */
+.tx-jump {
+  display: block;
+  font-size: 12.5px;
+  color: var(--gold);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(201,162,39,0.04);
+  margin-bottom: 5px;
+  transition: all 0.16s;
+}
+.tx-jump:hover { color: var(--gold-bright); background: rgba(201,162,39,0.1); transform: translateX(3px); }
+#panel-tx { margin-top: 18px; }
+#help-overlay {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  background: var(--panel-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 18px 22px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 30px rgba(201,162,39,0.1);
+  animation: reveal-up 0.2s ease-out;
+}
+#help-overlay table { border-collapse: collapse; margin: 6px 0 10px; }
+#help-overlay td { padding: 3px 14px 3px 0; font-size: 13px; color: var(--paper); }
+#help-overlay td:first-child { font-family: var(--mono); color: var(--gold-bright); font-size: 11.5px; white-space: nowrap; }
+#help-overlay .hint { font-size: 10px; color: #59617c; line-height: 1.6; }
+
+/* ============ legend ============ */
+#legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 6px 22px;
+  border-top: 1px solid var(--line);
+  background: var(--obsidian-2);
+  font-size: 11.5px;
+  color: var(--paper-dim);
+}
+.legend-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 9.5px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold-dim);
+}
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+#event-count { margin-left: auto; color: #59617c; }
+
+/* ============ responsive & a11y ============ */
+@media (max-width: 900px) {
+  #masthead h1 { font-size: 16px; letter-spacing: 0.22em; }
+  .masthead-readout { display: none; }
+  #search { flex-basis: 150px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--obsidian); }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+/* ============ the pocket archive: phones & small screens ============ */
+@media (max-width: 700px) {
+  #bar { flex-wrap: wrap; padding: 6px 8px; gap: 5px; row-gap: 5px; }
+  #bar-title { font-size: 13px; letter-spacing: 0.2em; }
+  #bar .tool-btn, #view-switch .view-btn { padding: 5px 8px; font-size: 10px; }
+  #bar #tx-link, #bar #bl-link, #bar #pn-link { padding: 5px 7px; font-size: 9px; }
+  #search { flex: 1 1 110px; min-width: 90px; font-size: 12px; padding: 6px 9px; }
+  .masthead-readout { display: none; }
+  .toolbar-spacer { display: none; }
+  #drawer { width: 100vw; max-width: 100vw; }
+  #panel { width: 100vw; max-width: 100vw; }
+  #masthead { padding: 8px 12px; flex-wrap: wrap; gap: 6px; }
+  #masthead h1 { font-size: 14px; }
+  #masthead .tagline { display: none; }
+  #play-feed { width: 58vw; font-size: 9px; }
+  #play-era { font-size: 11px; }
+  #status { font-size: 9px; }
+  #help-overlay { width: 92vw; }
+  #tour-card { width: 90vw; left: 5vw; }
+  #bl-panel, #pn-panel { width: 100vw; max-width: 100vw; }
+  #bl-toolbar, #pn-toolbar { padding: 6px 8px; gap: 4px; }
+  #bl-mini { display: none; }
+  #bl-hint, #pn-legend { display: none; }
+}
+
+</style>
+<style>
+  /* ---- Transmissions codex — page-specific ---- */
+  body { overflow: auto; }
+  #tx-main {
+    flex: 1;
+    max-width: 1060px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 28px 24px 80px;
+  }
+  .tx-epigraph {
+    border-left: 2px solid var(--gold-dim);
+    padding: 14px 20px;
+    margin-bottom: 10px;
+    color: var(--paper-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .tx-epigraph em { color: var(--gold-bright); font-style: normal; }
+  .tx-thesis {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #59617c;
+    margin: 0 0 26px 22px;
+  }
+  #tx-filters { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+  #tx-count { font-family: var(--mono); font-size: 11px; color: #59617c; margin: 4px 0 22px 2px; }
+
+  .tx-card {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(201,162,39,0.035), transparent 90px), var(--obsidian-2);
+    margin-bottom: 22px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .tx-card:hover { border-color: var(--gold-dim); box-shadow: 0 0 24px rgba(201,162,39,0.08); }
+  .tx-card.hi { border-color: var(--gold); box-shadow: 0 0 30px rgba(201,162,39,0.22); scroll-margin-top: 20px; }
+  .tx-head {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--line-faint);
+  }
+  .tx-cat {
+    font-family: var(--display); font-weight: 600; font-size: 9.5px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 3px;
+    border: 1px solid var(--c, var(--gold-dim));
+    color: var(--c, var(--gold));
+  }
+  .tx-title { font-family: var(--display); font-weight: 600; font-size: 16.5px; color: var(--paper); }
+  .tx-gap { margin-left: auto; font-family: var(--mono); font-size: 10px; color: #59617c; }
+  .tx-body { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 760px) { .tx-body { grid-template-columns: 1fr; } }
+  .tx-col { padding: 16px 20px 18px; }
+  .tx-col + .tx-col { border-left: 1px solid var(--line-faint); }
+  .tx-col h3 {
+    font-family: var(--display); font-weight: 600; font-size: 10px;
+    letter-spacing: 0.26em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .tx-claim h3 { color: #9b6fc3; }
+  .tx-record h3 { color: #3fa7c4; }
+  .tx-field { margin-bottom: 9px; font-size: 13.5px; line-height: 1.55; color: var(--paper); }
+  .tx-field .k {
+    display: block; font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: #59617c; margin-bottom: 2px;
+  }
+  .tx-quote {
+    font-style: italic; color: var(--paper-dim); font-size: 13px;
+    border-left: 2px solid rgba(155,111,195,0.4);
+    padding-left: 10px; margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  .tx-foot {
+    padding: 12px 20px 15px;
+    border-top: 1px solid var(--line-faint);
+    font-size: 12.5px; color: var(--paper-dim); line-height: 1.6;
+  }
+  .tx-foot .k {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #59617c; display: block; margin-bottom: 3px;
+  }
+  .tx-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tx-links a, .tx-links .tx-ref {
+    font-family: var(--display); font-weight: 500; font-size: 10.5px;
+    letter-spacing: 0.06em; text-decoration: none;
+    border: 1px solid var(--line); border-radius: 3px;
+    padding: 4px 10px; color: var(--paper-dim);
+    transition: all 0.15s; cursor: pointer;
+  }
+  .tx-links a:hover, .tx-links .tx-ref:hover { border-color: var(--gold-dim); color: var(--gold-bright); }
+  .tx-links .tx-ref { color: var(--gold); }
+  #masthead a.back {
+    font-family: var(--display); font-size: 11px; letter-spacing: 0.1em;
+    color: var(--gold); text-decoration: none; margin-left: auto;
+    border: 1px solid var(--gold-dim); border-radius: 4px; padding: 7px 14px;
+    transition: all 0.18s;
+  }
+  #masthead a.back:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.2); }
+</style>
+</head>
+<body>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE TRANSMISSIONS</h1>
+      <p class="tagline">claims of taught knowledge, against the documented record</p>
+    </div>
+    <a class="back" href="codex.html">The Codex</a>
+    <a class="back" href="pantheons.html" style="margin-left:8px">The Pantheons</a>
+    <a class="back" href="lineage.html" style="margin-left:8px">The Bloodline</a>
+    <a class="back" href="index.html" style="margin-left:8px">⟵ The Archive</a>
+  </header>
+
+  <main id="tx-main">
+    <div class="tx-epigraph">
+      Across esoteric literature runs one persistent claim: that innovation is not invented but <em>transmitted</em> —
+      taught by Watcher, god, bound demon, dream, or rite. Azazel hands down the metallurgy of war and the use of antimony;
+      Oannes rises daily from the sea with the whole Uruk package; the elixir furnace answers Taoist immortalists with gunpowder;
+      a snake seizes its tail and benzene closes into a ring; and in Pasadena a man chants the Hymn to Pan over the test pits,
+      then casts the solid fuel that will one day lift boosters off the pad.
+      <br><br>
+      Each leaf of this codex holds both ledgers: <em>the claim</em> — its text, its date, its transmitter — and
+      <em>the record</em> — the innovation's documented first attestation and its first-principles mechanism.
+    </div>
+    <p class="tx-thesis">The archive takes no position on daimons. It takes positions on dates.</p>
+
+    <div id="tx-filters"></div>
+    <div id="tx-count"></div>
+    <div id="tx-list"></div>
+  </main>
+
+  <script>
+/* ARCHIVUS — THE TRANSMISSIONS
+   Claims recorded in esoteric, mythological and occult literature that an
+   innovation was TAUGHT to humanity — by angel, god, daimon, dream or rite —
+   paired against the documented historical record of that innovation.
+
+   Schema per entry:
+   id, category:  "angelic" | "divine" | "daimonic" | "alchemical" | "oneiric"
+   transmitter    — the claimed teacher
+   taught         — what the claim says was transmitted
+   claimSource    — the text/tradition making the claim
+   claimYear      — approx. composition date of the claim (negative = BCE)
+   claimDate      — display string for the above
+   quote          — short excerpt or paraphrase (public-domain translations)
+   record: { innovation, year, date, place, principles }
+   note           — epistemic status
+   eventRefs      — ids in the main archive (deep-linkable)
+   links: { claim, record }
+
+   The archive takes no position on daimons. It takes positions on dates. */
+window.ARCHIVUS_TRANSMISSIONS = [
+
+  /* ================= ANGELIC — the Watchers and their kin ================= */
+  { id: "azazel-metals", category: "angelic", transmitter: "Azazel, chief of the Watchers",
+    taught: "Metallurgy of war — swords, knives, shields, breastplates; \"the metals of the earth and the art of working them\"",
+    claimSource: "1 Enoch (Book of the Watchers) 8:1", claimYear: -300, claimDate: "c. 300–200 BCE",
+    quote: "And Azazel taught men to make swords, and knives, and shields, and breastplates…",
+    record: { innovation: "Alloyed and hardened weapon metallurgy", year: -3300, date: "c. 3300 BCE (bronze) · c. 1200–900 BCE (quenched steel)",
+      place: "Near East / Anatolia",
+      principles: "Tin-copper alloying lowers melting point and raises hardness; later, carbon diffusion into iron plus rapid quench forms martensite — carburized, quench-hardened steel." },
+    note: "The myth is retrospective: the text post-dates bronze weaponry by ~3,000 years. It reads as a moral indictment of the arms trade, ascribed to a fallen teacher.",
+    eventRefs: ["bronzework", "ironwork", "collapse"],
+    links: { claim: "https://www.sacred-texts.com/bib/boe/boe011.htm", record: "https://en.wikipedia.org/wiki/Ferrous_metallurgy" } },
+
+  { id: "azazel-antimony", category: "angelic", transmitter: "Azazel",
+    taught: "\"The use of antimony, and the beautifying of the eyelids\" — cosmetics, ornament, and by extension the hardening metalloid itself",
+    claimSource: "1 Enoch 8:1", claimYear: -300, claimDate: "c. 300–200 BCE",
+    quote: "…and the use of antimony, and the beautifying of the eyelids, and all kinds of costly stones.",
+    record: { innovation: "Stibnite (antimony sulfide) kohl; antimonial alloys", year: -3100, date: "c. 3100 BCE (kohl) · 3rd millennium BCE (antimonial bronze)",
+      place: "Egypt · Caucasus",
+      principles: "Ground stibnite (Sb₂S₃) as eye paint with antibacterial side-effects; antimony as a hardening solute in lead and copper alloys — the property your reading keys on." },
+    note: "The Ge'ez text's word covers both the cosmetic and the mineral. Both uses long pre-date the text.",
+    eventRefs: ["egypt_unify", "copper"],
+    links: { claim: "https://www.sacred-texts.com/bib/boe/boe011.htm", record: "https://en.wikipedia.org/wiki/Antimony#History" } },
+
+  { id: "shemihazah-roots", category: "angelic", transmitter: "Shemihazah (Semjaza) and his host",
+    taught: "\"Enchantments and root-cuttings\" — incantatory medicine and herbal pharmacology",
+    claimSource: "1 Enoch 7:1–8:3", claimYear: -300, claimDate: "c. 300–200 BCE",
+    quote: "…and they taught them charms and enchantments, and the cutting of roots, and made them acquainted with plants.",
+    record: { innovation: "Systematic herbal pharmacopoeia", year: -2100, date: "c. 2100 BCE (Sumerian tablet) · c. 1550 BCE (Ebers Papyrus)",
+      place: "Mesopotamia · Egypt",
+      principles: "Empirical trial of plant alkaloids, glycosides and resins; recipes transmitted scribally — pharmacology before chemistry." },
+    note: "Herbal medicine is attested ~1,500 years before the claim text.",
+    eventRefs: ["hippocrates"],
+    links: { claim: "https://www.sacred-texts.com/bib/boe/boe010.htm", record: "https://en.wikipedia.org/wiki/Ebers_Papyrus" } },
+
+  { id: "watchers-astrology", category: "angelic", transmitter: "Baraqel, Kokabel, Sahriel, Shamsiel",
+    taught: "Astrology of lightning, the courses of stars, moon and sun — the celestial sciences as forbidden gift",
+    claimSource: "1 Enoch 8:3", claimYear: -300, claimDate: "c. 300–200 BCE",
+    quote: "Baraqijal taught astrology, Kokabel the constellations… Shamsiel the signs of the sun.",
+    record: { innovation: "Systematic positional astronomy", year: -1600, date: "c. 1600 BCE (Enuma Anu Enlil) · c. 1000 BCE (MUL.APIN) · 5th c. BCE (zodiac)",
+      place: "Babylon",
+      principles: "Multi-generation observation logs → periodic regularities → predictive ephemerides. Astrology's bookkeeping becomes astronomy's data." },
+    note: "The Watchers narrative mirrors — and moralizes — Babylonian scholar-priest astronomy that Judean scribes knew from exile.",
+    eventRefs: ["neobabylon", "babylon_exile", "ptolemy"],
+    links: { claim: "https://www.sacred-texts.com/bib/boe/boe011.htm", record: "https://en.wikipedia.org/wiki/Babylonian_astronomy" } },
+
+  { id: "penemue-writing", category: "angelic", transmitter: "Penemue",
+    taught: "\"Writing with ink and paper\" — and the text counts it a corruption: \"thereby many sinned\"",
+    claimSource: "1 Enoch 69:8–10", claimYear: -100, claimDate: "c. 100 BCE (Similitudes stratum)",
+    quote: "He instructed mankind in writing with ink and paper, and thereby many sinned from eternity to eternity.",
+    record: { innovation: "Writing; carbon ink", year: -3200, date: "c. 3200 BCE (cuneiform, hieroglyphs) · ink from the same horizon",
+      place: "Sumer · Egypt",
+      principles: "Accounting tokens → impressed signs → phonetization; lamp-soot bound in gum as ink. Writing preceded the complaint about it by three millennia." },
+    note: "Rare inverse case: the transmission myth frames literacy itself as the dangerous gift.",
+    eventRefs: ["writing", "hieroglyphs", "alphabet"],
+    links: { claim: "https://www.sacred-texts.com/bib/boe/boe072.htm", record: "https://en.wikipedia.org/wiki/History_of_writing" } },
+
+  { id: "gadreel-war", category: "angelic", transmitter: "Gadreel",
+    taught: "\"The blows of death… the shield, the coat of mail, and the sword for battle\"",
+    claimSource: "1 Enoch 69:6–7", claimYear: -100, claimDate: "c. 100 BCE",
+    quote: "He showed the children of men all the weapons of death.",
+    record: { innovation: "Organized panoplied warfare", year: -2500, date: "c. 2500 BCE (Standard of Ur, phalanx imagery)",
+      place: "Sumer",
+      principles: "State surplus funds specialized arms production; bronze panoply + formation discipline." },
+    note: "Duplicate attribution with Azazel — the tradition itself disagrees about which teacher to blame.",
+    eventRefs: ["kadesh", "assyria"],
+    links: { claim: "https://www.sacred-texts.com/bib/boe/boe072.htm", record: "https://en.wikipedia.org/wiki/Standard_of_Ur" } },
+
+  { id: "kasdeya-womb", category: "angelic", transmitter: "Kasdeja",
+    taught: "\"The smitings of the embryo in the womb\" — abortifacient and obstetric knowledge",
+    claimSource: "1 Enoch 69:12", claimYear: -100, claimDate: "c. 100 BCE",
+    quote: "…the smitings of the embryo in the womb, that it may pass away.",
+    record: { innovation: "Contraceptive / abortifacient pharmacology", year: -1550, date: "c. 1550 BCE (Ebers & Kahun papyri) · classical silphium trade",
+      place: "Egypt · Cyrene",
+      principles: "Plant estrogen-analogues and emmenagogues; Kahun gynecological papyrus is the oldest medical text of its kind." },
+    note: "The claim moralizes knowledge already ~1,400 years old.",
+    eventRefs: ["hippocrates"],
+    links: { claim: "https://www.sacred-texts.com/bib/boe/boe072.htm", record: "https://en.wikipedia.org/wiki/Kahun_Gynaecological_Papyrus" } },
+
+  { id: "uriel-calendar", category: "angelic", transmitter: "Uriel, angel of the luminaries",
+    taught: "The Astronomical Book: gates of the sun, a 364-day solar calendar, the order of the heavens — shown to Enoch himself",
+    claimSource: "1 Enoch 72–82 (Astronomical Book)", claimYear: -250, claimDate: "3rd c. BCE (oldest Enochic stratum)",
+    quote: "The book of the courses of the luminaries of the heaven… which Uriel showed me.",
+    record: { innovation: "Schematic solar calendars", year: -1000, date: "c. 1000 BCE (MUL.APIN scheme) — Enoch's 364 days is a sectarian idealization",
+      place: "Babylon → Judea (Qumran calendar disputes)",
+      principles: "Intercalation problem: lunar months vs solar year; Enoch's answer (364 = 52 exact weeks) trades accuracy for sabbath arithmetic." },
+    note: "A transmission claim about calendar POLITICS — the Qumran community used it against the lunar Temple calendar.",
+    eventRefs: ["neobabylon", "second_temple"],
+    links: { claim: "https://www.sacred-texts.com/bib/boe/boe075.htm", record: "https://en.wikipedia.org/wiki/Enoch_calendar" } },
+
+  { id: "raziel-book", category: "angelic", transmitter: "The angel Raziel ('Secrets of God')",
+    taught: "A book containing all celestial and earthly knowledge, given to Adam after the Fall — astrology, amulets, the names of things",
+    claimSource: "Sefer Raziel HaMalakh (trad.); printed Amsterdam 1701", claimYear: 1230, claimDate: "13th c. compilation (traditions older)",
+    quote: "All wisdom was given to Adam in a book from the hand of the angel.",
+    record: { innovation: "None new — an encyclopedia of already-current astro-magic and medicine", year: 1230, date: "13th c. CE",
+      place: "Ashkenaz / Iberia",
+      principles: "The 'primordial book' motif: retrojecting the present state of knowledge to Eden, so that all learning becomes recovery." },
+    note: "Type-specimen of the recovered-book frame that Dee and later magicians inherit.",
+    eventRefs: ["printing"],
+    links: { claim: "https://en.wikipedia.org/wiki/Sefer_Raziel_HaMalakh", record: "https://en.wikipedia.org/wiki/Sefer_Raziel_HaMalakh" } },
+
+  { id: "jubilees-medicine", category: "angelic", transmitter: "Angels of the Presence, to Noah",
+    taught: "Remedies and herbs against the diseases inflicted by the spirits of the Watchers' dead offspring",
+    claimSource: "Book of Jubilees 10:10–14", claimYear: -155, claimDate: "c. 160–150 BCE",
+    quote: "We explained to Noah all the medicines… and Noah wrote down all things in a book.",
+    record: { innovation: "Disease etiology + materia medica", year: -1550, date: "attested c. 1550 BCE and earlier",
+      place: "Egypt · Mesopotamia",
+      principles: "Demonic etiology is the pre-germ-theory placeholder: invisible agents cause disease; herbs counter them. Replace 'spirit' with 'microbe' and the logic survives to Pasteur." },
+    note: "A striking proto-model: invisible malignant agents + written pharmacological countermeasures.",
+    eventRefs: ["germtheory", "hippocrates"],
+    links: { claim: "https://www.sacred-texts.com/bib/jub/jub55.htm", record: "https://en.wikipedia.org/wiki/Book_of_Jubilees" } },
+
+  /* ================= DIVINE — gods and culture-heroes ================= */
+  { id: "prometheus-fire", category: "divine", transmitter: "Prometheus, the Forethinker",
+    taught: "Fire stolen from heaven in a fennel stalk — and with it \"all arts\": number, letters, medicine, metallurgy, sailing, divination",
+    claimSource: "Hesiod, Theogony; Aeschylus, Prometheus Bound 442–506", claimYear: -700, claimDate: "c. 700 BCE · c. 460 BCE",
+    quote: "Every art possessed by man comes from Prometheus.",
+    record: { innovation: "Control of fire", year: -400000, date: "c. 400,000+ BCE (habitual use)",
+      place: "Africa / Eurasia",
+      principles: "Friction and percussion ignition; fire as external digestion, defense, and the precondition of every pyrotechnology after it." },
+    note: "The gap is the largest in the archive: ~400 millennia between craft and claim. Punished transmission — the teacher chained for the gift.",
+    eventRefs: ["fire"],
+    links: { claim: "https://en.wikipedia.org/wiki/Prometheus", record: "https://en.wikipedia.org/wiki/Control_of_fire_by_early_humans" } },
+
+  { id: "oannes-apkallu", category: "divine", transmitter: "Oannes and the seven apkallu sages",
+    taught: "Everything at once: letters, sciences, crafts, city-building, temple-founding, law, geometry, agriculture — emerging daily from the sea",
+    claimSource: "Berossus, Babyloniaca (via Eusebius); Adapa tradition far older", claimYear: -280, claimDate: "c. 280 BCE (tradition 2nd millennium)",
+    quote: "Since that time nothing further has been discovered.",
+    record: { innovation: "The Uruk package: urbanism, writing, administration", year: -3400, date: "c. 3400–3100 BCE",
+      place: "Sumer",
+      principles: "Irrigation surplus → specialization → accounting → writing → law. The myth compresses eight centuries of accumulation into one amphibious tutor." },
+    note: "Berossus' closing line is the purest statement of the transmission worldview: all knowledge is inheritance, none is invention.",
+    eventRefs: ["uruk", "writing", "agriculture"],
+    links: { claim: "https://en.wikipedia.org/wiki/Apkallu", record: "https://en.wikipedia.org/wiki/Uruk_period" } },
+
+  { id: "enki-me", category: "divine", transmitter: "Enki, god of the deep waters",
+    taught: "The ME — civilization as ~100 discrete divine modules: kingship, smithcraft, scribeship, law, music, even lamentation — carried off by Inanna to Uruk",
+    claimSource: "Inanna and Enki (Sumerian tablets)", claimYear: -1900, claimDate: "c. 1900 BCE tablets",
+    quote: "She has taken the me of the craft of the smith, the scribe, the builder…",
+    record: { innovation: "The same Uruk package, catalogued", year: -3400, date: "c. 3400–3100 BCE",
+      place: "Sumer",
+      principles: "Oldest surviving 'tech tree': civilization understood as enumerable, transferable capabilities — closer to a package manifest than a myth." },
+    note: "The oldest transmission text in the archive, and the most systematic.",
+    eventRefs: ["uruk", "enheduanna"],
+    links: { claim: "https://en.wikipedia.org/wiki/Me_(mythology)", record: "https://en.wikipedia.org/wiki/Uruk" } },
+
+  { id: "thoth-letters", category: "divine", transmitter: "Thoth (Theuth), ibis-headed scribe of the gods",
+    taught: "Writing, mathematics, astronomy, magic — offered to king Thamus, who refuses: letters will produce forgetfulness, not memory",
+    claimSource: "Egyptian tradition; Plato, Phaedrus 274c–275b", claimYear: -370, claimDate: "c. 370 BCE (Plato; Egyptian tradition millennia older)",
+    quote: "This invention will produce forgetfulness… you give your disciples not truth, but only the semblance of truth.",
+    record: { innovation: "Hieroglyphic writing", year: -3100, date: "c. 3100 BCE",
+      place: "Egypt",
+      principles: "Rebus phonetization of pictographs. Plato's frame adds the first recorded critique of an information technology — by its mythical inventor's own king." },
+    note: "Transmission claim + technology criticism in a single text.",
+    eventRefs: ["hieroglyphs", "writing"],
+    links: { claim: "https://en.wikipedia.org/wiki/Thoth", record: "https://en.wikipedia.org/wiki/Egyptian_hieroglyphs" } },
+
+  { id: "hermes-alchemy", category: "divine", transmitter: "Hermes Trismegistus, thrice-great",
+    taught: "The Emerald Tablet: \"as above, so below\" — the operative key to transmutation; the Hermetica: cosmos as knowable, divinizable mind",
+    claimSource: "Corpus Hermeticum; Tabula Smaragdina (Arabic, c. 800 CE)", claimYear: 150, claimDate: "1st–3rd c. CE (Corpus) · c. 800 CE (Tablet)",
+    quote: "That which is below is like that which is above… so all things have been from this one thing.",
+    record: { innovation: "The research program that becomes chemistry", year: 750, date: "8th–17th c. — from Jabir's lab protocols to Boyle",
+      place: "Alexandria → Baghdad → Europe",
+      principles: "Wrong theory, fertile practice: pursuit of transmutation systematized distillation, sublimation, assaying and mineral acids — the apparatus outlived the doctrine." },
+    note: "Renaissance dating (Casaubon, 1614) exposed the texts as late antique, not primordial — the recovered-wisdom frame collapsing under philology.",
+    eventRefs: ["wisdom", "alexandria", "newton"],
+    links: { claim: "https://en.wikipedia.org/wiki/Emerald_Tablet", record: "https://en.wikipedia.org/wiki/Alchemy" } },
+
+  { id: "odin-runes", category: "divine", transmitter: "Odin, to himself",
+    taught: "The runes — seized shrieking after nine nights hanged on the world-tree, wounded by his own spear, \"myself to myself\"",
+    claimSource: "Hávamál 138–145 (Poetic Edda)", claimYear: 1270, claimDate: "13th c. manuscript (poem centuries older)",
+    quote: "I took up the runes, screaming I took them; then I fell back from there.",
+    record: { innovation: "Runic writing (Elder Futhark)", year: 150, date: "c. 150 CE",
+      place: "Denmark / northern Germania",
+      principles: "Adaptation of North Italic/Latin letterforms to Germanic phonology, optimized for knife-cut strokes in wood." },
+    note: "Knowledge bought by ordeal rather than gifted — the shamanic variant of the transmission motif.",
+    eventRefs: ["alphabet", "vikings"],
+    links: { claim: "https://en.wikipedia.org/wiki/H%C3%A1vam%C3%A1l", record: "https://en.wikipedia.org/wiki/Elder_Futhark" } },
+
+  { id: "quetzalcoatl-maize", category: "divine", transmitter: "Quetzalcoatl, the feathered serpent",
+    taught: "Maize (stolen from the mountain of sustenance as an ant), the calendar count, writing, the arts — civilization's full kit",
+    claimSource: "Central Mexican tradition (Codex Chimalpopoca and others)", claimYear: 1400, claimDate: "Postclassic tradition, 15th–16th c. codices",
+    quote: "He went to fetch the maize kernels from within the Mountain of Our Sustenance.",
+    record: { innovation: "Maize domestication; Mesoamerican calendar & script", year: -7000, date: "c. 7000 BCE (maize, Balsas valley) · c. 600 BCE (calendar/writing)",
+      place: "Mesoamerica",
+      principles: "Selection of teosinte for non-shattering cobs across millennia; vigesimal interlocking calendar cycles (260 × 365)." },
+    note: "Independent invention of the same myth-type on a hemisphere the Watchers never reached — evidence the transmission frame is a human universal.",
+    eventRefs: ["maya", "aztec", "olmec"],
+    links: { claim: "https://en.wikipedia.org/wiki/Quetzalcoatl", record: "https://en.wikipedia.org/wiki/Maize#History" } },
+
+  { id: "fuxi-trigrams", category: "divine", transmitter: "Fuxi, reading the River Map",
+    taught: "The eight trigrams — the binary skeleton of the I Ching — copied from markings on a dragon-horse risen from the Yellow River",
+    claimSource: "Xici (Great Commentary to the Changes)", claimYear: -300, claimDate: "c. 300 BCE",
+    quote: "He looked up and contemplated the images in heaven… and thereupon made the eight trigrams.",
+    record: { innovation: "Zhouyi divination system; binary enumeration", year: -800, date: "c. 800 BCE (Zhouyi) · 1703 CE (Leibniz reads hexagrams as binary)",
+      place: "Zhou China → Hanover",
+      principles: "64 hexagrams = complete 6-bit enumeration. Leibniz, corresponding with Jesuit Bouvet, recognized his own binary arithmetic in Fuxi's sequence — a transmission claim endorsed by the mathematician himself." },
+    note: "The one entry where a modern discoverer voluntarily joined his discovery to the ancient revelation.",
+    eventRefs: ["confucius", "pc"],
+    links: { claim: "https://en.wikipedia.org/wiki/Bagua", record: "https://en.wikipedia.org/wiki/Binary_number#History" } },
+
+  { id: "asclepius-incubation", category: "divine", transmitter: "Asclepius, via dream incubation",
+    taught: "Cures prescribed to sleepers in the temple — surgery, regimen and drugs delivered by the god in dreams",
+    claimSource: "Epidaurian iamata (cure inscriptions)", claimYear: -350, claimDate: "4th c. BCE inscriptions",
+    quote: "The god opened his eyes in a dream, and he departed cured.",
+    record: { innovation: "Clinical medicine (Hippocratic school, same era)", year: -430, date: "c. 430 BCE",
+      place: "Kos · Epidaurus",
+      principles: "The temples ran placebo, suggestion, rest and diet at scale; Hippocratics ran naturalistic diagnosis next door. Greek medicine used both channels simultaneously." },
+    note: "Transmission and empiricism as contemporaries and competitors, not stages.",
+    eventRefs: ["hippocrates", "galen"],
+    links: { claim: "https://en.wikipedia.org/wiki/Asclepeion", record: "https://en.wikipedia.org/wiki/Hippocrates" } },
+
+  /* ================= DAIMONIC — demons, spirits, familiar voices ================= */
+  { id: "solomon-ring", category: "daimonic", transmitter: "Bound demons, under Solomon's seal-ring",
+    taught: "Engineering labor and trade secrets: each demon compelled to confess its craft, its harm, and the angel that thwarts it — the Temple built by conscripted spirits",
+    claimSource: "Testament of Solomon", claimYear: 200, claimDate: "1st–3rd c. CE",
+    quote: "I commanded the demon to cut stones… and he did so, fearing the ring.",
+    record: { innovation: "First Temple engineering (traditional date)", year: -957, date: "c. 957 BCE (traditional); text ~1,100 years later",
+      place: "Jerusalem",
+      principles: "Phoenician masonry and cedar joinery (per Kings, Hiram of Tyre supplies the actual expertise). The demonological handbook became the template for the entire grimoire tradition — Ars Goetia, Lemegeton (17th c.)." },
+    note: "Root text of the 'compelled spirit as knowledge source' pattern that runs straight to Dee and Parsons.",
+    eventRefs: ["exodus_temple", "israel_kingdom"],
+    links: { claim: "https://en.wikipedia.org/wiki/Testament_of_Solomon", record: "https://en.wikipedia.org/wiki/Solomon%27s_Temple" } },
+
+  { id: "socrates-daimonion", category: "daimonic", transmitter: "The daimonion — Socrates' inner divine sign",
+    taught: "Not doctrine but veto: a voice that only ever forbade, steering the founding practice of Western philosophy",
+    claimSource: "Plato, Apology 31c–d; Xenophon, Memorabilia", claimYear: -399, claimDate: "399 BCE (trial)",
+    quote: "A sort of voice which, whenever it speaks, turns me away from what I am about to do.",
+    record: { innovation: "The Socratic method; the concept of 'genius'", year: -430, date: "5th c. BCE, continuous influence",
+      place: "Athens",
+      principles: "The daimon became Latin genius — the attendant spirit of insight — the direct etymological ancestor of calling a discoverer 'a genius'. The transmission metaphor is fossilized inside the word." },
+    note: "Included as the hinge: where the external teacher begins its migration inward, toward 'intuition'.",
+    eventRefs: ["socrates"],
+    links: { claim: "https://en.wikipedia.org/wiki/Daimonic", record: "https://en.wikipedia.org/wiki/Genius_(mythology)" } },
+
+  { id: "faust-pact", category: "daimonic", transmitter: "Mephistopheles, by contract",
+    taught: "All knowledge — astronomy, medicine, the mechanics of heaven — for a soul; the legend crystallizing around a real itinerant alchemist-astrologer",
+    claimSource: "Historia von D. Johann Fausten (Faustbuch)", claimYear: 1587, claimDate: "1587 (Johann Georg Faust d. c. 1541)",
+    quote: "He took eagle's wings and would search all the foundations of heaven and earth.",
+    record: { innovation: "None — the legend is a pressure gauge", year: 1543, date: "the generation of Copernicus (1543), Vesalius (1543), print",
+      place: "Germany",
+      principles: "The pact story externalizes the era's fear that the new learning was transgressive — knowledge acquired faster than legitimacy could sanctify it." },
+    note: "The transmission myth as cultural immune response to real discovery.",
+    eventRefs: ["copernicus", "printing", "reformation"],
+    links: { claim: "https://en.wikipedia.org/wiki/Faust", record: "https://en.wikipedia.org/wiki/Johann_Georg_Faust" } },
+
+  { id: "dee-enochian", category: "daimonic", transmitter: "The angels of the shewstone (via Edward Kelley)",
+    taught: "Enochian — the language of Adam before Babel, dictated letter by letter, backwards, into 49×49 tables: claimed recovery of the operating language of creation",
+    claimSource: "John Dee's spirit diaries (Liber Loagaeth, Claves Angelicae)", claimYear: 1583, claimDate: "1582–1589",
+    quote: "Out of the shew-stone the creatures spelled the calls, letter by letter, in reverse, for the words were too dangerous spoken forward.",
+    record: { innovation: "Dee's documented legacy is mundane and real", year: 1570, date: "1570 (mathematical preface to Euclid) · navigation for the northern voyages · coining 'British Empire'",
+      place: "Mortlake, England",
+      principles: "Linguistic analysis finds Enochian internally consistent but structurally English-like — a constructed language received under trance. Dee's actual transmissions to posterity were mathematics advocacy and applied cartography." },
+    note: "Named for Enoch deliberately — Dee believed he was restoring the Watchers' pre-Flood knowledge channel. Parsons used these exact Calls three and a half centuries later.",
+    eventRefs: ["armada", "printing"],
+    links: { claim: "https://en.wikipedia.org/wiki/Enochian", record: "https://en.wikipedia.org/wiki/John_Dee" } },
+
+  { id: "parsons-babalon", category: "daimonic", transmitter: "Pan, invoked; Babalon, received; a 'preternatural entity' dictating in the Mojave",
+    taught: "Parsons framed rocketry and magick as one Great Work: he recited Crowley's Hymn to Pan before static tests, ran the Enochian-based Babalon Working (Dec 1945–Feb 1946, L. Ron Hubbard as scribe), and claimed psychographic receipt of Liber 49 in the desert",
+    claimSource: "Parsons' own writings; Pendle, Strange Angel; Carter, Sex and Rockets", claimYear: 1946, claimDate: "1935–1952 (Working: 1945–46)",
+    quote: "Von Kármán's 'delightful screwball,' chanting the Hymn to Pan over the test pits.",
+    record: { innovation: "Castable composite solid rocket fuel (GALCIT-53)", year: 1942, date: "June 1942 · JATO flights Aug 1941 · Aerojet founded 1942",
+      place: "Pasadena (GALCIT → JPL)",
+      principles: "Replace pressed black powder (cracks → detonation) with asphalt binder + potassium perchlorate oxidizer, melt-cast into the casing: stable grain geometry, storable, scalable. The direct first-principles ancestor of every composite booster since, Shuttle SRBs included." },
+    note: "The modern limit case: claim and discovery inside one biography. The documented record shows the chemistry preceded the Babalon Working by four years — the magician's own timeline runs discovery-first, ritual-after. A crater on the far side of the Moon is named Parsons.",
+    eventRefs: ["moon", "ww2", "spacex"],
+    links: { claim: "https://en.wikipedia.org/wiki/Jack_Parsons#Religious_beliefs", record: "https://en.wikipedia.org/wiki/Jack_Parsons_(rocket_engineer)" } },
+
+  /* ================= ALCHEMICAL — occult pursuit, real discovery ================= */
+  { id: "taoist-gunpowder", category: "alchemical", transmitter: "The elixir furnace (wai-dan alchemy)",
+    taught: "Immortality, allegedly. The Taoist alchemists were seeking the elixir of deathlessness when the crucible answered otherwise",
+    claimSource: "Zhenyuan miaodao yaolüe (alchemical tract warning adepts)", claimYear: 850, claimDate: "c. 850 CE",
+    quote: "Some have heated sulfur, realgar and saltpeter with honey; smoke and flames result, so that their hands and faces have been burnt, and even the whole house.",
+    record: { innovation: "Gunpowder", year: 850, date: "c. 850 CE (warned against) · 1044 (first military formula, Wujing Zongyao)",
+      place: "Tang–Song China",
+      principles: "KNO₃ oxidizer + sulfur + charcoal: self-contained combustion. The cleanest documented case of an occult research program producing a world-changing technology as a side effect." },
+    note: "Discovery date = claim date: the mystical lab notebook IS the primary source.",
+    eventRefs: ["song", "opium"],
+    links: { claim: "https://en.wikipedia.org/wiki/History_of_gunpowder", record: "https://en.wikipedia.org/wiki/Wujing_Zongyao" } },
+
+  { id: "jabir-balance", category: "alchemical", transmitter: "The 'Science of the Balance' — knowledge attributed to the Imam Ja'far al-Sadiq",
+    taught: "Jabirian alchemy: every substance's nature computable from the numerology of its name; transmutation via elixirs",
+    claimSource: "Jabir ibn Hayyan corpus", claimYear: 800, claimDate: "8th–10th c. CE",
+    quote: "The letters of the name yield the natures of the thing named.",
+    record: { innovation: "Laboratory chemistry's toolkit", year: 800, date: "8th–13th c. (distillation, crystallization, sal ammoniac; mineral acids in Latin pseudo-Geber)",
+      place: "Kufa / Baghdad → Europe",
+      principles: "The numerology was sterile; the protocols were not. Reflux, distillation and assaying survived falsification of every doctrine they were invented to serve." },
+    note: "Pattern entry: occult theory as scaffolding that real method outgrows.",
+    eventRefs: ["wisdom", "alkhwarizmi"],
+    links: { claim: "https://en.wikipedia.org/wiki/Jabir_ibn_Hayyan", record: "https://en.wikipedia.org/wiki/Pseudo-Geber" } },
+
+  { id: "brand-phosphorus", category: "alchemical", transmitter: "The philosopher's stone (pursued, not found)",
+    taught: "Brand sought the stone in 'the golden stream' — boiling down some 5,500 liters of urine in his Hamburg cellar",
+    claimSource: "Hennig Brand's alchemical program", claimYear: 1669, claimDate: "1669",
+    quote: "A light glowing cold and green in the dark, which he named kalte Feuer — cold fire.",
+    record: { innovation: "Phosphorus — first element discovered since antiquity", year: 1669, date: "1669",
+      place: "Hamburg",
+      principles: "Urine phosphates reduced by carbon at high temperature → white phosphorus, chemiluminescent in air. Wrong quest, real element; Boyle reproduced it and chemistry absorbed it." },
+    note: "The alchemist's apparatus worked perfectly; only his ontology was wrong.",
+    eventRefs: ["newton", "lavoisier"],
+    links: { claim: "https://en.wikipedia.org/wiki/Hennig_Brand", record: "https://en.wikipedia.org/wiki/Phosphorus#History" } },
+
+  { id: "boettger-porcelain", category: "alchemical", transmitter: "Transmutation, demanded at swordpoint",
+    taught: "Böttger, a boasting young alchemist, was imprisoned by Augustus the Strong to manufacture gold for Saxony",
+    claimSource: "Böttger's captivity at Dresden/Meissen", claimYear: 1701, claimDate: "1701–1708",
+    quote: "God, our Creator, has made a goldmaker into a potter — inscribed over his laboratory door.",
+    record: { innovation: "European hard-paste porcelain ('white gold')", year: 1708, date: "1708–1710 (Meissen manufactory)",
+      place: "Saxony",
+      principles: "Kaolin + feldspathic flux vitrified ~1400 °C — reverse-engineering by systematic firing trials what China had kept secret for a millennium. The gold never came; the porcelain funded the state anyway." },
+    note: "Alchemy under duress converging on materials science.",
+    eventRefs: ["voc"],
+    links: { claim: "https://en.wikipedia.org/wiki/Johann_Friedrich_B%C3%B6ttger", record: "https://en.wikipedia.org/wiki/Meissen_porcelain" } },
+
+  { id: "newton-active", category: "alchemical", transmitter: "The alchemical 'active principles'",
+    taught: "Newton wrote ~a million words of alchemy seeking the vegetative spirit animating matter — decades in the furnace room at Trinity",
+    claimSource: "Newton's alchemical MSS (Keynes collection)", claimYear: 1670, claimDate: "c. 1668–1696",
+    quote: "The vital agent diffused through everything in the earth is one and the same.",
+    record: { innovation: "Universal gravitation as action-at-a-distance", year: 1687, date: "1687 (Principia)",
+      place: "Cambridge",
+      principles: "Historians (Dobbs, Westfall) argue the alchemical notion of immaterial active powers made attractive force *thinkable* while strict mechanists demanded contact. Contested, but the manuscripts exist and the chronology fits." },
+    note: "Flagged as scholarly interpretation, not established causation.",
+    eventRefs: ["newton"],
+    links: { claim: "https://en.wikipedia.org/wiki/Isaac_Newton%27s_occult_studies", record: "https://en.wikipedia.org/wiki/Philosophi%C3%A6_Naturalis_Principia_Mathematica" } },
+
+  { id: "kepler-harmony", category: "alchemical", transmitter: "The harmony of the spheres (Pythagorean program)",
+    taught: "Kepler — a practicing astrologer — sought the literal chord structure God composed into the planets' motions",
+    claimSource: "Harmonices Mundi", claimYear: 1619, claimDate: "1619",
+    quote: "The heavenly motions are nothing but a continuous song for several voices.",
+    record: { innovation: "The third law of planetary motion", year: 1619, date: "1619 (T² ∝ a³, published inside the same mystical treatise)",
+      place: "Linz",
+      principles: "Fitting planetary 'polyphony' to Tycho's data forced the period-radius power law into view. The mystical program was the search algorithm; the law was the residue that survived." },
+    note: "Perhaps the best-documented case of an occult framework directly yielding a quantitative law.",
+    eventRefs: ["galileo", "newton", "copernicus"],
+    links: { claim: "https://en.wikipedia.org/wiki/Harmonices_Mundi", record: "https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion" } },
+
+  { id: "rosicrucian-college", category: "alchemical", transmitter: "The invisible Brotherhood of the Rosy Cross",
+    taught: "Manifestos announce a hidden college of adepts holding perfected knowledge, inviting Europe's learned to find them",
+    claimSource: "Fama Fraternitatis; Confessio", claimYear: 1614, claimDate: "1614–1616",
+    quote: "We speak unto you by parables, but would willingly bring you to the right, simple, easy and ingenuous exposition.",
+    record: { innovation: "The Royal Society (institutionalized experimental science)", year: 1660, date: "1646 ('invisible college' in Boyle's letters) · 1660 (founding)",
+      place: "London / Oxford",
+      principles: "Yates thesis: the fictional college of adepts supplied the imaginative template for a real cooperative research institution. Contested by historians; the phrase-lineage is documented." },
+    note: "A transmission claim that may have transmitted only a FORM — the institution — rather than any content.",
+    eventRefs: ["newton", "encyclopedie"],
+    links: { claim: "https://en.wikipedia.org/wiki/Rosicrucianism", record: "https://en.wikipedia.org/wiki/Royal_Society#Founding" } },
+
+  /* ================= ONEIRIC — dreams, visions, received insight ================= */
+  { id: "descartes-dreams", category: "oneiric", transmitter: "Three dreams in a heated room, night of 10 Nov 1619",
+    taught: "Descartes recorded that a spirit descended and the dreams disclosed 'the foundations of a marvelous science' — he vowed a pilgrimage in thanks",
+    claimSource: "Olympica (lost notebook, via Baillet)", claimYear: 1619, claimDate: "1619",
+    quote: "He believed the Spirit of Truth had chosen to open to him the treasures of all the sciences.",
+    record: { innovation: "Analytic geometry and the Method", year: 1637, date: "1637 (Discourse + La Géométrie)",
+      place: "Neuburg → Leiden",
+      principles: "Coordinates fuse algebra with geometry — the substrate of all mathematical physics after. Dreamed program, waking execution, eighteen years apart." },
+    note: "Rationalism's founding document credits a revelation.",
+    eventRefs: ["newton", "galileo"],
+    links: { claim: "https://en.wikipedia.org/wiki/Ren%C3%A9_Descartes", record: "https://en.wikipedia.org/wiki/La_G%C3%A9om%C3%A9trie" } },
+
+  { id: "kekule-ouroboros", category: "oneiric", transmitter: "The ouroboros — alchemy's oldest sigil, in a fireside reverie",
+    taught: "\"One of the snakes had seized hold of its own tail... as if by a flash of lightning I awoke\" — the benzene ring",
+    claimSource: "Kekulé's Benzolfest speech", claimYear: 1890, claimDate: "1890 (recalling 1865)",
+    quote: "Let us learn to dream, gentlemen — but let us beware of publishing our dreams before they have been put to the proof by the waking understanding.",
+    record: { innovation: "Benzene's cyclic structure", year: 1865, date: "1865",
+      place: "Ghent",
+      principles: "Closing C₆H₆ into a ring resolved valence bookkeeping; delocalized aromatic bonding (understood later) explains its stability. Organic chemistry's map unlocked by alchemy's emblem." },
+    note: "Self-reported, decades later, with the discoverer's own epistemic warning attached — the model citation for this whole codex.",
+    eventRefs: ["mendeleev", "curie"],
+    links: { claim: "https://en.wikipedia.org/wiki/August_Kekul%C3%A9", record: "https://en.wikipedia.org/wiki/Benzene#Ring_formula" } },
+
+  { id: "mendeleev-dream", category: "oneiric", transmitter: "A dream, after three sleepless days of card-sorting",
+    taught: "\"I saw in a dream a table where all the elements fell into place as required. Awakening, I immediately wrote it down.\"",
+    claimSource: "Mendeleev, as recorded by A. A. Inostrantsev", claimYear: 1869, claimDate: "February 1869",
+    quote: "Only in one place did a correction later seem necessary.",
+    record: { innovation: "The periodic law", year: 1869, date: "1869; gap-predictions (Ga, Ge, Sc) confirmed within 20 years",
+      place: "St. Petersburg",
+      principles: "Ordering by atomic weight (later: number) exposes recurring valence periodicity — strong enough to predict unknown elements' properties." },
+    note: "The dream followed 15 years of preparation; the codex logs the claim and the work.",
+    eventRefs: ["mendeleev"],
+    links: { claim: "https://en.wikipedia.org/wiki/Dmitri_Mendeleev", record: "https://en.wikipedia.org/wiki/Periodic_table#History" } },
+
+  { id: "tesla-faust", category: "oneiric", transmitter: "A vision at sunset, mid-recitation of Goethe's Faust",
+    taught: "Budapest, 1882: the rotating magnetic field appears to Tesla complete — he draws the motor in the dust with a stick",
+    claimSource: "Tesla, My Inventions", claimYear: 1882, claimDate: "1882 (published 1919)",
+    quote: "The idea came like a flash of lightning and in an instant the truth was revealed.",
+    record: { innovation: "AC induction motor / polyphase system", year: 1888, date: "1888 (patents & AIEE lecture)",
+      place: "Budapest → Pittsburgh",
+      principles: "Two out-of-phase currents produce a rotating field; the rotor chases it without commutators. The vision compressed six years of engineering into one remembered instant." },
+    note: "Tesla's own account, stylized in memoir — logged as claim, dated by patent.",
+    eventRefs: ["electricity", "faraday"],
+    links: { claim: "https://en.wikipedia.org/wiki/My_Inventions:_The_Autobiography_of_Nikola_Tesla", record: "https://en.wikipedia.org/wiki/Induction_motor#History" } },
+
+  { id: "ramanujan-namagiri", category: "oneiric", transmitter: "The goddess Namagiri of Namakkal, in dreams",
+    taught: "\"She wrote the equations on my tongue\" — Ramanujan attributed his theorems to his family deity and would not publish on days she withheld consent",
+    claimSource: "Ramanujan, per Hardy and family testimony", claimYear: 1913, claimDate: "1913–1920",
+    quote: "An equation for me has no meaning unless it expresses a thought of God.",
+    record: { innovation: "Partition asymptotics, mock theta functions, 3,900 results", year: 1918, date: "1913–1920; mock theta functions vindicated in full only after 2002",
+      place: "Kumbakonam → Cambridge",
+      principles: "Formally: extreme pattern-recognition over self-built notational systems, later proved by standard methods. The transmission claim and the mathematics are both simply *there* — the archive holds the tension rather than resolving it." },
+    note: "The strongest modern case where the claimed channel cannot be separated from the results' texture.",
+    eventRefs: ["quantum"],
+    links: { claim: "https://en.wikipedia.org/wiki/Srinivasa_Ramanujan", record: "https://en.wikipedia.org/wiki/Mock_modular_form" } },
+
+  { id: "loewi-frogs", category: "oneiric", transmitter: "A dream, twice — the second time he got up",
+    taught: "Loewi dreamed the experimental design proving nerves signal chemically; scribbled it, couldn't read it, and the dream mercifully returned the next night",
+    claimSource: "Loewi's autobiographical sketch", claimYear: 1921, claimDate: "Easter 1921",
+    quote: "I got up immediately, went to the laboratory, and performed a simple experiment on a frog heart.",
+    record: { innovation: "Chemical neurotransmission (acetylcholine)", year: 1921, date: "1921; Nobel Prize 1936",
+      place: "Graz",
+      principles: "Perfusate from a stimulated vagus slows a second heart with no nerve attached — the signal must be a molecule. Foundation of neuropharmacology." },
+    note: "The rare dream-claim validated in the laboratory within hours of waking.",
+    eventRefs: ["germtheory", "dna"],
+    links: { claim: "https://en.wikipedia.org/wiki/Otto_Loewi", record: "https://en.wikipedia.org/wiki/Acetylcholine#History" } }
+];
+
+</script>
+  <script>
+  (function () {
+    "use strict";
+    const TX = window.ARCHIVUS_TRANSMISSIONS.slice().sort((a, b) => a.claimYear - b.claimYear);
+    const CATS = {
+      angelic:    { name: "Angelic",    color: "#d4a437", blurb: "the Watchers and their kin" },
+      divine:     { name: "Divine",     color: "#7c9ac9", blurb: "gods and culture-heroes" },
+      daimonic:   { name: "Daimonic",   color: "#9b6fc3", blurb: "demons, spirits, received voices" },
+      alchemical: { name: "Alchemical", color: "#5faa5f", blurb: "occult pursuit, real discovery" },
+      oneiric:    { name: "Oneiric",    color: "#d4738f", blurb: "dreams and visions" }
+    };
+    let active = new Set();
+
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const fmtY = y => Math.abs(y) >= 10000
+      ? Math.abs(y).toLocaleString("en-US") + (y < 0 ? " BCE" : " CE")
+      : Math.abs(y) + (y < 0 ? " BCE" : " CE");
+
+    function gapText(t) {
+      const d = t.claimYear - t.record.year;
+      if (Math.abs(d) < 30) return "claim and craft coincide";
+      if (d > 0) return "the myth trails the craft by ~" + d.toLocaleString("en-US") + " years";
+      return "the claim precedes the record by ~" + (-d).toLocaleString("en-US") + " years";
+    }
+
+    function render() {
+      const list = document.getElementById("tx-list");
+      list.innerHTML = "";
+      let shown = 0;
+      TX.forEach(t => {
+        if (active.size && !active.has(t.category)) return;
+        shown++;
+        const cat = CATS[t.category];
+        const card = document.createElement("article");
+        card.className = "tx-card";
+        card.id = t.id;
+        card.innerHTML =
+          '<div class="tx-head">' +
+            '<span class="tx-cat" style="--c:' + cat.color + '">' + cat.name + "</span>" +
+            '<span class="tx-title">' + esc(t.transmitter) + "</span>" +
+            '<span class="tx-gap">' + gapText(t) + "</span>" +
+          "</div>" +
+          '<div class="tx-body">' +
+            '<div class="tx-col tx-claim"><h3>The Claim</h3>' +
+              '<div class="tx-field"><span class="k">What was taught</span>' + esc(t.taught) + "</div>" +
+              '<div class="tx-field"><span class="k">Source · date of claim</span>' + esc(t.claimSource) + " · " + esc(t.claimDate) + "</div>" +
+              (t.quote ? '<p class="tx-quote">' + esc(t.quote) + "</p>" : "") +
+            "</div>" +
+            '<div class="tx-col tx-record"><h3>The Record</h3>' +
+              '<div class="tx-field"><span class="k">Documented innovation</span>' + esc(t.record.innovation) + "</div>" +
+              '<div class="tx-field"><span class="k">First attestation</span>' + esc(t.record.date) + " · " + esc(t.record.place) + "</div>" +
+              '<div class="tx-field"><span class="k">First principles</span>' + esc(t.record.principles) + "</div>" +
+            "</div>" +
+          "</div>" +
+          '<div class="tx-foot"><span class="k">Epistemic note</span>' + esc(t.note) +
+            '<div class="tx-links">' +
+              '<a href="' + t.links.claim + '" target="_blank" rel="noopener">Claim source ↗</a>' +
+              '<a href="' + t.links.record + '" target="_blank" rel="noopener">Record ↗</a>' +
+              (t.eventRefs || []).map(id =>
+                '<a class="tx-ref" href="index.html#e=' + id + '">' + id + " → Chronicle</a>").join("") +
+            "</div>" +
+          "</div>";
+        list.appendChild(card);
+      });
+      document.getElementById("tx-count").textContent =
+        shown + " of " + TX.length + " transmission claims · ordered by date of claim";
+    }
+
+    const filters = document.getElementById("tx-filters");
+    Object.entries(CATS).forEach(([id, c]) => {
+      const b = document.createElement("button");
+      b.className = "chip";
+      b.style.setProperty("--c", c.color);
+      b.innerHTML = '<span class="dot"></span>' + c.name + " — " + c.blurb;
+      b.addEventListener("click", () => {
+        if (active.has(id)) active.delete(id); else active.add(id);
+        b.classList.toggle("active", active.has(id));
+        document.querySelectorAll("#tx-filters .chip").forEach(ch =>
+          ch.classList.toggle("dimmed", active.size > 0 && !ch.classList.contains("active")));
+        render();
+      });
+      filters.appendChild(b);
+    });
+
+    render();
+
+    /* arriving from the Chronicle with #entry-id: scroll to it and light it */
+    function focusHash() {
+      const h = location.hash.slice(1);
+      if (!h) return;
+      const card = document.getElementById(h);
+      if (!card) return;
+      document.querySelectorAll(".tx-card.hi").forEach(c => c.classList.remove("hi"));
+      card.classList.add("hi");
+      card.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+    focusHash();
+    window.addEventListener("hashchange", focusHash);
+  })();
+  </script>
+</body>
+</html>
