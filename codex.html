@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="src/styles.css">
 <style>
   html, body { height:100%; }
-  body { display:flex; flex-direction:column; overflow:hidden; }
+  body { height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
 
   /* ---- the reading desk ---- */
   #cx-stage { flex:1; min-height:0; display:flex; align-items:center; justify-content:center;
@@ -20,7 +20,7 @@
       #0a0c12; }
 
   /* ---- the book ---- */
-  #cx-book { position:relative; width:min(1180px, 96vw); height:min(76vh, 780px);
+  #cx-book { position:relative; width:min(1180px, 96vw); height:min(76dvh, 780px);
     display:flex; perspective:2200px; filter:drop-shadow(0 26px 50px rgba(0,0,0,.65)); }
   .cx-page { flex:1; position:relative; padding:34px 38px 44px; overflow:hidden;
     background:
@@ -109,7 +109,8 @@
     font-size:9.5px; color:#3d4763; pointer-events:none; }
 
   @media (max-width: 760px) {
-    #cx-book { height:78vh; }
+    body { overflow-y:auto; }
+    #cx-book { height:calc(100dvh - 175px); min-height:420px; }
     .cx-page.right { display:none; }
     .cx-page.left { border-radius:6px; box-shadow:none; }
     #masthead h1 { font-size:14px; } .tagline { display:none; }

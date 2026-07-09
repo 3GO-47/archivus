@@ -9,7 +9,8 @@
 <link rel="stylesheet" href="src/styles.css">
 <style>
   html, body { height:100%; }
-  body { display:flex; flex-direction:column; overflow:hidden; }
+  body { height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
+  @media (max-width:700px) { body { overflow-y:auto; } #as-stage { min-height:64dvh; } }
 
   #as-stage { flex:1; position:relative; min-height:0;
     background:
