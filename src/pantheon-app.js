@@ -339,5 +339,9 @@
   });
 
   fit();
+  /* a phone opens on the Mesopotamian sky at reading zoom, not the whole tiny heavens */
+  if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches && clusterX.meso != null) {
+    centerOn(clusterX.meso + clusterW.meso / 2, clusterY.meso + clusterH.meso / 2, 0.85);
+  }
   window.addEventListener("resize", fit);
 })();

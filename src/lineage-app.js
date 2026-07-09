@@ -576,6 +576,7 @@
 
   /* ---- boot ---- */
   const adam = find("adam");
-  centerOn(PX(adam), PY(adam) + 100, 0.55);
+  const phone = window.matchMedia && window.matchMedia("(max-width: 760px)").matches;
+  centerOn(PX(adam), PY(adam) + (phone ? 40 : 100), phone ? 0.95 : 0.55);
   window.addEventListener("resize", apply);
 })();
