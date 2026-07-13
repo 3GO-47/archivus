@@ -126,7 +126,7 @@ body {
   transition: all 0.18s;
 }
 #tx-link:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.22); }
-#bl-link, #pn-link, #cx-link {
+#bl-link, #pn-link, #cx-link, #tr-link {
   margin-left: 8px;
   font-family: var(--display);
   font-weight: 500;
@@ -177,7 +177,63 @@ body {
 .sigil.mini::after { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; }
 #bar .masthead-readout { margin-left: 4px; }
 #bar #search { flex: 0 1 220px; }
-#bar #tx-link, #bar #bl-link, #bar #pn-link, #bar #cx-link { margin-left: 0; padding: 6px 10px; font-size: 10.5px; }
+#bar #tx-link, #bar #bl-link, #bar #pn-link, #bar #cx-link, #bar #tr-link { margin-left: 0; padding: 6px 10px; font-size: 10.5px; }
+#bar .sigil.mini { cursor: pointer; }
+
+/* ============ the portal (welcome overlay) ============ */
+#welcome {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(7, 9, 15, 0.82);
+  backdrop-filter: blur(7px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px;
+  overflow-y: auto;
+}
+#welcome-card {
+  width: min(680px, 96vw);
+  background: var(--obsidian-2);
+  border: 1px solid var(--gold-dim);
+  border-radius: 10px;
+  padding: 30px 30px 22px;
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(0,0,0,.7), 0 0 60px rgba(201,162,39,.08);
+  animation: reveal-up 0.35s ease-out;
+}
+.w-sigil {
+  width: 44px; height: 44px; margin: 0 auto 14px;
+  border: 1px solid rgba(201,162,39,0.6); border-radius: 50%;
+  position: relative; animation: glowpulse 5s ease-in-out infinite;
+}
+.w-sigil::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  background: var(--gold-bright); border-radius: 50%;
+  box-shadow: 0 0 12px var(--gold-bright);
+}
+#welcome-card h2 {
+  font-family: var(--display); font-weight: 700; font-size: 20px;
+  letter-spacing: 0.34em; color: var(--gold-bright); margin-bottom: 8px;
+}
+.w-sub { font-size: 13.5px; line-height: 1.6; color: var(--paper-dim); margin-bottom: 20px; }
+.w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.w-door {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left;
+  background: var(--obsidian-3); border: 1px solid var(--line); border-radius: 7px;
+  padding: 13px 15px; cursor: pointer; text-decoration: none;
+  color: var(--paper); font-family: var(--sans); transition: all 0.16s;
+}
+.w-door:hover { border-color: var(--gold); background: rgba(201,162,39,0.08); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+.w-door.wide { grid-column: 1 / -1; }
+.w-door .w-ic { font-size: 19px; }
+.w-door b { font-family: var(--display); font-weight: 600; font-size: 14px; color: var(--gold-bright); letter-spacing: 0.03em; }
+.w-door span:last-child { font-size: 11.5px; line-height: 1.5; color: var(--paper-dim); }
+.w-foot { margin-top: 16px; font-family: var(--mono); font-size: 10px; color: #59617c; }
+.w-foot b { color: var(--gold); font-weight: 400; }
+@media (max-width: 700px) {
+  .w-grid { grid-template-columns: 1fr; }
+  #welcome-card { padding: 22px 18px 16px; }
+  #welcome-card h2 { font-size: 16px; letter-spacing: 0.24em; }
+}
 
 /* ============ collapsible drawer ============ */
 #drawer {
