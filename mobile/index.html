@@ -192,14 +192,15 @@ body {
 /* ============ the portal (welcome overlay) ============ */
 #welcome {
   position: fixed; inset: 0; z-index: 200;
-  background: rgba(7, 9, 15, 0.82);
-  backdrop-filter: blur(7px);
+  background: rgba(7, 9, 15, 0.93);
   display: flex; align-items: center; justify-content: center;
   padding: 18px;
   overflow-y: auto;
 }
+#welcome[hidden] { display: none !important; }   /* the hidden attribute must always win */
 #welcome-card {
   width: min(680px, 96vw);
+  max-height: 92dvh; overflow-y: auto;
   background: var(--obsidian-2);
   border: 1px solid var(--gold-dim);
   border-radius: 10px;
@@ -927,11 +928,7 @@ select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
   #help-overlay { width: 92vw; }
   #tour-card { width: 90vw; left: 5vw; }
   #bl-panel, #pn-panel { width: 100vw; max-width: 100vw; }
-  #bl-toolbar, #pn-toolbar { padding: 6px 8px; gap: 4px; }
-  #bl-mini { display: none; }
-  #bl-hint, #pn-legend { display: none; }
-}
-
+  #bl-toolbar, #pn-toolbar { pad
 </style>
 </head>
 <body class="app">
@@ -6398,9 +6395,10 @@ window.ARCHIVUS_BORDERS = "M220.3 100.3L219.5 100.9L218.4 101.3L217.8 101.3L217.
   (function () {
     const w = document.getElementById("welcome");
     const seen = (() => { try { return localStorage.getItem("archivus-welcomed"); } catch (e) { return null; } })();
-    const open = () => { w.hidden = false; };
+    const open = () => { w.hidden = false; w.style.display = ""; };
     const close = () => {
       w.hidden = true;
+      w.style.display = "none";              /* wins even over stale cached CSS */
       try { localStorage.setItem("archivus-welcomed", "1"); } catch (e) {}
     };
     if (!seen && !location.hash) open();
