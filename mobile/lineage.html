@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ARCHIVUS — The Bloodline</title>
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -135,7 +137,7 @@ body {
   transition: all 0.18s;
 }
 #tx-link:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.22); }
-#bl-link, #pn-link, #cx-link {
+#bl-link, #pn-link, #cx-link, #tr-link {
   margin-left: 8px;
   font-family: var(--display);
   font-weight: 500;
@@ -186,7 +188,64 @@ body {
 .sigil.mini::after { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; }
 #bar .masthead-readout { margin-left: 4px; }
 #bar #search { flex: 0 1 220px; }
-#bar #tx-link, #bar #bl-link, #bar #pn-link, #bar #cx-link { margin-left: 0; padding: 6px 10px; font-size: 10.5px; }
+#bar #tx-link, #bar #bl-link, #bar #pn-link, #bar #cx-link, #bar #tr-link { margin-left: 0; padding: 6px 10px; font-size: 10.5px; }
+#bar .sigil.mini { cursor: pointer; }
+
+/* ============ the portal (welcome overlay) ============ */
+#welcome {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(7, 9, 15, 0.93);
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px;
+  overflow-y: auto;
+}
+#welcome[hidden] { display: none !important; }   /* the hidden attribute must always win */
+#welcome-card {
+  width: min(680px, 96vw);
+  max-height: 92dvh; overflow-y: auto;
+  background: var(--obsidian-2);
+  border: 1px solid var(--gold-dim);
+  border-radius: 10px;
+  padding: 30px 30px 22px;
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(0,0,0,.7), 0 0 60px rgba(201,162,39,.08);
+  animation: reveal-up 0.35s ease-out;
+}
+.w-sigil {
+  width: 44px; height: 44px; margin: 0 auto 14px;
+  border: 1px solid rgba(201,162,39,0.6); border-radius: 50%;
+  position: relative; animation: glowpulse 5s ease-in-out infinite;
+}
+.w-sigil::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  background: var(--gold-bright); border-radius: 50%;
+  box-shadow: 0 0 12px var(--gold-bright);
+}
+#welcome-card h2 {
+  font-family: var(--display); font-weight: 700; font-size: 20px;
+  letter-spacing: 0.34em; color: var(--gold-bright); margin-bottom: 8px;
+}
+.w-sub { font-size: 13.5px; line-height: 1.6; color: var(--paper-dim); margin-bottom: 20px; }
+.w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.w-door {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left;
+  background: var(--obsidian-3); border: 1px solid var(--line); border-radius: 7px;
+  padding: 13px 15px; cursor: pointer; text-decoration: none;
+  color: var(--paper); font-family: var(--sans); transition: all 0.16s;
+}
+.w-door:hover { border-color: var(--gold); background: rgba(201,162,39,0.08); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+.w-door.wide { grid-column: 1 / -1; }
+.w-door .w-ic { font-size: 19px; }
+.w-door b { font-family: var(--display); font-weight: 600; font-size: 14px; color: var(--gold-bright); letter-spacing: 0.03em; }
+.w-door span:last-child { font-size: 11.5px; line-height: 1.5; color: var(--paper-dim); }
+.w-foot { margin-top: 16px; font-family: var(--mono); font-size: 10px; color: #59617c; }
+.w-foot b { color: var(--gold); font-weight: 400; }
+@media (max-width: 700px) {
+  .w-grid { grid-template-columns: 1fr; }
+  #welcome-card { padding: 22px 18px 16px; }
+  #welcome-card h2 { font-size: 16px; letter-spacing: 0.24em; }
+}
 
 /* ============ collapsible drawer ============ */
 #drawer {
@@ -865,7 +924,13 @@ select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
   #masthead { padding: 8px 12px; flex-wrap: wrap; gap: 6px; }
   #masthead h1 { font-size: 14px; }
   #masthead .tagline { display: none; }
-  #play-feed { width: 58vw
+  #play-feed { width: 58vw; font-size: 9px; }
+  #play-era { font-size: 11px; }
+  #status { font-size: 9px; }
+  #help-overlay { width: 92vw; }
+  #tour-card { width: 90vw; left: 5vw; }
+  #bl-panel, #pn-panel { width: 100vw; max-width: 100vw; }
+  #bl-toolbar, #pn-toolbar { pad
 </style>
 <style>
   #bl-toolbar { display:flex; align-items:center; gap:8px; padding:8px 16px; border-bottom:1px solid var(--line-faint); flex-wrap:wrap; }
