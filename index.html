@@ -175,9 +175,10 @@
   (function () {
     const w = document.getElementById("welcome");
     const seen = (() => { try { return localStorage.getItem("archivus-welcomed"); } catch (e) { return null; } })();
-    const open = () => { w.hidden = false; };
+    const open = () => { w.hidden = false; w.style.display = ""; };
     const close = () => {
       w.hidden = true;
+      w.style.display = "none";              /* wins even over stale cached CSS */
       try { localStorage.setItem("archivus-welcomed", "1"); } catch (e) {}
     };
     if (!seen && !location.hash) open();
