@@ -183,14 +183,15 @@ body {
 /* ============ the portal (welcome overlay) ============ */
 #welcome {
   position: fixed; inset: 0; z-index: 200;
-  background: rgba(7, 9, 15, 0.82);
-  backdrop-filter: blur(7px);
+  background: rgba(7, 9, 15, 0.93);
   display: flex; align-items: center; justify-content: center;
   padding: 18px;
   overflow-y: auto;
 }
+#welcome[hidden] { display: none !important; }   /* the hidden attribute must always win */
 #welcome-card {
   width: min(680px, 96vw);
+  max-height: 92dvh; overflow-y: auto;
   background: var(--obsidian-2);
   border: 1px solid var(--gold-dim);
   border-radius: 10px;
