@@ -621,6 +621,13 @@
     const nodePos = {};
     const labelEdges = [];
 
+    /* the unplaced shelf: global events get clean, evenly-spaced slots in
+       time order — never piled onto the log scale's crushed modern end */
+    const unplaced = visible.filter(e => !GEO[e.id] && matches(e)).sort((a, b) => a.startYear - b.startYear);
+    const gSlot = {};
+    unplaced.forEach((e, i) => gSlot[e.id] = i);
+    const gRowLen = Math.max(1, Math.ceil(unplaced.length / 2));
+
     visible.sort((a, b) => b.importance - a.importance).forEach(ev => {
       const isMatch = matches(ev);
       if (isMatch) matchCount++;
@@ -636,8 +643,11 @@
         cy += (((h >> 3) % 7) - 3) * spread;
         parent = gPlaced;
       } else {
-        cx = Math.max(10, Math.min(W - 10, x(ev.startYear)));
-        cy = gy + (((hashOf(ev.id) >> 2) % 3) - 1) * 7;
+        const si = gSlot[ev.id];
+        if (si == null) return;                          /* filtered out */
+        const col = si % gRowLen, row = Math.floor(si / gRowLen);
+        cx = 140 + (W - 180) * (gRowLen > 1 ? col / (gRowLen - 1) : 0.5);
+        cy = gy - 7 + row * 15;
         parent = layers.events;
       }
       nodePos[ev.id] = { x: cx, y: cy, r };
@@ -664,7 +674,7 @@
 
       const node = drawNode(g, ev, cx, cy, r, isMatch, state.selected === ev.id);
 
-      const wantLabel = (state.selected === ev.id) || (isMatch && !playMode && (ev.importance >= (mapView.k < 2 ? 9 : 8) || mapView.k >= 4)) || (playMode && isMatch && ev.importance >= 9 && (state.t1 - ev.startYear) < (state.t1 - state.t0) * 0.15 && (state.t1 - ev.startYear) >= 0);
+      const wantLabel = (state.selected === ev.id) || (geo && isMatch && !playMode && (ev.importance >= (mapView.k < 2 ? 9 : 8) || mapView.k >= 4)) || (playMode && geo && isMatch && ev.importance >= 9 && (state.t1 - ev.startYear) < (state.t1 - state.t0) * 0.15 && (state.t1 - ev.startYear) >= 0);
       if (wantLabel) {
         const est = ev.title.length * 6.4;
         const clash = labelEdges.some(b => Math.abs(b.y - cy) < 12 && cx + 6 < b.x1 && cx + 6 + est > b.x0);
