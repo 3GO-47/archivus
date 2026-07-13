@@ -31,6 +31,8 @@
     <a id="bl-link" href="lineage.html" title="The family tree — pantheon to Messiah">Bloodline</a>
     <a id="pn-link" href="pantheons.html" title="Seven divine family trees and the roads between religions">Pantheons</a>
     <a id="cx-link" href="codex.html" title="Read the whole archive as a book (5)">Codex</a>
+    <a id="tr-link" href="trial.html" title="The Trial — ten questions drawn from the archive">Trial</a>
+    <button id="dice-btn" class="tool-btn" title="Surprise me — fly to one of history's great records">⚄</button>
     <div class="masthead-readout">
       <div id="readout-era" class="readout-line">—</div>
       <div id="readout-span" class="readout-line mono">—</div>
@@ -149,8 +151,49 @@
   <script src="src/data/tours.js"></script>
   <script src="src/data/transmissions.js"></script>
   <script src="assets/world.js"></script>
+  <!-- the portal: what do you seek? -->
+  <div id="welcome" hidden>
+    <div id="welcome-card">
+      <div class="w-sigil" aria-hidden="true"></div>
+      <h2>THE ORACLE IS OPEN</h2>
+      <p class="w-sub">548 records of human history — everything from the Lion-Man of 38,000 BCE
+        to the 2117 transit of Venus, sourced, connected, and drawn on one instrument.<br>What do you seek?</p>
+      <div class="w-grid">
+        <a class="w-door" href="codex.html"><span class="w-ic">📖</span><b>Read it as a book</b><span>The Codex — every record on parchment, in order, with its causes and consequences</span></a>
+        <button class="w-door" id="w-tour"><span class="w-ic">🧭</span><b>Take a guided tour</b><span>The oracle flies you along a thread — plagues, bombs, gods, the future</span></button>
+        <a class="w-door" href="trial.html"><span class="w-ic">⚖️</span><b>Face the Trial</b><span>Ten questions drawn fresh from the archive. The oracle judges what you know</span></a>
+        <button class="w-door" id="w-dice"><span class="w-ic">⚄</span><b>Surprise me</b><span>Fly to one of history's greatest records and pull its thread</span></button>
+        <button class="w-door wide" id="w-explore"><span class="w-ic">🗺</span><b>Explore freely</b><span>Scroll to zoom through 40,000 years · Atlas &amp; Wheel up top · click anything</span></button>
+      </div>
+      <div class="w-foot">press <b>?</b> anytime for the keys · click the ☉ sigil to reopen this portal</div>
+    </div>
+  </div>
+
   <script src="src/core.js"></script>
   <script>
+  /* the portal — the first-visit answer to "what do I do here?" */
+  (function () {
+    const w = document.getElementById("welcome");
+    const seen = (() => { try { return localStorage.getItem("archivus-welcomed"); } catch (e) { return null; } })();
+    const open = () => { w.hidden = false; };
+    const close = () => {
+      w.hidden = true;
+      try { localStorage.setItem("archivus-welcomed", "1"); } catch (e) {}
+    };
+    if (!seen && !location.hash) open();
+    document.querySelector("#bar .sigil").addEventListener("click", open);
+    w.addEventListener("click", e => { if (e.target === w) close(); });
+    document.getElementById("w-explore").addEventListener("click", close);
+    document.getElementById("w-tour").addEventListener("click", () => { close(); document.getElementById("tours-btn").click(); });
+    const dive = () => {
+      const greats = window.ARCHIVUS_EVENTS.filter(e => (e.importance || 0) >= 9);
+      const pick = greats[Math.floor(Math.random() * greats.length)];
+      location.hash = "e=" + pick.id + "&v=chronicle";
+    };
+    document.getElementById("w-dice").addEventListener("click", () => { close(); dive(); });
+    document.getElementById("dice-btn").addEventListener("click", dive);
+    window.addEventListener("keydown", e => { if (e.key === "Escape" && !w.hidden) close(); });
+  })();
   /* drawer toggle — independent of the core engine */
   (function () {
     const drawer = document.getElementById("drawer");

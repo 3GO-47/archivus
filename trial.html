@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Trial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<style>
+  html, body { height:100%; }
+  body { height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
+  @media (max-width:700px) { body { overflow-y:auto; } }
+
+  #tr-stage { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:16px; position:relative; }
+  #tr-card { width:min(640px, 94vw); background:var(--obsidian-2); border:1px solid var(--gold-dim); border-radius:8px;
+    padding:26px 28px 24px; box-shadow:0 24px 70px rgba(0,0,0,.6), 0 0 40px rgba(201,162,39,.06); position:relative; }
+  #tr-kicker { font-family:var(--mono); font-size:9.5px; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+  #tr-q { font-family:var(--display); font-weight:600; font-size:clamp(17px, 2.6vw, 22px); line-height:1.35; color:var(--paper); margin-bottom:18px; }
+  #tr-opts { display:flex; flex-direction:column; gap:9px; }
+  .tr-opt { text-align:left; background:var(--obsidian-3); border:1px solid var(--line); border-radius:6px;
+    color:var(--paper); font-family:var(--sans); font-size:14.5px; line-height:1.45; padding:13px 15px; cursor:pointer;
+    transition:all .15s; min-height:48px; }
+  .tr-opt:hover { border-color:var(--gold-dim); background:rgba(201,162,39,.06); }
+  .tr-opt:disabled { cursor:default; }
+  .tr-opt.right { border-color:#5faa5f; background:rgba(95,170,95,.13); box-shadow:0 0 14px rgba(95,170,95,.25); }
+  .tr-opt.wrong { border-color:#c0392b; background:rgba(192,57,43,.12); opacity:.85; }
+  .tr-opt.faded { opacity:.4; }
+  .tr-opt .oy { font-family:var(--mono); font-size:10.5px; color:var(--gold-bright); display:block; margin-top:3px; }
+  #tr-verdict { margin-top:16px; font-size:14px; line-height:1.6; color:var(--paper-dim); display:none; }
+  #tr-verdict a { color:var(--gold); text-decoration:none; border-bottom:1px dotted var(--gold-dim); }
+  #tr-verdict a:hover { color:var(--gold-bright); }
+  #tr-next { margin-top:14px; display:none; width:100%; padding:12px; font-size:14px; }
+  #tr-hud { display:flex; align-items:center; gap:14px; justify-content:space-between; margin-bottom:14px;
+    font-family:var(--mono); font-size:11px; color:#59617c; }
+  #tr-hud b { color:var(--gold-bright); font-weight:400; }
+  #tr-streak { color:#c87f3a; }
+  #tr-bar { height:4px; background:rgba(255,255,255,.05); border-radius:2px; overflow:hidden; margin-bottom:18px; }
+  #tr-fill { height:100%; width:0%; background:linear-gradient(90deg, var(--gold-dim), var(--gold-bright)); transition:width .3s; }
+
+  /* final judgement */
+  #tr-final { text-align:center; display:none; }
+  #tr-final .big { font-family:var(--display); font-weight:700; font-size:30px; letter-spacing:.14em; color:var(--gold-bright);
+    margin:10px 0 6px; text-shadow:0 0 24px rgba(201,162,39,.4); }
+  #tr-final .sub { font-size:14px; color:var(--paper-dim); line-height:1.6; margin-bottom:18px; }
+  #tr-final .row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE TRIAL</h1>
+      <p class="tagline">ten questions drawn fresh from the archive — the oracle judges what you know</p>
+    </div>
+    <a id="tx-link" href="codex.html">Study in the Codex</a>
+    <a id="bl-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <main id="tr-stage">
+    <div id="tr-card">
+      <div id="tr-hud">
+        <span>question <b id="tr-n">1</b> / 10</span>
+        <span id="tr-streak"></span>
+        <span>score <b id="tr-score">0</b></span>
+      </div>
+      <div id="tr-bar"><div id="tr-fill"></div></div>
+      <div id="tr-kicker"></div>
+      <div id="tr-q"></div>
+      <div id="tr-opts"></div>
+      <div id="tr-verdict"></div>
+      <button id="tr-next" class="tool-btn accent">Next question ▶</button>
+      <div id="tr-final">
+        <div id="tr-kicker2" class="kicker">THE ORACLE'S JUDGEMENT</div>
+        <div class="big" id="tr-rank"></div>
+        <div class="sub" id="tr-sub"></div>
+        <div class="row">
+          <button id="tr-again" class="tool-btn accent">⟳ Face the Trial again</button>
+          <a class="tool-btn" href="codex.html" style="text-decoration:none">📖 Study the Codex</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="src/data/eras.js"></script>
+  <script src="src/data/themes.js"></script>
+  <script src="src/data/events.js"></script>
+  <script src="src/data/events2.js"></script>
+  <script src="src/data/geo.js"></script>
+  <script src="src/data/uncertainty.js"></script>
+  <script src="src/data/events3.js"></script>
+  <script src="src/data/events4.js"></script>
+  <script src="src/data/events5.js"></script>
+  <script src="src/data/events6.js"></script>
+  <script src="src/trial-app.js"></script>
+</body>
+</html>
