@@ -70,6 +70,8 @@
     era: "",
     query: "",
     lens: "theme",
+    minImp: 0,
+    futureOnly: false,
     view: "chronicle",
     selected: null,
     panelMode: "empty"
@@ -228,11 +230,21 @@
   }
 
   /* ---------- lanes / lens ---------- */
+  /* the great civilizations, ranked by their weight in the archive */
+  const CIV_OTHER = "Other currents";
+  const CIVS = (() => {
+    const counts = {};
+    EVENTS.forEach(e => { if (e.civ) counts[e.civ] = (counts[e.civ] || 0) + 1; });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([c]) => c).concat([CIV_OTHER]);
+  })();
   function lanes() {
     if (state.lens === "region") return REGIONS.map(r => ({ id: r, name: r, color: REGION_LANE_COLOR }));
+    if (state.lens === "civ") return CIVS.map(c => ({ id: c, name: c, color: REGION_LANE_COLOR }));
     return THEMES;
   }
-  const laneKeyOf = ev => state.lens === "region" ? ev.region : ev.theme;
+  const laneKeyOf = ev => state.lens === "region" ? ev.region
+    : state.lens === "civ" ? (ev.civ && CIVS.indexOf(ev.civ) >= 0 ? ev.civ : CIV_OTHER)
+    : ev.theme;
 
   /* ---------- formatting ---------- */
   function fmtYear(y, approx) {
@@ -251,6 +263,8 @@
     if (state.themes.size && !state.themes.has(ev.theme)) return false;
     if (state.region && ev.region !== state.region) return false;
     if (state.era && ev.era !== state.era) return false;
+    if (state.minImp && (ev.importance || 0) < state.minImp) return false;
+    if (state.futureOnly && !ev.future) return false;
     if (state.query) {
       const hay = (ev.title + " " + ev.desc + " " + (ev.civ || "") + " " + ev.region).toLowerCase();
       if (!hay.includes(state.query)) return false;
@@ -291,8 +305,10 @@
       const g = el("g", { class: "era-band" }, layers.eras);
       el("rect", {
         x: xs, y: 0, width: xe - xs, height: ERA_STRIP_H,
-        fill: i % 2 ? "rgba(201,162,39,0.06)" : "rgba(124,154,201,0.05)",
-        stroke: "#2a3040", "stroke-width": 0.5
+        fill: era.id === "horizon" ? "rgba(220,232,255,0.07)"          /* the anticipated glows spectral */
+          : i % 2 ? "rgba(201,162,39,0.06)" : "rgba(124,154,201,0.05)",
+        stroke: era.id === "horizon" ? "#3d4a66" : "#2a3040", "stroke-width": 0.5,
+        "stroke-dasharray": era.id === "horizon" ? "3 3" : "none"
       }, g);
       if (drawBoundaries) {
         el("line", { class: "era-boundary", x1: xs, y1: ERA_STRIP_H, x2: xs, y2: plotBottom() }, g);
@@ -1612,6 +1628,11 @@
       regSel.appendChild(o);
     });
     regSel.addEventListener("change", () => { state.region = regSel.value; renderCurrentEvents(); });
+
+    const impSel = document.getElementById("imp-filter");
+    if (impSel) impSel.addEventListener("change", () => { state.minImp = +impSel.value || 0; renderCurrentEvents(); });
+    const futChk = document.getElementById("future-only");
+    if (futChk) futChk.addEventListener("change", () => { state.futureOnly = futChk.checked; renderCurrentEvents(); });
 
     const lensSel = document.getElementById("lens");
     lensSel.addEventListener("change", () => {
