@@ -613,6 +613,8 @@ select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
 .graticule.equator { stroke: var(--gold-dim); stroke-dasharray: 2 5; opacity: 0.5; }
 .map-land { fill: rgba(230,225,211,0.11); stroke: #6b7899; stroke-width: 0.9; }
 .map-border { fill: none; stroke: #3a445c; stroke-width: 0.6; stroke-dasharray: 2 2; opacity: 0.7; }
+.map-country { fill: rgba(230,225,211,0.10); stroke: #4d5a78; stroke-width: 0.7; transition: fill 0.2s; }
+.map-country:hover { fill: rgba(201,162,39,0.14); stroke: var(--gold-dim); }
 .map-caption {
   font-family: "Space Grotesk", sans-serif;
   fill: var(--gold-dim); font-size: 10px; letter-spacing: 0.16em;
