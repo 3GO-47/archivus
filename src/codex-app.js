@@ -31,8 +31,16 @@
   const TXBY = {};
   TX.forEach(t => (t.eventRefs || []).forEach(id => (TXBY[id] = TXBY[id] || []).push(t)));
 
-  /* ---- the manuscript: chronological flow with chapter breaks ---- */
-  EV.sort((a, b) => (a.startYear - b.startYear) || (b.importance - a.importance));
+  /* ---- the manuscript: chronological flow with chapter breaks ----
+     Same-year ties: the smaller spark precedes the larger blaze — an
+     assassination at Sarajevo must come before the war it ignites —
+     so ties sort by ASCENDING weight, then alphabetically. */
+  /* explicit precedence for same-year pairs the weight heuristic gets wrong:
+     lower rank reads first within its year */
+  const YEAR_RANK = { sept11: -2, afghanistan: -1, ww2: -2, turing: -1 };
+  EV.sort((a, b) => (a.startYear - b.startYear) ||
+    ((YEAR_RANK[a.id] || 0) - (YEAR_RANK[b.id] || 0)) ||
+    ((a.importance || 0) - (b.importance || 0)) || a.title.localeCompare(b.title));
   const eraOfYear = y => ERAS.find(er => y >= er.start && y < er.end) || ERAS[ERAS.length - 1];
   /* filters: the codex re-binds itself around whatever you ask of it */
   const FILT = { era: "", theme: "", region: "" };

@@ -22,6 +22,8 @@
   const GEO = window.ARCHIVUS_GEO || {};
   const UNC = window.ARCHIVUS_UNCERTAINTY || {};
   const WORLD = window.ARCHIVUS_WORLD || "";
+  const COUNTRIES = window.ARCHIVUS_COUNTRIES || null;
+  const GEO_CTRY = window.ARCHIVUS_GEO_COUNTRY || {};
 
   const THEME_BY_ID = Object.fromEntries(THEMES.map(t => [t.id, t]));
   const ERA_BY_ID = Object.fromEntries(ERAS.map(e => [e.id, e]));
@@ -605,17 +607,28 @@
       el("line", { class: "graticule" + (lat === 0 ? " equator" : ""), x1: F.fx, y1: gy2, x2: F.fx + F.fw, y2: gy2 }, gMap);
     }
     const [lx, ly] = project(90, -180);
-    el("path", {
-      class: "map-land", d: WORLD,
-      transform: `translate(${lx},${ly}) scale(${S2})`,
-      "vector-effect": "non-scaling-stroke"
-    }, gMap);
-    if (window.ARCHIVUS_BORDERS) {
+    const countryTf = `translate(${lx},${ly}) scale(${S2})`;
+    const countryGlow = new Map();           /* countryIdx → {o, c} — land ignites with its events */
+    if (COUNTRIES) {
+      /* every nation of the atlas as its own engraved polygon */
+      const gC = el("g", { transform: countryTf }, gMap);
+      COUNTRIES.forEach(c => {
+        const p = el("path", { class: "map-country", d: c.d, "vector-effect": "non-scaling-stroke" }, gC);
+        el("title", {}, p).textContent = c.n;
+      });
+    } else {
       el("path", {
-        class: "map-border", d: window.ARCHIVUS_BORDERS,
-        transform: `translate(${lx},${ly}) scale(${S2})`,
+        class: "map-land", d: WORLD,
+        transform: countryTf,
         "vector-effect": "non-scaling-stroke"
       }, gMap);
+      if (window.ARCHIVUS_BORDERS) {
+        el("path", {
+          class: "map-border", d: window.ARCHIVUS_BORDERS,
+          transform: countryTf,
+          "vector-effect": "non-scaling-stroke"
+        }, gMap);
+      }
     }
 
     el("text", { class: "map-caption", x: F.fx + 8, y: F.fy + 16 }, layers.map)
@@ -680,11 +693,22 @@
             stroke: THEME_BY_ID[ev.theme].color, "stroke-width": 1.6 * f, opacity: (0.85 * f).toFixed(2) }, g);
           el("circle", { class: "ignite", cx, cy, r: r * (1 + f * 0.9), fill: THEME_BY_ID[ev.theme].color,
             opacity: (0.35 * f).toFixed(2), filter: "url(#glow-big)" }, g);
+          /* the land itself catches the fire */
+          const ci = GEO_CTRY[ev.id];
+          if (ci != null) {
+            const prev = countryGlow.get(ci), o = 0.30 * f;
+            if (!prev || o > prev.o) countryGlow.set(ci, { o, c: THEME_BY_ID[ev.theme].color });
+          }
         } else if (d >= fw && d < fw * 3.5) {
           /* dying ember: a soft after-glow so ignitions linger legibly */
           const f2 = 1 - (d - fw) / (fw * 2.5);
           el("circle", { class: "ignite", cx, cy, r: r + 2.5, fill: THEME_BY_ID[ev.theme].color,
             opacity: (0.18 * f2).toFixed(2), filter: "url(#glow)" }, g);
+          const ci2 = GEO_CTRY[ev.id];
+          if (ci2 != null) {
+            const prev2 = countryGlow.get(ci2), o2 = 0.10 * f2;
+            if (!prev2 || o2 > prev2.o) countryGlow.set(ci2, { o: o2, c: THEME_BY_ID[ev.theme].color });
+          }
         }
       }
 
@@ -702,6 +726,15 @@
       }
       wireNode(g, ev, cx, cy, node, r);
     });
+
+    /* a selected record lights its whole country softly, even at rest */
+    if (COUNTRIES && !playMode && state.selected && GEO_CTRY[state.selected] != null && EVENT_BY_ID[state.selected]) {
+      countryGlow.set(GEO_CTRY[state.selected], { o: 0.15, c: THEME_BY_ID[EVENT_BY_ID[state.selected].theme].color });
+    }
+    if (COUNTRIES && countryGlow.size) {
+      const gGlow = el("g", { transform: countryTf, "pointer-events": "none" }, gMap);
+      countryGlow.forEach((v, ci) => el("path", { d: COUNTRIES[ci].d, fill: v.c, opacity: v.o.toFixed(2) }, gGlow));
+    }
 
     drawWeb(playMode ? {} : nodePos);   /* clear the web during playback — let the ignitions read */
     setCount(matchCount);
