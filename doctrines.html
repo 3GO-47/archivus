@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Doctrines</title>
+<meta name="description" content="Every major political ideology on one compass, its lineage traced from Plato to the present — and Marxism dissected: the Communist Manifesto, its ancestors, and the long quarrel of its heirs (Leninism, Menshevism, Trotskyism, Maoism and the rest).">
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<link rel="stylesheet" href="src/wars.css">
+<link rel="stylesheet" href="src/doctrines.css">
+</head>
+<body class="wr dc">
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE DOCTRINES</h1>
+      <p class="tagline">every ideology on one chart — where each began, what it holds, and what it begat</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="wr-bar" aria-label="Views">
+    <div id="wr-tabs" role="tablist">
+      <button role="tab" data-v="compass" title="Every ideology in its quadrant (1)">The Compass</button>
+      <button role="tab" data-v="lineage" title="Who descends from whom (2)">The Lineage</button>
+      <button role="tab" data-v="manifesto" title="The Communist Manifesto, thesis by thesis (3)">The Manifesto</button>
+      <button role="tab" data-v="red" title="Marx's heirs: what they share, where they part (4)">The Red Family</button>
+      <button role="tab" data-v="atlas" title="Where each doctrine was born; the party-states by year (5)">The Atlas</button>
+      <button role="tab" data-v="library" title="The founding texts in order (6)">The Library</button>
+    </div>
+    <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a doctrine, thinker or text…  ( / )" autocomplete="off" aria-label="Find a doctrine, thinker or text"></div>
+  </nav>
+
+  <main id="dc-main">
+    <div id="dc-stage">
+
+      <!-- THE COMPASS -->
+      <section id="v-compass" class="wr-view dc-view">
+        <div class="dc-bar">
+          <div class="chips" id="cp-fams" role="group" aria-label="Families"></div>
+          <div class="yearctl" id="cp-year" title="Show only the doctrines that existed by this year"></div>
+          <div class="chips" role="group" aria-label="Chart options">
+            <button class="chipbtn on" id="cp-halos" title="How far each doctrine's adherents range">Range</button>
+            <button class="chipbtn" id="cp-lines" title="Draw every line of descent">Descent</button>
+            <button class="chipbtn" id="cp-zi" title="Zoom in (+)">+</button>
+            <button class="chipbtn" id="cp-zo" title="Zoom out (−)">−</button>
+            <button class="chipbtn" id="cp-zr" title="Reset the view (0)">Reset</button>
+          </div>
+        </div>
+        <div id="cp-wrap">
+          <svg id="cp" role="img" aria-label="Political compass: economic left to right, libertarian to authoritarian"></svg>
+          <div id="cp-tip" class="plate" hidden></div>
+        </div>
+        <div id="cp-foot">
+          <span class="xc-h" title="Currents with left, right, libertarian and authoritarian wings — they have no single point">Across the chart</span>
+          <span id="cp-xc" class="chips"></span>
+          <span class="wr-note">Placements follow where ideology charts customarily put each current. The two axes are a convention, not a measurement.</span>
+        </div>
+      </section>
+
+      <!-- THE LINEAGE -->
+      <section id="v-lineage" class="wr-view dc-view" hidden>
+        <div class="dc-bar">
+          <div class="ln-leg">
+            <span><i class="lg s"></i>descends from</span>
+            <span><i class="lg x"></i>written against</span>
+            <span><i class="lg p"></i>split from</span>
+            <span><b class="gl">●</b> doctrine</span>
+            <span><b class="gl r">◆</b> thinker · text</span>
+            <span><b class="gl r">■</b> movement</span>
+            <span><b class="gl r">▲</b> event</span>
+          </div>
+          <div class="chips">
+            <button class="chipbtn" id="ln-zo" title="Compress time">−</button>
+            <button class="chipbtn" id="ln-zi" title="Stretch time">+</button>
+            <button class="chipbtn" id="ln-1848" title="Jump to the Manifesto">1848</button>
+            <button class="chipbtn" id="ln-1917" title="Jump to October">1917</button>
+          </div>
+        </div>
+        <div id="ln-scroll"><svg id="ln" role="img" aria-label="Genealogy of political ideologies"></svg></div>
+      </section>
+
+      <!-- THE MANIFESTO -->
+      <section id="v-manifesto" class="wr-view wr-scroll" hidden></section>
+
+      <!-- THE RED FAMILY -->
+      <section id="v-red" class="wr-view wr-scroll" hidden></section>
+
+      <!-- THE ATLAS -->
+      <section id="v-atlas" class="wr-view dc-view" hidden>
+        <div class="dc-bar">
+          <div class="chips" id="at-modes" role="group" aria-label="Map mode">
+            <button class="chipbtn on" data-m="birth" title="Where each doctrine, thinker and text began">Birthplaces</button>
+            <button class="chipbtn" data-m="red" title="States ruled by communist parties, year by year">The Red Century</button>
+          </div>
+          <div class="yearctl" id="at-year"></div>
+          <div class="chips" id="at-regions" role="group" aria-label="Region"></div>
+        </div>
+        <div id="at-wrap">
+          <svg id="at" role="img" aria-label="World map of where ideologies began"></svg>
+          <div id="at-leg" class="plate"></div>
+          <div id="at-tip" class="plate" hidden></div>
+        </div>
+      </section>
+
+      <!-- THE LIBRARY -->
+      <section id="v-library" class="wr-view wr-scroll" hidden></section>
+    </div>
+
+    <aside id="dc-side" aria-live="polite"></aside>
+  </main>
+
+  <noscript><p style="padding:24px">The Doctrines needs JavaScript. The data is readable in <code>src/data/doctrines.js</code>.</p></noscript>
+
+  <script src="assets/world2.js"></script>
+  <script src="src/data/doctrines.js"></script>
+  <script src="src/data/doctrines-marx.js"></script>
+  <script src="src/nav.js"></script>
+  <script src="src/doctrines-app.js"></script>
+</body>
+</html>

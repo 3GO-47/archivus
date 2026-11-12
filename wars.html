@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The War Room</title>
+<meta name="description" content="The two World Wars, day by day: animated fronts and offensives on the map, the Allied, Axis and Central powers and when each joined, switched or fell, the monarchs and leaders and the ties between them, the campaigns, and the human cost.">
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<link rel="stylesheet" href="src/wars.css">
+</head>
+<body class="wr">
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE WAR ROOM</h1>
+      <p class="tagline">the two world wars, day by day — fronts, powers, leaders and the cost</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="wr-bar" aria-label="War and view">
+    <div id="war-switch" role="group" aria-label="Which war"></div>
+    <div id="wr-tabs" role="tablist">
+      <button role="tab" data-v="map" title="The animated map (1)">The Map</button>
+      <button role="tab" data-v="powers" title="Who fought on which side, and when (2)">The Powers</button>
+      <button role="tab" data-v="leaders" title="Monarchs, leaders and the ties between them (3)">The Leaders</button>
+      <button role="tab" data-v="campaigns" title="Phase by phase, battle by battle (4)">The Campaigns</button>
+      <button role="tab" data-v="cost" title="The human cost (5)">The Cost</button>
+      <button role="tab" data-v="why" title="Causes, aftermath, technology, sources (6)">Causes &amp; Aftermath</button>
+    </div>
+    <div id="wr-blurb"></div>
+  </nav>
+
+  <main id="wr-main">
+    <!-- THE MAP -->
+    <section id="v-map" class="wr-view">
+      <div id="map-col">
+      <!-- the order of battle on the scrubber's date: who stands on which side today -->
+      <div id="oob" aria-label="Order of battle on this date"></div>
+      <div id="map-wrap">
+        <svg id="map" role="img" aria-label="Animated map of the war"></svg>
+        <div id="date-plate" class="plate">
+          <div id="dp-date">—</div>
+          <div id="dp-phase"></div>
+          <div id="dp-day"></div>
+        </div>
+        <div id="legend" class="plate" hidden></div>
+        <div id="theaters" class="plate" role="group" aria-label="Theatre of war"></div>
+        <div id="map-tools" class="plate" role="group" aria-label="Map layers">
+          <button class="chipbtn on" data-layer="fronts" title="Front lines and occupied zones">Fronts</button>
+          <button class="chipbtn on" data-layer="moves" title="Offensives and movements">Offensives</button>
+          <button class="chipbtn on" data-layer="items" title="Battles and turning points">Battles</button>
+          <button class="chipbtn on" data-layer="labels" title="Names on the map">Labels</button>
+          <button class="chipbtn" id="lg-btn" title="What the colours mean">Legend</button>
+          <button class="chipbtn" id="zm-in" title="Zoom in (+)">+</button>
+          <button class="chipbtn" id="zm-out" title="Zoom out (−)">−</button>
+        </div>
+        <button id="play-cta">▶ PLAY THE WAR</button>
+        <div id="map-tip" hidden></div>
+      </div>
+      </div>
+      <aside id="side" aria-live="polite"></aside>
+    </section>
+
+    <section id="v-powers" class="wr-view wr-scroll" hidden></section>
+
+    <section id="v-leaders" class="wr-view" hidden>
+      <div id="ld-top"></div>
+      <div id="ld-body">
+        <div id="ld-board"><svg id="ld-ties"></svg><div id="ld-grid"></div></div>
+        <aside id="ld-panel"></aside>
+      </div>
+    </section>
+
+    <section id="v-campaigns" class="wr-view wr-scroll" hidden></section>
+    <section id="v-cost" class="wr-view wr-scroll" hidden></section>
+    <section id="v-why" class="wr-view wr-scroll" hidden></section>
+  </main>
+
+  <!-- the scrubber: one date drives the map, the powers and the leaders -->
+  <footer id="scrub">
+    <button id="sc-start" class="tool-btn" title="To the start (Home)">⏮</button>
+    <button id="sc-play" class="tool-btn accent" title="Play / pause (Space)">▶ Play</button>
+    <button id="sc-speed" class="tool-btn" title="Playback speed">1×</button>
+    <button id="sc-back" class="tool-btn" title="Back one month (←)">◀</button>
+    <button id="sc-fwd" class="tool-btn" title="Forward one month (→)">▶</button>
+    <svg id="tl" role="slider" aria-label="Date"></svg>
+  </footer>
+
+  <!-- data: the two wars, and the world they were fought on (plain scripts: works from file://) -->
+  <script src="assets/world2.js"></script>
+  <script src="src/data/wars-ww1.js"></script>
+  <script src="src/data/wars-ww2.js"></script>
+  <script src="src/nav.js"></script>
+  <script src="src/wars-app.js"></script>
+</body>
+</html>
