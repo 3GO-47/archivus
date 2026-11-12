@@ -123,7 +123,7 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 - *Archive depth* — 59 new world-war records (607 total, zero dangling threads), two new tours, exact dates on war records, a War Room link in every relevant event panel, a fifth Trial ordeal, a War Room door on the portal.
 - *Polish* — engraved display face (Cinzel) for mastheads; the Bloodline opens at reading zoom on desktop; the Astrolabe's hint no longer sits under the bezel.
 - *Tooling* — `tools/build-mobile.js` makes the pocket builds reproducible (they were hand-assembled before); `tools/validate-wars.js` checks the war datasets against the archive and the map.
-- **The live site (GitHub Pages) still serves v7.2** until the changed files are pushed — see `SHARE.md`.
+- Published to the live site on 2026-11-11, together with v9 — see `SHARE.md`.
 
 **v9.0 — the Doctrines (2026-11-12)**
 - *The Doctrines* — `doctrines.html`, described above: the political compass, the genealogy of ideologies, the Communist Manifesto dissected, Marx's heirs compared, the atlas of origins and party-states, the library of founding texts.

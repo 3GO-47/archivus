@@ -6,13 +6,11 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**v9.0 note (2026-11-12):** the Doctrines (`doctrines.html`, `src/doctrines-app.js`, `src/doctrines.css`, `src/data/doctrines.js`, `src/data/doctrines-marx.js`, `src/data/events8.js`, `mobile/doctrines.html`) were added after v8 and are likewise not yet on the live site. New deep links: `/doctrines.html#v=compass&i=maoism` · `/doctrines.html#v=red&c=menshevism,leninism,trotskyism,maoism` · `/doctrines.html#v=atlas&m=red&y=1980`.
+**Live version: v9.0** — deployed 2026-11-11 (War Room, instrument rail and the Doctrines went up together, in four commits: data, engines and styles, pocket builds, pages). The live repository matches this folder byte for byte except `tools/` and `research/`, which are not published.
 
-**v8.0 note (2026-11-11):** the live site still serves v7.2. The v8 overhaul (War Room, navigation rail,
-new records) exists only in this folder until it is pushed. Files to upload: the 8 root `*.html`, all of
-`src/`, `mobile/`, `tools/`, `README.md`, `SHARE.md`. After any edit, run `node tools/build-mobile.js --zip`
-first so `mobile/` and `exports/archivus-site.zip` match the sources. New deep links:
-`/wars.html#w=ww2` · `/wars.html#w=ww1&v=leaders` · `/wars.html#w=ww2&i=stalingrad1942`.
+How it was deployed: uploaded through github.com (`/upload/main/<folder>`), folders first and the root pages last, so no page ever pointed at a script that was not there yet. After any edit, run `node tools/build-mobile.js --zip` first so `mobile/` and `exports/archivus-site.zip` match the sources, then upload the changed files the same way. GitHub Pages caches files for ten minutes — hard-refresh (Ctrl+F5) to see a change at once.
+
+Deep links: `/doctrines.html#v=compass&i=maoism` · `/doctrines.html#v=red&c=menshevism,leninism,trotskyism,maoism` · `/doctrines.html#v=atlas&m=red&y=1980` · `/wars.html#w=ww2` · `/wars.html#w=ww1&v=leaders` · `/wars.html#w=ww2&i=stalingrad1942`.
 
 
 ## Fastest: send one file
