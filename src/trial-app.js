@@ -1,9 +1,10 @@
 /* ============================================================
    ARCHIVUS — THE TRIAL
    The archive turned examiner. Every round draws ten fresh
-   questions straight from the 548 records, so no two trials
+   questions straight from the archive's records, so no two trials
    are alike, and every answer links back to the record so a
-   wrong guess becomes a lesson. Four ordeals:
+   wrong guess becomes a lesson. Five ordeals:
+     · THE ALLIANCE — who stood with whom in the world wars (v8)
      · PRECEDENCE — which came first?
      · THE DATE   — when did it happen?
      · THE THREAD — which record is truly connected?
@@ -96,6 +97,23 @@
     };
   }
 
+  /* v8 — ORDEAL OF THE ALLIANCE: who stood with whom when the world went to war.
+     Asks who *entered* on a side, so the powers that later changed sides stay unambiguous. */
+  const WARS = window.ARCHIVUS_WARS ? Object.values(window.ARCHIVUS_WARS) : [];
+  function qAlliance() {
+    const w = rnd(WARS), side = rnd(["A", "B"]);
+    const solo = p => p.n.indexOf("·") < 0 && p.seg[0][2] !== "S";
+    const right = rnd(w.powers.filter(p => p.side === side && solo(p)));
+    const decoys = shuffle(w.powers.filter(p => p.side !== side && solo(p))).slice(0, 3);
+    return {
+      kicker: "ORDEAL OF THE ALLIANCE",
+      q: "Which of these entered " + w.name + " on the side of " + w.sides[side].name.replace(/^The /, "the ") + "?",
+      opts: shuffle([right, ...decoys]).map(p => ({ label: p.n, right: p === right })),
+      verdict: ok => (ok ? "Correct. " : "Not so — it was ") + "<b>" + right.n + "</b>. " + right.note +
+        ' <a href="wars.html#w=' + w.id + '&v=powers">See both coalitions in the War Room ⟶</a>'
+    };
+  }
+
   /* ---------- the trial ---------- */
   const FORGES = [qPrecedence, qDate, qThread, qHorizon];
   let round = [], idx = 0, score = 0, streak = 0, best = 0;
@@ -103,7 +121,7 @@
   function newTrial() {
     round = [];
     /* a balanced draw: 3 precedence, 3 dates, 2 threads, 2 horizon — shuffled */
-    [qPrecedence, qPrecedence, qPrecedence, qDate, qDate, qDate, qThread, qThread, qHorizon, qHorizon]
+    [qPrecedence, qPrecedence, WARS.length ? qAlliance : qPrecedence, qDate, qDate, qDate, qThread, qThread, qHorizon, qHorizon]
       .forEach(f => round.push(f()));
     round = shuffle(round);
     idx = 0; score = 0; streak = 0; best = 0;
@@ -173,7 +191,7 @@
     document.getElementById("tr-rank").textContent = rank;
     document.getElementById("tr-sub").innerHTML = "You answered <b>" + score + " of 10</b>" +
       (best >= 3 ? " with a streak of " + best : "") +
-      ".<br>" + sub + "<br><span style='font-size:12px;color:#59617c'>Every trial draws fresh questions from all 548 records.</span>";
+      ".<br>" + sub + "<br><span style='font-size:12px;color:#59617c'>Every trial draws fresh questions from all " + ALL.length + " records.</span>";
     document.getElementById("tr-final").style.display = "block";
   }
 

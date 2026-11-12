@@ -577,6 +577,7 @@
   /* ---- boot ---- */
   const adam = find("adam");
   const phone = window.matchMedia && window.matchMedia("(max-width: 760px)").matches;
-  centerOn(PX(adam), PY(adam) + (phone ? 40 : 100), phone ? 0.95 : 0.55);
+  /* v8: open at reading zoom on a desk too — at 0.55 the names were ~5px; the minimap gives the overview */
+  centerOn(PX(adam), PY(adam) + (phone ? 40 : 150), phone ? 0.95 : 0.9);
   window.addEventListener("resize", apply);
 })();

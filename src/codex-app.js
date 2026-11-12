@@ -38,7 +38,11 @@
   /* explicit precedence for same-year pairs the weight heuristic gets wrong:
      lower rank reads first within its year */
   const YEAR_RANK = { sept11: -2, afghanistan: -1, ww2: -2, turing: -1 };
+  /* v8: records that carry an exact date (the world-war records) read in true calendar
+     order within their year, after that year's undated, year-scale records. */
   EV.sort((a, b) => (a.startYear - b.startYear) ||
+    ((a.date ? 1 : 0) - (b.date ? 1 : 0)) ||
+    (a.date && b.date ? (a.date < b.date ? -1 : a.date > b.date ? 1 : 0) : 0) ||
     ((YEAR_RANK[a.id] || 0) - (YEAR_RANK[b.id] || 0)) ||
     ((a.importance || 0) - (b.importance || 0)) || a.title.localeCompare(b.title));
   const eraOfYear = y => ERAS.find(er => y >= er.start && y < er.end) || ERAS[ERAS.length - 1];
@@ -94,7 +98,8 @@
 
   function evHTML(e) {
     const t = THEME_META[e.theme] || { color: "#a8862a", name: e.theme };
-    const when = fmtY(e.startYear) + (e.endYear ? " — " + fmtY(e.endYear) : "") + (e.approximate ? "  (c.)" : "");
+    const when = e.dateLabel ? e.dateLabel.toUpperCase()
+      : fmtY(e.startYear) + (e.endYear ? " — " + fmtY(e.endYear) : "") + (e.approximate ? "  (c.)" : "");
     const stars = "◆".repeat(Math.max(1, Math.round((e.importance || 5) / 2.5)));
     /* threads: ancestors it names (⟵ if earlier), and records that name it (⟶) */
     const fwd = (e.related || []).map(r => BY_ID[r]).filter(Boolean);

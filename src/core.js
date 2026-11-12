@@ -24,6 +24,8 @@
   const WORLD = window.ARCHIVUS_WORLD || "";
   const COUNTRIES = window.ARCHIVUS_COUNTRIES || null;
   const GEO_CTRY = window.ARCHIVUS_GEO_COUNTRY || {};
+  const WAR_LINKS = window.ARCHIVUS_WAR_LINKS || {};
+  const DOC_LINKS = window.ARCHIVUS_DOCTRINE_LINKS || {};
 
   const THEME_BY_ID = Object.fromEntries(THEMES.map(t => [t.id, t]));
   const ERA_BY_ID = Object.fromEntries(ERAS.map(e => [e.id, e]));
@@ -298,6 +300,10 @@
   }
 
   /* ---------- era strip ---------- */
+  const ERA_SHORT = { prehistory: "Prehistory", neolithic: "Neolithic", bronze: "Bronze", iron: "Iron", axial: "Axial",
+    classical: "Classical", lateantique: "Late Antiq.", medieval: "Post-Classical", renaissance: "Renaissance",
+    earlymodern: "Early Modern", revolutions: "Revolutions", worldwars: "World Wars", coldwar: "Cold War",
+    digital: "Digital", horizon: "The Horizon" };
   function renderEras() {
     clear(layers.eras);
     const drawBoundaries = state.view === "chronicle";
@@ -315,13 +321,21 @@
       if (drawBoundaries) {
         el("line", { class: "era-boundary", x1: xs, y1: ERA_STRIP_H, x2: xs, y2: plotBottom() }, g);
       }
-      if (xe - xs > 60) {
+      /* v8: never shrink a label into illegibility or let it spill into its neighbour.
+         Try the full name, then a short form, at ≥ 8.5px; otherwise leave the band clean
+         (its name is still in the tooltip and the readout). */
+      const bandW = xe - xs - 10;
+      const fits = (txt, fs) => txt.length * fs * 0.74 <= bandW;       /* uppercase + 0.12em tracking */
+      const short = ERA_SHORT[era.id] || era.name;
+      const label = fits(era.name, 10) ? [era.name, 10] : fits(era.name, 8.5) ? [era.name, 8.5]
+        : fits(short, 9.5) ? [short, 9.5] : fits(short, 8.5) ? [short, 8.5] : null;
+      if (label) {
         el("text", {
           class: "era-band-label",
           x: (xs + xe) / 2, y: ERA_STRIP_H / 2 + 3.5,
           "text-anchor": "middle",
-          "font-size": Math.min(10, (xe - xs) / era.name.length * 1.4)
-        }, g).textContent = era.name;
+          "font-size": label[1]
+        }, g).textContent = label[0];
       }
       el("title", {}, g).textContent = era.name + " — click to open this era's record";
       g.addEventListener("click", ev => { ev.stopPropagation(); state.eraIdx = i; zoomToEra(era); showEraRecord(era); });
@@ -482,11 +496,12 @@
     const lh = plotH() / L.length;
     const laneIdx = Object.fromEntries(L.map((t, i) => [t.id, i]));
     const SUBROWS = L.length > 10 ? 2 : 3;
-    const occupied = {}, labelEdge = {};
+    const occupied = {};
 
     const visible = EVENTS.filter(inView).sort((a, b) => a.startYear - b.startYear || b.importance - a.importance);
     let matchCount = 0;
     const nodePos = {};
+    const labelJobs = [], rowNodes = {};          /* v8 label pass — see below */
 
     visible.forEach(ev => {
       const li = laneIdx[laneKeyOf(ev)];
@@ -538,17 +553,30 @@
       const isSel = state.selected === ev.id;
       const node = drawNode(g, ev, xs, y, r, isMatch, isSel);
 
-      const est = ev.title.length * 6.4 + r + 10;
-      const lastLabelEnd = labelEdge[key] || -1e9;
-      const showLabel = isSel || (isMatch && xs - r > lastLabelEnd);
-      if (showLabel) {
-        el("text", {
-          class: "evt-label" + (ev.importance >= 9 ? " major" : ""),
-          x: xs + r + 5, y: y + 4
-        }, g).textContent = ev.title;
-        labelEdge[key] = xs + est;
-      }
+      (rowNodes[key] = rowNodes[key] || []).push({ x: xs, r, id: ev.id });
+      if (isSel || isMatch) labelJobs.push({ ev, x: xs, y, r, key, isSel });
       wireNode(g, ev, xs, y, node, r);
+    });
+
+    /* v8 — the label pass. Labels used to be laid down in time order and were then
+       overprinted by every later node in the same row. Now: every node is drawn first;
+       labels are placed heaviest-record-first, only where the text will not cover another
+       node in its row or collide with a label already placed; and they are drawn in a
+       layer above all nodes. Fewer labels at world scale, every one of them legible —
+       zooming in frees space and more names resolve. */
+    const placed = {};
+    const labelLayer = el("g", { class: "evt-labels" }, layers.events);
+    labelJobs.sort((a, b) => (b.isSel - a.isSel) || (b.ev.importance - a.ev.importance) || (a.x - b.x));
+    labelJobs.forEach(j => {
+      const major = j.ev.importance >= 9;
+      const x0 = j.x + j.r + 5, x1 = x0 + j.ev.title.length * (major ? 6.5 : 5.7);
+      if (!j.isSel) {
+        if (x0 > W - 8 || x1 < 0) return;
+        if ((rowNodes[j.key] || []).some(n => n.id !== j.ev.id && n.x + n.r > x0 - 3 && n.x - n.r < x1 + 2)) return;
+        if ((placed[j.key] || []).some(p => p[0] < x1 + 8 && p[1] > x0 - 8)) return;
+      }
+      (placed[j.key] = placed[j.key] || []).push([x0, x1]);
+      el("text", { class: "evt-label" + (major ? " major" : ""), x: x0, y: j.y + 4 }, labelLayer).textContent = j.ev.title;
     });
 
     drawWeb(nodePos);
@@ -648,7 +676,7 @@
     const visible = EVENTS.filter(inView);
     let matchCount = 0;
     const nodePos = {};
-    const labelEdges = [];
+    const labelEdges = [], atlasLabels = [];
 
     /* the unplaced shelf: global events get clean, evenly-spaced slots in
        time order — never piled onto the log scale's crushed modern end */
@@ -719,12 +747,17 @@
         const est = ev.title.length * 6.4;
         const clash = labelEdges.some(b => Math.abs(b.y - cy) < 12 && cx + 6 < b.x1 && cx + 6 + est > b.x0);
         if (!clash || state.selected === ev.id) {
-          el("text", { class: "evt-label" + (ev.importance >= 9 ? " major" : ""), x: cx + r + 4, y: cy + 4 }, g)
-            .textContent = ev.title;
+          /* v8: names are queued and drawn after every node, so no dot can sit on top of one */
+          atlasLabels.push({ parent, cls: "evt-label" + (ev.importance >= 9 ? " major" : ""), x: cx + r + 4, y: cy + 4, text: ev.title, o: isMatch ? 1 : 0.06 });
           labelEdges.push({ y: cy, x0: cx + 6, x1: cx + 6 + est });
         }
       }
       wireNode(g, ev, cx, cy, node, r);
+    });
+    const labelHosts = new Map();
+    atlasLabels.forEach(l => {
+      if (!labelHosts.has(l.parent)) labelHosts.set(l.parent, el("g", { class: "evt-labels" }, l.parent));
+      el("text", { class: l.cls, x: l.x, y: l.y, opacity: l.o }, labelHosts.get(l.parent)).textContent = l.text;
     });
 
     /* a selected record lights its whole country softly, even at rest */
@@ -1039,7 +1072,7 @@
     document.getElementById("panel-kicker").textContent = "Record · " + (era ? era.name : ev.era);
     document.getElementById("panel-title").textContent = ev.title;
 
-    let dateTxt = fmtRange(ev);
+    let dateTxt = ev.dateLabel || fmtRange(ev);
     const unc = UNC[ev.id];
     if (unc) dateTxt += "   ·   dating range " + fmtYear(unc[0]) + " – " + fmtYear(unc[1]);
     document.getElementById("panel-date").textContent = dateTxt;
@@ -1078,6 +1111,33 @@
       d.addEventListener("click", () => revealEvent(re.id));
       rel.appendChild(d);
     });
+
+    /* v8 — the War Room: records of the two world wars open onto the animated map */
+    let wr = document.getElementById("panel-war");
+    if (!wr) {
+      wr = document.createElement("a");
+      wr.id = "panel-war"; wr.className = "war-jump";
+      const src = document.getElementById("panel-source");
+      src.parentNode.insertBefore(wr, src.nextSibling);
+    }
+    const warHref = WAR_LINKS[ev.id];
+    wr.style.display = warHref ? "" : "none";
+    if (warHref) {
+      wr.href = warHref;
+      wr.textContent = (ev.id === "ww1" || ev.id === "ww2")
+        ? "⚔ Enter the War Room — fronts, powers, leaders, cost"
+        : "⚔ See it on the War Room map";
+    }
+    /* v9 — the Doctrines: records in the history of ideas open onto the compass and the lineage */
+    let dj = document.getElementById("panel-doc");
+    if (!dj) {
+      dj = document.createElement("a");
+      dj.id = "panel-doc"; dj.className = "war-jump doc-jump";
+      wr.parentNode.insertBefore(dj, wr.nextSibling);
+    }
+    const docHref = DOC_LINKS[ev.id];
+    dj.style.display = docHref ? "" : "none";
+    if (docHref) { dj.href = docHref; dj.textContent = "◈ Trace it in the Doctrines — its ancestors, its heirs, its place on the compass"; }
 
     /* the codex speaks: esoteric claims that touch this event */
     const txw = document.getElementById("panel-tx");
@@ -1769,6 +1829,8 @@
         case "3": setView("wheel"); break;
         case "4": location.href = "astrolabe.html"; break;
         case "5": location.href = "codex.html"; break;
+        case "6": location.href = "wars.html"; break;
+        case "7": location.href = "doctrines.html"; break;
         case "Escape": state.eraIdx = null; if (tour) { endTour(); break; } if (playMode || spinMode) { stopPlay(); break; } closePanel(); break;
       }
     });
