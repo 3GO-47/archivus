@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0a0c12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    ARCHIVUS — v0.5 "Lens"
@@ -624,6 +624,8 @@ select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
 .graticule.equator { stroke: var(--gold-dim); stroke-dasharray: 2 5; opacity: 0.5; }
 .map-land { fill: rgba(230,225,211,0.11); stroke: #6b7899; stroke-width: 0.9; }
 .map-border { fill: none; stroke: #3a445c; stroke-width: 0.6; stroke-dasharray: 2 2; opacity: 0.7; }
+.map-country { fill: rgba(230,225,211,0.10); stroke: #4d5a78; stroke-width: 0.7; transition: fill 0.2s; }
+.map-country:hover { fill: rgba(201,162,39,0.14); stroke: var(--gold-dim); }
 .map-caption {
   font-family: "Space Grotesk", sans-serif;
   fill: var(--gold-dim); font-size: 10px; letter-spacing: 0.16em;
@@ -930,7 +932,92 @@ select:hover, select:focus { border-color: var(--gold-dim); outline: none; }
   #help-overlay { width: 92vw; }
   #tour-card { width: 90vw; left: 5vw; }
   #bl-panel, #pn-panel { width: 100vw; max-width: 100vw; }
-  #bl-toolbar, #pn-toolbar { pad
+  #bl-toolbar, #pn-toolbar { padding: 6px 8px; gap: 4px; }
+  #bl-mini { display: none; }
+  #bl-hint, #pn-legend { display: none; }
+}
+
+/* ============================================================
+   v8 — THE OVERHAUL
+   · the instrument rail (src/nav.js): one nav strip on every page
+   · header that never clips; readout that never wraps
+   · engraved display face for mastheads (Cinzel, falls back cleanly)
+   · the War Room link in the event panel
+   ============================================================ */
+:root { --engraved: "Cinzel", "Trajan Pro", "Space Grotesk", Georgia, serif; --allied: #4f8fd6; --axis: #d2452f; }
+
+#rail {
+  display: flex; align-items: stretch; gap: 2px;
+  flex: 0 0 auto; height: 31px; padding: 0 12px;
+  background: linear-gradient(180deg, rgba(6,8,13,0.86), rgba(10,12,18,0.72));
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+  position: relative; z-index: 29;
+}
+#rail::-webkit-scrollbar { display: none; }
+#rail a {
+  display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto;
+  padding: 0 13px;
+  font-family: var(--display); font-weight: 500; font-size: 10.5px; letter-spacing: 0.17em; text-transform: uppercase;
+  color: #8792ad; text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent; border-top: 2px solid transparent;
+  transition: color 0.16s, background 0.16s, border-color 0.16s;
+}
+#rail a svg { opacity: 0.75; flex: 0 0 auto; }
+#rail a:hover { color: var(--gold-bright); background: rgba(201,162,39,0.07); }
+#rail a.here { color: var(--gold-bright); border-bottom-color: var(--gold); background: linear-gradient(180deg, transparent, rgba(201,162,39,0.10)); }
+#rail a.here svg { opacity: 1; }
+#rail a:focus-visible { outline: 1px solid var(--gold); outline-offset: -3px; }
+#rail .new { font: 600 8px/1 var(--display); letter-spacing: 0.1em; color: #0a0c12; background: var(--gold); border-radius: 2px; padding: 2px 4px; }
+.legacy-nav { display: none !important; }
+
+/* mastheads: an engraved face for the names of things */
+#masthead h1, #bar-title, #welcome-card h2 { font-family: var(--engraved); font-weight: 600; }
+#masthead h1 { letter-spacing: 0.24em; font-size: 18px; }
+#bar-title { letter-spacing: 0.24em; }
+body.has-rail #masthead { padding-top: 9px; padding-bottom: 8px; }
+
+/* the Archive's command bar: nothing may clip, nothing may wrap */
+#view-switch { flex: 0 0 auto; }
+#bar .tool-btn { flex: 0 0 auto; white-space: nowrap; }
+#bar #search { min-width: 120px; }
+#bar .masthead-readout { margin-left: 8px; min-width: 0; flex: 0 1 auto; }
+.readout-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 30vw; }
+#drawer { top: var(--chrome-h, 48px); }
+
+/* chronicle labels sit in their own layer above the nodes (see core.js, v8 label pass) */
+.evt-labels { pointer-events: none; }
+.evt-label { stroke: rgba(10,12,18,0.94); stroke-width: 3.4px; stroke-linejoin: round; }
+
+/* the door from a war record into the War Room */
+.war-jump {
+  display: block; margin: 10px 0 16px; padding: 9px 12px;
+  font-family: var(--display); font-weight: 500; font-size: 11.5px; letter-spacing: 0.05em;
+  color: #ffd9cf; text-decoration: none;
+  background: linear-gradient(90deg, rgba(210,69,47,0.20), rgba(79,143,214,0.16));
+  border: 1px solid rgba(210,69,47,0.5); border-radius: 4px;
+  transition: transform 0.16s, box-shadow 0.16s;
+}
+.war-jump:hover { transform: translateX(3px); box-shadow: 0 0 16px rgba(210,69,47,0.28); color: #fff; }
+
+@media (max-width: 700px) {
+  #rail { height: 34px; padding: 0 4px; }
+  #rail a { padding: 0 10px; font-size: 10px; letter-spacing: 0.12em; }
+  .readout-line { max-width: 60vw; }
+}
+
+/* v9 — the door into the Doctrines */
+.war-jump.doc-jump { color: #f6e7b4; background: linear-gradient(90deg, rgba(229,72,77,0.16), rgba(201,162,39,0.14), rgba(154,120,214,0.16)); border-color: rgba(201,162,39,0.55); }
+.war-jump.doc-jump:hover { box-shadow: 0 0 16px rgba(201,162,39,0.3); }
+#panel-war + #panel-doc { margin-top: -8px; }
+.w-door.doc { border-color: rgba(201,162,39,0.55); background: linear-gradient(120deg, rgba(229,72,77,0.11), rgba(79,174,106,0.08), rgba(154,120,214,0.12)); }
+.w-door.doc:hover { border-color: var(--gold-bright); }
+
+/* v8 portal: the War Room door */
+.w-door.war { border-color: rgba(210,69,47,0.55); background: linear-gradient(120deg, rgba(79,143,214,0.10), rgba(210,69,47,0.12)); }
+.w-door.war:hover { border-color: #ff8a73; box-shadow: 0 8px 26px rgba(210,69,47,0.25); }
+#bar #wr-link { font-family: var(--display); font-size: 10.5px; letter-spacing: 0.1em; color: var(--gold); text-decoration: none; border: 1px solid var(--gold-dim); border-radius: 4px; padding: 6px 10px; }
+
 </style>
 <style>
   #pn-toolbar { display:flex; align-items:center; gap:8px; padding:8px 16px; border-bottom:1px solid var(--line-faint); flex-wrap:wrap; }
@@ -1253,6 +1340,79 @@ window.ARCHIVUS_PANTHEONS = {
     { a:"hephaestus", b:"enki", k:"p", t:"The smith-craftsman under the king: the maker's office. The board's Tubal-Cain 'the Vulcan' carries it into the Bloodline." }
   ]
 };
+
+</script>
+  <script>
+/* ============================================================
+   ARCHIVUS — the instrument rail (v8)
+   ------------------------------------------------------------
+   One navigation strip, identical on every page, so every
+   instrument is one click from every other. Before v8 each page
+   carried its own hand-picked subset of links (the Trial could
+   reach only two instruments; at 1440px the Archive's header
+   clipped Wheel and Astrolabe out of sight).
+
+   The rail is injected after the page's header. The older
+   per-page link buttons stay in the markup as a no-script
+   fallback and are hidden once the rail is in place.
+   To add an instrument: add one row to ITEMS.
+   ============================================================ */
+(function () {
+  "use strict";
+  const I = d => '<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">' + d + "</svg>";
+  const ITEMS = [
+    { id: "archive", href: "index.html", label: "The Archive", tip: "Chronicle · Atlas · Wheel — all recorded history on one instrument",
+      icon: I('<circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/>') },
+    { id: "astrolabe", href: "astrolabe.html", label: "Astrolabe", tip: "The transit instrument — history in Keplerian rotation",
+      icon: I('<circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="3.2"/><path d="M8 1.8v12.4M1.8 8h12.4"/>') },
+    { id: "codex", href: "codex.html", label: "Codex", tip: "Read the whole archive as a book",
+      icon: I('<path d="M8 3.6C6.4 2.6 4 2.4 2 3v9.6c2-.6 4.4-.4 6 .6 1.6-1 4-1.2 6-.6V3c-2-.6-4.4-.4-6 .6zM8 3.6v9.6"/>') },
+    { id: "wars", href: "wars.html", label: "War Room", tip: "The two World Wars, day by day: fronts, powers, leaders, cost", isNew: true,
+      icon: I('<path d="M2.5 2.5l8.2 8.2M13.5 2.5l-8.2 8.2M9.2 12.2l3-3M6.8 12.2l-3-3M11.6 11.6l1.9 1.9M4.4 11.6l-1.9 1.9"/>') },
+    { id: "doctrines", href: "doctrines.html", label: "Doctrines", tip: "Every ideology on one compass — and Marxism dissected, from its ancestors to its heirs", isNew: true,
+      icon: I('<rect x="2.2" y="2.2" width="11.6" height="11.6" rx="1"/><path d="M8 2.2v11.6M2.2 8h11.6"/><circle cx="5" cy="5.2" r="1" fill="currentColor"/><circle cx="10.6" cy="10.4" r="1" fill="currentColor"/>') },
+    { id: "lineage", href: "lineage.html", label: "Bloodline", tip: "The family tree — pantheon of Sumer to the lines of the Messiah",
+      icon: I('<path d="M8 2v4M8 6H4v3M8 6h4v3M4 9v2M12 9v2"/><circle cx="8" cy="2.4" r="1" fill="currentColor"/><circle cx="4" cy="12.4" r="1.3"/><circle cx="12" cy="12.4" r="1.3"/>') },
+    { id: "pantheons", href: "pantheons.html", label: "Pantheons", tip: "Seven divine family trees and the roads between religions",
+      icon: I('<path d="M2 5.6L8 2l6 3.6M3 6.5h10M4.3 6.8v5.4M8 6.8v5.4M11.7 6.8v5.4M2.5 13h11"/>') },
+    { id: "transmissions", href: "transmissions.html", label: "Transmissions", tip: "Claims of taught knowledge, against the documented record",
+      icon: I('<path d="M8 1.8l1.5 4.7 4.7 1.5-4.7 1.5L8 14.2 6.5 9.5 1.8 8l4.7-1.5z"/>') },
+    { id: "trial", href: "trial.html", label: "Trial", tip: "Ten questions drawn fresh from the archive",
+      icon: I('<path d="M8 2.2v11.3M5 13.5h6M3 4.2h10M3 4.2L1.5 8.4h3zM13 4.2l-1.5 4.2h3z"/>') }
+  ];
+  const file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  const here = (ITEMS.find(it => it.href === file) || ITEMS[0]).id;
+  const FILES = ITEMS.map(it => it.href);
+
+  function build() {
+    const header = document.getElementById("bar") || document.getElementById("masthead");
+    if (!header || document.getElementById("rail")) return;
+    const rail = document.createElement("nav");
+    rail.id = "rail";
+    rail.setAttribute("aria-label", "Archivus instruments");
+    rail.innerHTML = ITEMS.map(it =>
+      '<a href="' + it.href + '" title="' + it.tip + '"' + (it.id === here ? ' class="here" aria-current="page"' : "") + ">" +
+      it.icon + "<span>" + it.label + "</span>" + (it.isNew && it.id !== here ? '<b class="new">new</b>' : "") + "</a>").join("");
+    header.parentNode.insertBefore(rail, header.nextSibling);
+
+    /* the old ad-hoc link buttons are now redundant — hide, don't delete (no-script fallback).
+       The Archive keeps its Astrolabe button inside the view switch. */
+    document.querySelectorAll("#bar > a[href], #masthead a[href], #as-bar a[href], #cx-bar a[href]").forEach(a => {
+      const f = (a.getAttribute("href") || "").split("#")[0].toLowerCase();
+      if (FILES.indexOf(f) >= 0) a.classList.add("legacy-nav");
+    });
+    document.body.classList.add("has-rail");
+
+    /* overlays that sit under the chrome (the filter drawer) read its height from here */
+    const setH = () => document.documentElement.style.setProperty("--chrome-h", (header.offsetHeight + rail.offsetHeight) + "px");
+    setH();
+    window.addEventListener("resize", setH);
+    if (window.ResizeObserver) new ResizeObserver(setH).observe(header);
+    const cur = rail.querySelector(".here");
+    if (cur && cur.scrollIntoView && rail.scrollWidth > rail.clientWidth) cur.scrollIntoView({ block: "nearest", inline: "center" });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build); else build();
+})();
 
 </script>
   <script>
