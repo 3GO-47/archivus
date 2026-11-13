@@ -227,7 +227,10 @@
   /* ---- selection panel ---- */
   const panel = document.getElementById("pn-panel");
   function closePanel() { panel.classList.remove("open"); document.querySelectorAll(".pn-node.sel").forEach(n => n.classList.remove("sel")); arcEls.forEach(a => a.classList.remove("sel")); }
-  document.getElementById("pn-close").addEventListener("click", closePanel);
+  /* v10: the address follows the selection (pantheons.html#g=<id>), so the frame can bring you back to it */
+  let shown = null;
+  function setHash(h) { try { history.replaceState(null, "", h || (location.pathname + location.search)); } catch (_) {} }
+  document.getElementById("pn-close").addEventListener("click", () => { closePanel(); shown = null; setHash(""); });
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const link = id => '<a data-go="' + id + '">' + esc(byId[id].n) + "</a>";
   function wirePanelLinks() {
@@ -236,6 +239,7 @@
   }
   function selectGod(id) {
     closePanel();
+    shown = id; setHash("#g=" + id);
     const g = byId[id];
     nodeEls[id].classList.add("sel");
     const c = PAN[g.pa].color;
@@ -339,9 +343,16 @@
   });
 
   fit();
-  /* a phone opens on the Mesopotamian sky at reading zoom, not the whole tiny heavens */
-  if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches && clusterX.meso != null) {
-    centerOn(clusterX.meso + clusterW.meso / 2, clusterY.meso + clusterH.meso / 2, 0.85);
+  /* open on the Mesopotamian sky at reading zoom, not the whole tiny heavens (v10: on a desk as well as a phone —
+     at "fit" the names are a few pixels tall; "Fit all" is one click away) */
+  const phone = window.matchMedia && window.matchMedia("(max-width: 760px)").matches;
+  if (clusterX.meso != null) centerOn(clusterX.meso + clusterW.meso / 2, clusterY.meso + clusterH.meso / 2, phone ? 0.85 : 0.8);
+  window.addEventListener("resize", apply);          /* keep the reader's place; "Fit all" restores the overview */
+  /* v10: deep links from the search palette and from the frame's memory */
+  function applyHash() {
+    const m = location.hash.match(/[#&]g=([\w-]+)/), g = m && byId[m[1]];
+    if (g && shown !== g.id && pos[g.id]) { centerOn(pos[g.id].x, pos[g.id].y, Math.max(k, 0.95)); selectGod(g.id); }
   }
-  window.addEventListener("resize", fit);
+  window.addEventListener("hashchange", applyHash);
+  applyHash();
 })();

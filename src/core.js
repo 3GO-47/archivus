@@ -24,6 +24,7 @@
   const WORLD = window.ARCHIVUS_WORLD || "";
   const COUNTRIES = window.ARCHIVUS_COUNTRIES || null;
   const GEO_CTRY = window.ARCHIVUS_GEO_COUNTRY || {};
+  const hop = href => (window.ARCHIVUS_GO || (h => { location.href = h; }))(href);
   const WAR_LINKS = window.ARCHIVUS_WAR_LINKS || {};
   const DOC_LINKS = window.ARCHIVUS_DOCTRINE_LINKS || {};
 
@@ -52,8 +53,9 @@
 
   /* ---------- constants ---------- */
   const MIN_YEAR = -450000, MAX_YEAR = 2140;   /* the Horizon era extends past the present */
-  const ANCHOR = 2150;                     /* log anchor beyond the present — tuned so
-                                              antiquity/medieval/modern each get fair screen share */
+  const ANCHOR = 2300;                     /* log anchor beyond the present (2150 until v11: that gave
+                                              the anticipated future a third of the default view) */
+  const DENSITY = 5;                       /* v11: how hard the axis stretches where the record is thick */
   const MIN_SPAN = 12;
   const OV0 = -10000, OV1 = 2040;
   const ERA_STRIP_H = 24;
@@ -62,9 +64,35 @@
   const PLOT_TOP = ERA_STRIP_H + 12;
   const REGION_LANE_COLOR = "#8f9ab5";
 
-  /* ---------- log time scale ---------- */
-  const uOf = t => Math.log(ANCHOR - t);           /* larger u = deeper past */
-  const tOf = u => ANCHOR - Math.exp(u);
+  /* ---------- the time scale: log time, stretched where the record is thick ----------
+     Until v11 the axis was pure log time. On that axis the 114 anticipated years of the Horizon
+     took a third of the default view and the whole twentieth century — a fifth of the archive —
+     under a twelfth, so the densest part of the record was an unreadable smear.
+     Now u(t) = log(ANCHOR − t) + DENSITY · (share of all records dated after t): every stretch of
+     time still gets room for its length (the log term) and extra room for how much happened in it
+     (the density term). It is strictly decreasing in t, so everything that works in u-space —
+     pan, zoom, flights, the Wheel — works unchanged. tOf inverts it by bisection. */
+  const DENS = (() => {
+    const ys = EVENTS.map(e => e.startYear).sort((a, b) => a - b), n = ys.length, y = [], c = [];
+    ys.forEach((v, i) => { if (y.length && y[y.length - 1] === v) c[c.length - 1] = (i + 1) / n; else { y.push(v); c.push((i + 1) / n); } });
+    return { y, c };
+  })();
+  function after(t) {                              /* share of records dated after t, 1 … 0, continuous */
+    const y = DENS.y, c = DENS.c;
+    if (t <= y[0]) return 1;
+    if (t >= y[y.length - 1]) return 0;
+    let lo = 0, hi = y.length - 1;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (y[m] <= t) lo = m; else hi = m; }
+    return 1 - (c[lo] + (c[hi] - c[lo]) * (t - y[lo]) / (y[hi] - y[lo]));
+  }
+  const uOf = t => Math.log(ANCHOR - t) + DENSITY * after(t);   /* larger u = deeper past */
+  const tOf = u => {
+    let lo = -2e6, hi = ANCHOR - 1e-6;
+    if (u >= uOf(lo)) return lo;
+    if (u <= uOf(hi)) return hi;
+    for (let i = 0; i < 64; i++) { const m = (lo + hi) / 2; if (uOf(m) > u) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  };
 
   /* ---------- state ---------- */
   const state = {
@@ -476,6 +504,7 @@
     });
   }
   function setCount(n) {
+    scheduleDigest();
     document.getElementById("event-count").textContent = n + " of " + EVENTS.length + " records in view";
   }
   let enterTimer = null;
@@ -568,15 +597,20 @@
     const labelLayer = el("g", { class: "evt-labels" }, layers.events);
     labelJobs.sort((a, b) => (b.isSel - a.isSel) || (b.ev.importance - a.ev.importance) || (a.x - b.x));
     labelJobs.forEach(j => {
-      const major = j.ev.importance >= 9;
-      const x0 = j.x + j.r + 5, x1 = x0 + j.ev.title.length * (major ? 6.5 : 5.7);
+      const major = j.ev.importance >= 9, w = j.ev.title.length * (major ? 6.5 : 5.7);
+      const free = (a0, a1) => !(rowNodes[j.key] || []).some(n => n.id !== j.ev.id && n.x + n.r > a0 - 3 && n.x - n.r < a1 + 2) &&
+        !(placed[j.key] || []).some(p => p[0] < a1 + 8 && p[1] > a0 - 8);
+      let x0 = j.x + j.r + 5, x1 = x0 + w, anchor = "start";
       if (!j.isSel) {
-        if (x0 > W - 8 || x1 < 0) return;
-        if ((rowNodes[j.key] || []).some(n => n.id !== j.ev.id && n.x + n.r > x0 - 3 && n.x - n.r < x1 + 2)) return;
-        if ((placed[j.key] || []).some(p => p[0] < x1 + 8 && p[1] > x0 - 8)) return;
+        if (j.x > W + 20 || j.x < -20) return;
+        if (!(x1 <= W - 4 && free(x0, x1))) {
+          /* v11: no room to the right (or it would run off the chart) — try the left of the node */
+          const l1 = j.x - j.r - 5, l0 = l1 - w;
+          if (l0 >= 4 && free(l0, l1)) { x0 = l0; x1 = l1; anchor = "end"; } else return;
+        }
       }
       (placed[j.key] = placed[j.key] || []).push([x0, x1]);
-      el("text", { class: "evt-label" + (major ? " major" : ""), x: x0, y: j.y + 4 }, labelLayer).textContent = j.ev.title;
+      el("text", { class: "evt-label" + (major ? " major" : ""), x: anchor === "end" ? x1 : x0, y: j.y + 4, "text-anchor": anchor }, labelLayer).textContent = j.ev.title;
     });
 
     drawWeb(nodePos);
@@ -1027,11 +1061,71 @@
   const panelOracle = document.getElementById("panel-oracle");
 
   function setPanelMode(mode) {
+    if (mode === "empty" && docked()) mode = "digest";     /* v11: on a wide screen the panel never goes blank */
     state.panelMode = mode;
     panel.classList.toggle("open", mode !== "empty");
     panelContent.hidden = mode !== "event";
-    panelOracle.hidden = mode !== "oracle" && mode !== "era";
+    panelOracle.hidden = mode !== "oracle" && mode !== "era" && mode !== "digest";
+    if (mode === "digest") renderDigest();
   }
+
+  /* ---------- v11: the standing digest ----------
+     The questions the Archive should answer at a glance — what era is this, what dominates it, which
+     powers were active, what are its defining records — used to need a click on "Oracle". On a wide
+     screen the panel is now docked beside the chart and answers them all the time, re-reading the
+     window as you pan, zoom or filter. Click a record to fly to it; × folds the dock away. */
+  const DOCK_KEY = "archivus-dock";
+  const dockWanted = () => { try { return localStorage.getItem(DOCK_KEY) !== "0"; } catch (e) { return true; } };
+  const docked = () => dockWanted() && window.innerWidth >= 1180;
+  function setDock(on) {
+    try { localStorage.setItem(DOCK_KEY, on ? "1" : "0"); } catch (e) { /* private mode */ }
+    document.body.classList.toggle("docked", docked());
+    const b = document.getElementById("dock-btn"); if (b) b.classList.toggle("accent", docked());
+    if (state.panelMode === "digest" || state.panelMode === "empty" || !state.panelMode) setPanelMode("empty");
+  }
+  let digestTimer = null;
+  function scheduleDigest() {
+    if (state.panelMode !== "digest") return;
+    clearTimeout(digestTimer); digestTimer = setTimeout(renderDigest, 160);
+  }
+  function renderDigest() {
+    if (state.panelMode !== "digest") return;
+    const t0 = state.t0, t1 = state.t1, win = EVENTS.filter(inView).filter(matches);
+    const filtered = state.themes.size || state.region || state.era || state.query || state.minImp || state.futureOnly;
+    const spanned = ERAS.map(e => ({ e, ov: Math.min(t1, e.end) - Math.max(t0, e.start) })).filter(o => o.ov > 0);
+    spanned.sort((a, b) => a.e.start - b.e.start);
+    const name = spanned.length === 1 ? spanned[0].e.name : spanned.length <= 3 && spanned.length ? spanned.map(o => o.e.name).join(" · ")
+      : spanned.length ? spanned[0].e.name + " → " + spanned[spanned.length - 1].e.name : document.getElementById("readout-era").textContent;
+    let h = '<div class="kicker">In view</div><div class="o-title">' + escapeHtml(name) + '</div>' +
+      '<div class="o-span">' + fmtYear(Math.round(t0)) + " — " + fmtYear(Math.round(t1)) + " · <b>" + win.length + "</b> of " + EVENTS.length + " records" +
+      (spanned.length > 1 ? " · " + spanned.length + " eras" : "") + (filtered ? " · filtered" : "") + "</div>";
+    if (!win.length) {
+      panelOracle.innerHTML = h + '<p class="o-prose">No records in this window under the current filters. Widen the view or lift a filter.</p>';
+      return;
+    }
+    const counts = {}; win.forEach(e => { counts[e.theme] = (counts[e.theme] || 0) + 1; });
+    const ranked = Object.entries(counts).sort((a, b) => b[1] - a[1]), maxN = ranked[0][1];
+    const civN = {}; win.forEach(e => { if (e.civ) civN[e.civ] = (civN[e.civ] || 0) + 1; });
+    const civs = Object.entries(civN).sort((a, b) => b[1] - a[1]).slice(0, 9);
+    h += '<div class="kicker dg-k">What dominates</div><div class="dg-bars">' + ranked.map(r => {
+      const t = THEME_BY_ID[r[0]];
+      return '<button class="o-bar-row' + (state.themes.has(r[0]) ? " on" : "") + '" data-theme="' + r[0] + '" title="Show only ' + escapeHtml(t.name) + ' — click again to lift"><span class="o-bar-name">' + escapeHtml(t.name) +
+        '</span><span class="o-bar-track"><span class="o-bar-fill" style="--c:' + t.color + ";width:" + Math.round(r[1] / maxN * 100) + '%"></span></span><span class="o-bar-n">' + r[1] + "</span></button>";
+    }).join("") + "</div>";
+    /* as many of the heaviest records as the panel has room for, in time order */
+    const room = panel.clientHeight - 176 - ranked.length * 17 - (civs.length ? 34 + Math.ceil(civs.length / 3) * 25 : 0);
+    const k = Math.max(4, Math.min(22, Math.floor(room / 25.5)));
+    const heavy = win.slice().sort((a, b) => (b.importance || 0) - (a.importance || 0) || a.startYear - b.startYear).slice(0, k).sort((a, b) => a.startYear - b.startYear);
+    h += '<div class="kicker dg-k">Defining records' + (win.length > k ? " · " + k + " of " + win.length : "") + '</div><div class="dg-list">' + heavy.map(e =>
+      '<button class="o-evt" data-ev="' + e.id + '" style="border-left-color:' + THEME_BY_ID[e.theme].color + '"><span class="oe-date">' + fmtRange(e) + "</span>" + escapeHtml(e.title) + "</button>").join("") + "</div>";
+    if (civs.length) h += '<div class="kicker dg-k">Powers active</div><div class="dg-civs">' + civs.map(c => "<span>" + escapeHtml(c[0]) + (c[1] > 1 ? " <i>" + c[1] + "</i>" : "") + "</span>").join("") + "</div>";
+    panelOracle.innerHTML = h;
+  }
+  panelOracle.addEventListener("click", e => {
+    const ev = e.target.closest("[data-ev]"); if (ev) return revealEvent(ev.dataset.ev);
+    const th = e.target.closest("[data-theme]");
+    if (th) { const chip = document.querySelector('#theme-chips [data-theme="' + th.dataset.theme + '"]'); if (chip) chip.click(); }
+  });
   function closePanel() {
     state.selected = null;
     setPanelMode("empty");
@@ -1551,7 +1645,13 @@
       if (!playAnim && !spinAnim) pb.textContent = v === "wheel" ? "⟳ Spin the Wheel" : "▶ Play the Atlas";
     }
     if ((playMode && v !== "atlas") || (spinMode && v !== "wheel")) stopPlay();
-    if (!silent) { renderTime(); playEnter(); }
+    if (!silent) {
+      renderTime(); playEnter();
+      /* v10: Chronicle, Atlas and Wheel ease into one another instead of cutting */
+      const ch = document.getElementById("chart");
+      if (ch && ch.animate && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches))
+        ch.animate([{ opacity: 0.15 }, { opacity: 1 }], { duration: 300, easing: "ease-out" });
+    }
   }
 
   /* ---------- pointer model ---------- */
@@ -1700,7 +1800,11 @@
 
     document.querySelectorAll(".view-btn").forEach(b =>
       b.addEventListener("click", () => setView(b.dataset.view)));
-    document.getElementById("panel-close").addEventListener("click", closePanel);
+    /* × closes a record or an oracle reading; on the standing digest it folds the dock away */
+    document.getElementById("panel-close").addEventListener("click", () => { if (state.panelMode === "digest") setDock(false); else closePanel(); });
+    const dockBtn = document.getElementById("dock-btn");
+    if (dockBtn) dockBtn.addEventListener("click", () => setDock(!dockWanted()));
+    window.addEventListener("resize", () => { const was = document.body.classList.contains("docked"); if (was !== docked()) setDock(dockWanted()); });
 
     const eraSel = document.getElementById("era-filter");
     ERAS.forEach(e => {
@@ -1827,20 +1931,23 @@
         case "1": setView("chronicle"); break;
         case "2": setView("atlas"); break;
         case "3": setView("wheel"); break;
-        case "4": location.href = "astrolabe.html"; break;
-        case "5": location.href = "codex.html"; break;
-        case "6": location.href = "wars.html"; break;
-        case "7": location.href = "doctrines.html"; break;
+        /* v10: leave through the frame, so the stage fades and this view is remembered */
+        case "4": hop("astrolabe.html"); break;
+        case "5": hop("codex.html"); break;
+        case "6": hop("wars.html"); break;
+        case "7": hop("doctrines.html"); break;
         case "Escape": state.eraIdx = null; if (tour) { endTour(); break; } if (playMode || spinMode) { stopPlay(); break; } closePanel(); break;
       }
     });
   }
 
   /* ---------- boot ---------- */
+  document.body.classList.toggle("docked", docked());     /* before the first measure, so the chart is drawn at its docked width */
   buildControls();
   buildPointer();
   renderAll();
   applyHash();
+  setDock(dockWanted());
   playEnter();
   window.addEventListener("hashchange", applyHash);
   new ResizeObserver(() => renderAll()).observe(wrap);

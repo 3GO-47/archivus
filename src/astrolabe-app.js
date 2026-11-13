@@ -218,7 +218,7 @@
   el("circle", { cx: bp0[0], cy: bp0[1], r: 4.6, fill: "none", stroke: "#e8c455", "stroke-width": 1.2 }, bloodG);
   el("text", { x: bp0[0] + 8, y: bp0[1] + 3 }, bloodG).textContent = "THE BLOODLINE ⟶";
   el("title", {}, bloodG).textContent = "Adam's radius to the living core — open the Bloodline";
-  bloodG.addEventListener("click", () => location.href = "lineage.html");
+  bloodG.addEventListener("click", () => (window.ARCHIVUS_GO || (h => { location.href = h; }))("lineage.html"));
 
   /* ---------- comets: the Transmissions ---------- */
   const CAT_COLOR = { angelic: "#c9a227", divine: "#9b6fc3", daimonic: "#c0392b", alchemical: "#4fae9c", oneiric: "#7c9ac9" };

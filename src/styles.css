@@ -1006,3 +1006,162 @@ body.has-rail #masthead { padding-top: 9px; padding-bottom: 8px; }
 .w-door.war { border-color: rgba(210,69,47,0.55); background: linear-gradient(120deg, rgba(79,143,214,0.10), rgba(210,69,47,0.12)); }
 .w-door.war:hover { border-color: #ff8a73; box-shadow: 0 8px 26px rgba(210,69,47,0.25); }
 #bar #wr-link { font-family: var(--display); font-size: 10.5px; letter-spacing: 0.1em; color: var(--gold); text-decoration: none; border: 1px solid var(--gold-dim); border-radius: 4px; padding: 6px 10px; }
+
+/* ============================================================
+   v10 — ONE INSTRUMENT
+   · one header on every page (src/nav.js): brand · instruments · search
+     — the per-page mastheads are hidden once it is in place
+   · page-to-page: native cross-document view transitions where the
+     browser has them, a hand-made fade everywhere else
+   · search everything (Ctrl/⌘ K) · first-arrival title card
+   · gliding tab markers · eased view changes · quiet scrollbars
+   ============================================================ */
+html { background: var(--obsidian); color-scheme: dark; }
+* { scrollbar-width: thin; scrollbar-color: #2b3348 transparent; }
+::selection { background: rgba(201,162,39,0.34); color: #fff; }
+:focus-visible { outline: 1px solid var(--gold); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+
+/* ---- the header ---- */
+html.hdr-on #masthead { display: none !important; }
+html.hdr-on #bar > .sigil.mini, html.hdr-on #bar-title { display: none; }
+#hdr {
+  flex: 0 0 auto; height: 44px; display: flex; align-items: stretch; gap: 4px;
+  padding: 0 12px 0 14px; position: sticky; top: 0; z-index: 45;
+  background: linear-gradient(180deg, #0c0f18, #0a0c12);
+  border-bottom: 1px solid var(--line);
+  view-transition-name: hdr;
+}
+#hdr::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 22%, var(--gold) 50%, var(--gold-dim) 78%, transparent); opacity: 0.45;
+}
+.hdr-brand { display: flex; align-items: center; gap: 11px; flex: 0 0 auto; text-decoration: none; padding: 0 16px 0 2px; margin-right: 6px; border-right: 1px solid var(--line-faint); }
+.hdr-brand b { font-family: var(--engraved); font-weight: 600; font-size: 14px; letter-spacing: 0.26em; color: var(--gold-bright); transition: text-shadow 0.2s; }
+.hdr-brand:hover b { text-shadow: 0 0 14px rgba(232,196,85,0.55); }
+#hdr #rail { flex: 1 1 auto; min-width: 0; height: auto; padding: 0; background: none; border: 0; gap: 0; z-index: auto; }
+#hdr #rail a { border: 0; padding: 0 12px; position: relative; z-index: 1; }
+#hdr #rail a:hover { background: none; }
+#hdr #rail a.here { background: none; }
+#rail-pill {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0; opacity: 0; pointer-events: none;
+  border-bottom: 2px solid var(--gold);
+  background: linear-gradient(180deg, transparent 25%, rgba(201,162,39,0.13));
+  transition: transform 0.42s cubic-bezier(0.3, 0.85, 0.3, 1), width 0.42s cubic-bezier(0.3, 0.85, 0.3, 1), opacity 0.2s;
+}
+#omni-btn {
+  flex: 0 0 auto; align-self: center; display: inline-flex; align-items: center; gap: 8px; margin-left: 8px;
+  height: 28px; padding: 0 9px 0 10px; cursor: pointer;
+  background: var(--obsidian-3); border: 1px solid var(--line); border-radius: 14px;
+  color: #8792ad; font: 500 11.5px var(--display); letter-spacing: 0.03em; white-space: nowrap;
+  transition: border-color 0.16s, color 0.16s, box-shadow 0.16s;
+}
+#omni-btn:hover { border-color: var(--gold-dim); color: var(--gold-bright); box-shadow: 0 0 14px rgba(201,162,39,0.14); }
+#omni-btn kbd, #omni kbd { font: 9.5px var(--mono); color: #7d87a1; border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; background: rgba(255,255,255,0.03); }
+#hdr #rail a { letter-spacing: 0.15em; }
+/* all eleven instruments must fit without scrolling, so their places never move from page to page */
+#hdr #rail a i { font-style: normal; }
+@media (max-width: 1900px) { #omni-btn span { display: none; } }
+@media (max-width: 1700px) { #hdr #rail a { padding: 0 9px; letter-spacing: 0.11em; gap: 6px; } .hdr-brand { padding-right: 12px; margin-right: 2px; } #hdr #rail a i { display: none; } }
+@media (max-width: 1500px) { #omni-btn kbd { display: none; } #omni-btn { padding: 0 9px; margin-left: 2px; } #hdr #rail a { padding: 0 7px; letter-spacing: 0.08em; gap: 5px; } }
+@media (max-width: 1400px) { .hdr-brand b { display: none; } .hdr-brand { padding-right: 9px; } #hdr #rail a { letter-spacing: 0.06em; } }
+@media (max-width: 1300px) { #hdr #rail a { padding: 0 6px; letter-spacing: 0.04em; font-size: 10px; } #hdr #rail a svg { display: none; } }
+@media (max-width: 1080px) { #hdr #rail a { padding: 0 5px; letter-spacing: 0.02em; font-size: 9.5px; } }
+@media (max-width: 700px) { #hdr { height: 42px; padding: 0 8px 0 10px; } #hdr #rail { height: auto; padding: 0; } }
+
+/* ---- page to page ---- */
+/* the opt-in rule itself (@view-transition { navigation: auto }) is added by src/nav.js, and only on http(s):
+   on file:// the browser has nothing to transition to and logs an aborted transition on every hop */
+::view-transition-old(root) { animation: vt-out 0.15s ease-in both; }
+::view-transition-new(root) { animation: vt-in 0.3s ease-out both; }
+::view-transition-old(hdr) { display: none; }          /* the header is the same object on both pages: no cross-fade, */
+::view-transition-new(hdr) { animation: none; }         /* just the live one, with its marker gliding */
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; } }
+@keyframes arrive { from { opacity: 0; } }
+html.vtf.arriving body > :not(#hdr):not(script):not(#omni) { animation: arrive 0.32s ease-out backwards; }
+html.vtf.leaving body > :not(#hdr):not(#omni) { opacity: 0; transition: opacity 0.12s ease-in; }
+@media (prefers-reduced-motion: reduce) { #rail-pill, .tab-pill { transition: none !important; } }
+
+/* ---- gliding markers for tab strips ---- */
+.glides { position: relative; }
+.glides > button.on, #wr-tabs.glides button.on { border-bottom-color: transparent; }
+.tab-pill { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; opacity: 0; background: var(--gold); pointer-events: none; box-shadow: 0 0 10px rgba(232,196,85,0.5);
+  transition: transform 0.32s cubic-bezier(0.3, 0.85, 0.3, 1), width 0.32s cubic-bezier(0.3, 0.85, 0.3, 1), opacity 0.2s; }
+
+/* ---- views ease in rather than cut ---- */
+@keyframes view-in { from { opacity: 0; transform: translateY(5px); } }
+@media (prefers-reduced-motion: no-preference) { .wr-view:not([hidden]) { animation: view-in 0.26s ease-out; } }
+
+/* ---- the first-arrival title card ---- */
+#arrive-card {
+  position: fixed; left: 0; bottom: 92px; z-index: 44; pointer-events: none; max-width: min(640px, 92vw);
+  padding: 14px 70px 15px 22px; border-left: 2px solid var(--gold);
+  background: linear-gradient(90deg, rgba(8,10,16,0.94) 55%, rgba(8,10,16,0));
+  animation: card-pass 4.5s ease both;
+}
+#arrive-card b { display: block; font-family: var(--engraved); font-weight: 600; font-size: 21px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold-bright); }
+#arrive-card span { display: block; margin-top: 5px; font-family: var(--display); font-size: 13px; letter-spacing: 0.03em; color: var(--paper-dim); }
+@keyframes card-pass { 0% { opacity: 0; transform: translateX(-14px); } 9%, 78% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateX(-8px); } }
+
+/* ---- search everything ---- */
+#omni { position: fixed; inset: 0; z-index: 200; display: flex; justify-content: center; align-items: flex-start; padding-top: 11vh; background: rgba(4,5,9,0.62); backdrop-filter: blur(3px); animation: vt-in 0.14s ease-out; }
+#omni[hidden] { display: none; }
+#omni-box { width: min(680px, 94vw); background: #0e1119; border: 1px solid var(--gold-dim); border-radius: 10px; box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 40px rgba(201,162,39,0.08); overflow: hidden; animation: view-in 0.18s ease-out; }
+#omni-top { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); color: var(--gold); }
+#omni-top svg { width: 16px; height: 16px; flex: 0 0 auto; }
+#omni-q { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--paper); font: 15px var(--sans); }
+#omni-q::placeholder { color: #66708c; }
+#omni-list { max-height: min(56vh, 520px); overflow-y: auto; padding: 4px 0; }
+.om-h { padding: 9px 16px 4px; font: 9px var(--display); letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); }
+.om-row { display: flex; align-items: baseline; gap: 10px; width: 100%; text-align: left; background: none; border: 0; border-left: 2px solid transparent; color: var(--paper); cursor: pointer; padding: 7px 14px 7px 12px; font: 13.5px var(--sans); }
+.om-row.on { background: rgba(201,162,39,0.1); border-left-color: var(--gold); }
+.om-row i { flex: 0 0 92px; font: normal 9px var(--display); letter-spacing: 0.14em; text-transform: uppercase; color: var(--k); }
+.om-row b { flex: 0 1 auto; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 52%; }
+.om-row span { flex: 1 1 0; min-width: 0; font-size: 11.5px; color: #8d96af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.om-row em { flex: 0 0 auto; font: normal 10px var(--mono); color: #66708c; }
+.om-row.on em { color: var(--gold-bright); }
+.om-none { padding: 16px; font-size: 13px; color: #8d96af; }
+#omni-foot { display: flex; gap: 16px; align-items: center; padding: 8px 14px; border-top: 1px solid var(--line); font: 10.5px var(--display); color: #7d87a1; }
+#omni-count { margin-left: auto; font-family: var(--mono); font-size: 10px; }
+@media (max-width: 700px) { #omni { padding-top: 6vh; } .om-row i { flex-basis: 70px; } .om-row em { display: none; } .om-row span { display: none; } .om-row b { max-width: none; flex: 1; } #arrive-card { bottom: 70px; } #arrive-card b { font-size: 16px; } }
+
+/* ============================================================
+   v11 — SEEN AT A GLANCE
+   · the Archive: a reading of whatever is in view stays docked
+     beside the chart on wide screens (src/core.js, "the standing
+     digest"); lane names are legible; the portal fits one screen
+   · every instrument: long reading views are cut into sections,
+     one screen each, by a pinned row of section chips (src/nav.js)
+   ============================================================ */
+#dock-btn { display: none; }
+@media (min-width: 1180px) {
+  #dock-btn { display: inline-flex; }
+  body.docked #panel { position: relative; transform: none; transition: none; flex: 0 0 336px; width: 336px; max-width: none; box-shadow: none; padding: 16px 18px 14px; z-index: 5; }
+  body.docked #panel #panel-close { top: 10px; right: 10px; }
+  body.docked #panel-content { padding-top: 26px; }
+}
+#panel-oracle .dg-k { margin: 12px 0 6px; }
+#panel-oracle .o-span b { color: var(--gold-bright); font-weight: 500; }
+.dg-bars .o-bar-row { width: 100%; background: none; border: 0; padding: 1px 0; margin: 0 0 2px; cursor: pointer; border-radius: 3px; }
+.dg-bars .o-bar-row:hover { background: rgba(255,255,255,0.05); } .dg-bars .o-bar-row.on .o-bar-name { color: var(--gold-bright); }
+.dg-bars .o-bar-name { width: 136px; font-size: 9.5px; white-space: nowrap; } .dg-bars .o-bar-track { height: 6px; } .dg-bars .o-bar-n { text-align: right; color: #8d96af; }
+.dg-list .o-evt { display: block; width: 100%; text-align: left; border-top: 0; border-right: 0; border-bottom: 0; font: 12.5px/1.3 var(--sans); padding: 3px 9px 4px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#panel-oracle .dg-list .o-evt .oe-date { display: inline; margin-right: 8px; color: #7d87a1; }
+#panel-oracle .dg-list .o-evt { margin-bottom: 3px; padding: 3px 9px 4px; font-size: 12.5px; }
+#panel-oracle .o-title { line-height: 1.25; }
+.dg-civs { display: flex; flex-wrap: wrap; gap: 4px; }
+.dg-civs span { font: 10.5px var(--display); color: var(--paper-dim); border: 1px solid var(--line); border-radius: 10px; padding: 2px 8px; white-space: nowrap; }
+.dg-civs i { font: normal 9px var(--mono); color: #66708c; }
+.lane-label { fill: #8b95b0; font-size: 10px; letter-spacing: 0.14em; }
+/* the portal: nine doors on a three-by-three board */
+#welcome-card { width: min(900px, 96vw); padding: 24px 26px 18px; }
+.w-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 760px) { .w-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .w-grid { grid-template-columns: 1fr; } }
+/* section chips for long views */
+.pg-off { display: none !important; }
+.pg-bar { position: sticky; top: -22px; z-index: 6; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: -22px calc(-1 * clamp(14px, 3vw, 40px)) 16px; padding: 9px clamp(14px, 3vw, 40px) 9px; background: linear-gradient(180deg, #0c0f18 78%, rgba(12,15,24,0.86)); border-bottom: 1px solid var(--line-faint); }
+.pg-bar::-webkit-scrollbar { display: none; }
+.pg-bar .chipbtn { flex: 0 0 auto; padding: 5px 12px; font-size: 11px; }
+.pg-bar .pg-all { margin-left: auto; opacity: .75; }

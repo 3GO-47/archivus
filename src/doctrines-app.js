@@ -38,6 +38,7 @@
   const yr = n => (n.ap ? "c. " : "") + (n.yr < 0 ? -n.yr + " BCE" : n.yr);
   const col = n => n.f ? FAM[n.f][1] : "#d8c690";
   const mobile = () => window.matchMedia("(max-width: 860px)").matches;
+  const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   /* chart labels: drop the parenthesis, and the second half of long "A & B" names */
   const short = n => { let s = n.n.replace(/\s*\(.*\)\s*$/, ""); if (s.length > 22 && s.indexOf(" & ") > 0) s = s.split(" & ")[0]; return s; };
   const chip = id => { const n = BY[id]; return n ? '<button class="nchip" data-go="' + id + '"><i class="fdot" style="background:' + col(n) + '"></i>' + esc(short(n)) + "</button>" : ""; };
@@ -104,12 +105,35 @@
     const half = 10 * cp.u * cp.k, mx = Math.max(0, half - cp.W / 2 + 30), my = Math.max(0, half - cp.H / 2 + 30);
     cp.tx = clamp(cp.tx, -mx, mx); cp.ty = clamp(cp.ty, -my, my);
   }
-  function cpZoom(f, px, py) {
+  /* v10: zoom buttons, keys, reset and "bring it into view" ease; the wheel and pinch stay direct */
+  function cpTween(k2, tx2, ty2) {
+    cancelAnimationFrame(cp.raf);
+    if (REDUCED) { cp.k = k2; cp.tx = tx2; cp.ty = ty2; cpClamp(); drawCompass(); return; }
+    const k0 = cp.k, x0 = cp.tx, y0 = cp.ty, t0 = performance.now(), D = 280;
+    const step = now => {
+      const u = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - u, 3);
+      cp.k = u === 1 ? k2 : k0 + (k2 - k0) * e; cp.tx = x0 + (tx2 - x0) * e; cp.ty = y0 + (ty2 - y0) * e;
+      cpClamp(); drawCompass();
+      if (u < 1) cp.raf = requestAnimationFrame(step);
+    };
+    cp.raf = requestAnimationFrame(step);
+  }
+  function cpZoom(f, px, py, smooth) {
     const k2 = clamp(cp.k * f, 1, 8);
     if (px == null) { px = cp.W / 2; py = cp.H / 2; }
     const wx = (px - cp.cx - cp.tx) / (cp.u * cp.k), wy = (py - cp.cy - cp.ty) / (cp.u * cp.k);
-    cp.tx = px - cp.cx - wx * cp.u * k2; cp.ty = py - cp.cy - wy * cp.u * k2; cp.k = k2;
+    const tx2 = px - cp.cx - wx * cp.u * k2, ty2 = py - cp.cy - wy * cp.u * k2;
+    if (smooth) return cpTween(k2, tx2, ty2);
+    cancelAnimationFrame(cp.raf);
+    cp.tx = tx2; cp.ty = ty2; cp.k = k2;
     cpClamp(); drawCompass();
+  }
+  /* a doctrine chosen from a card or the search box is brought into view if the zoom has left it off-stage */
+  function cpFocus(n) {
+    if (!n || !n.f || n.xc || !cp.W) return;
+    const x = X(n.x), y = Y(n.y), m = 64;
+    if (x > m && x < cp.W - m && y > m && y < cp.H - m) return;
+    cpTween(cp.k, cp.tx + cp.W / 2 - x, cp.ty + cp.H / 2 - y);
   }
   function arrowHead(x1, y1, x2, y2, back, size) {
     const a = Math.atan2(y2 - y1, x2 - x1), bx = x2 - Math.cos(a) * back, by = y2 - Math.sin(a) * back, s = size || 6;
@@ -212,9 +236,9 @@
       label: y => y >= 2026 ? "to today" : "as of " + y });
     $("cp-halos").addEventListener("click", e => { state.halos = !state.halos; e.currentTarget.classList.toggle("on", state.halos); drawCompass(); });
     $("cp-lines").addEventListener("click", e => { state.lines = !state.lines; e.currentTarget.classList.toggle("on", state.lines); drawCompass(); });
-    $("cp-zi").addEventListener("click", () => cpZoom(1.5));
-    $("cp-zo").addEventListener("click", () => cpZoom(1 / 1.5));
-    $("cp-zr").addEventListener("click", () => { cp.k = 1; cp.tx = cp.ty = 0; drawCompass(); });
+    $("cp-zi").addEventListener("click", () => cpZoom(1.5, null, null, true));
+    $("cp-zo").addEventListener("click", () => cpZoom(1 / 1.5, null, null, true));
+    $("cp-zr").addEventListener("click", () => cpTween(1, 0, 0));
     const svg = $("cp"), tip = $("cp-tip"), ptr = new Map();
     let drag = null, pinch = 0;
     svg.addEventListener("wheel", e => { e.preventDefault(); const r = svg.getBoundingClientRect(); cpZoom(e.deltaY < 0 ? 1.18 : 1 / 1.18, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
@@ -376,21 +400,39 @@
   const REGIONS = [["world", "World", [-170, -56, 180, 80]], ["europe", "Europe", [-12, 35, 47, 62]], ["asia", "Asia", [28, -10, 150, 60]], ["americas", "Americas", [-128, -45, -32, 55]], ["africa", "Africa & Middle East", [-20, -36, 62, 42]]];
   const REDLANES = { mx: 1, ref: 1, rev: 1, dis: 1, tri: 1 };
   function atApply() { $("at").setAttribute("viewBox", f1(at.x) + " " + f1(at.y) + " " + at.w.toFixed(2) + " " + at.h.toFixed(2)); atDraw(); }
-  function atFit(box) {
+  function atFit(box, smooth) {
     const r = $("at-wrap").getBoundingClientRect(); if (!r.width || !r.height) return;
     at.W = r.width; at.H = r.height;
     const asp = r.width / r.height; let w = box[2] - box[0], h = box[3] - box[1];
     const cx = (box[0] + box[2]) / 2 + 180, cy = 90 - (box[1] + box[3]) / 2;
     if (w / h < asp) w = h * asp; else h = w / asp;
+    if (smooth) return atTween(cx - w / 2, cy - h / 2, w, h);
+    cancelAnimationFrame(at.raf);
     at.x = cx - w / 2; at.y = cy - h / 2; at.w = w; at.h = h; atApply();
   }
-  function atZoom(f, px, py) {
+  /* v10: region changes, the zoom buttons and "find it on the map" travel instead of cutting */
+  function atTween(x2, y2, w2, h2) {
+    cancelAnimationFrame(at.raf);
+    if (REDUCED || !at.W) { at.x = x2; at.y = y2; at.w = w2; at.h = h2; atApply(); return; }
+    const c0 = [at.x + at.w / 2, at.y + at.h / 2], c1 = [x2 + w2 / 2, y2 + h2 / 2], w0 = at.w, asp = at.h / at.w, t0 = performance.now(), D = 460;
+    const step = now => {
+      const u = Math.min(1, (now - t0) / D), e = u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      const w = u === 1 ? w2 : w0 * Math.pow(w2 / w0, e), h = u === 1 ? h2 : w * asp;
+      at.w = w; at.h = h; at.x = c0[0] + (c1[0] - c0[0]) * e - w / 2; at.y = c0[1] + (c1[1] - c0[1]) * e - h / 2;
+      atApply();
+      if (u < 1) at.raf = requestAnimationFrame(step);
+    };
+    at.raf = requestAnimationFrame(step);
+  }
+  function atZoom(f, px, py, smooth) {
     const w2 = clamp(at.w / f, 6, 360 * Math.max(1, at.W / at.H / 2)), k = w2 / at.w;
     if (px == null) { px = at.W / 2; py = at.H / 2; }
-    const ux = at.x + px / at.W * at.w, uy = at.y + py / at.H * at.h;
-    at.x = ux - (ux - at.x) * k; at.y = uy - (uy - at.y) * k; at.w = w2; at.h = at.h * k;
-    at.x = clamp(at.x, -60, 420 - at.w); at.y = clamp(at.y, -30, 210 - at.h);
-    at.region = ""; atRegionChips(); atApply();
+    const ux = at.x + px / at.W * at.w, uy = at.y + py / at.H * at.h, h2 = at.h * k;
+    const x2 = clamp(ux - (ux - at.x) * k, -60, 420 - w2), y2 = clamp(uy - (uy - at.y) * k, -30, 210 - h2);
+    at.region = ""; atRegionChips();
+    if (smooth) return atTween(x2, y2, w2, h2);
+    cancelAnimationFrame(at.raf);
+    at.x = x2; at.y = y2; at.w = w2; at.h = h2; atApply();
   }
   function alignAt(row, y) { for (const s of row.seg) if (y >= s[0] && y < s[1]) return s[2]; return null; }
   function atDraw() {
@@ -481,8 +523,8 @@
     $("at-regions").innerHTML = REGIONS.map(r => '<button class="chipbtn" data-r="' + r[0] + '">' + r[1] + "</button>").join("") + '<button class="chipbtn" id="at-zi" title="Zoom in">+</button><button class="chipbtn" id="at-zo" title="Zoom out">−</button>';
     $("at-regions").addEventListener("click", e => {
       const b = e.target.closest("[data-r]");
-      if (b) { at.region = b.dataset.r; atRegionChips(); atFit(REGIONS.find(r => r[0] === at.region)[2]); }
-      else if (e.target.id === "at-zi") atZoom(1.6); else if (e.target.id === "at-zo") atZoom(1 / 1.6);
+      if (b) { at.region = b.dataset.r; atRegionChips(); atFit(REGIONS.find(r => r[0] === at.region)[2], true); }
+      else if (e.target.id === "at-zi") atZoom(1.6, null, null, true); else if (e.target.id === "at-zo") atZoom(1 / 1.6, null, null, true);
     });
     $("at-modes").addEventListener("click", e => { const b = e.target.closest("[data-m]"); if (b) atMode(b.dataset.m); });
     built.atYear = yearCtl($("at-year"), { min: 1500, max: 2026, rate: 3, ms: 70, get: () => state.atYear, set: y => { state.atYear = y; atDraw(); },
@@ -523,14 +565,14 @@
       svg.classList.remove("drag");
       if (drag && ptr.size === 0) {
         if (drag.moved) { atRegionChips(); atDraw(); }
-        else if (drag.g && drag.g.dataset.zoom) { const b = drag.g.dataset.zoom.split(",").map(Number), pad = Math.max(2.5, (b[2] - b[0]) * .25, (b[3] - b[1]) * .25); at.region = ""; atRegionChips(); atFit([b[0] - 180 - pad, 90 - b[3] - pad, b[2] - 180 + pad, 90 - b[1] + pad]); }
+        else if (drag.g && drag.g.dataset.zoom) { const b = drag.g.dataset.zoom.split(",").map(Number), pad = Math.max(2.5, (b[2] - b[0]) * .25, (b[3] - b[1]) * .25); at.region = ""; atRegionChips(); atFit([b[0] - 180 - pad, 90 - b[3] - pad, b[2] - 180 + pad, 90 - b[1] + pad], true); }
         else select(drag.g ? drag.g.dataset.id : null);
         drag = null;
       }
     });
     svg.addEventListener("pointercancel", e => { ptr.delete(e.pointerId); drag = null; pinch = 0; svg.classList.remove("drag"); });
     svg.addEventListener("pointerleave", () => { tip.hidden = true; });
-    const refit = () => { if (state.view !== "atlas") return; const r = $("at-wrap").getBoundingClientRect(); if (!r.width) return; const cx = at.x + at.w / 2, cy = at.y + at.h / 2; at.W = r.width; at.H = r.height; at.h = at.w * r.height / r.width; at.x = cx - at.w / 2; at.y = cy - at.h / 2; atApply(); };
+    const refit = () => { if (state.view !== "atlas") return; const r = $("at-wrap").getBoundingClientRect(); if (!r.width) return; cancelAnimationFrame(at.raf); const cx = at.x + at.w / 2, cy = at.y + at.h / 2; at.W = r.width; at.H = r.height; at.h = at.w * r.height / r.width; at.x = cx - at.w / 2; at.y = cy - at.h / 2; atApply(); };
     if (window.ResizeObserver) new ResizeObserver(refit).observe($("at-wrap")); else window.addEventListener("resize", refit);
     built.atlas = true;
   }
@@ -544,7 +586,7 @@
   }
   function atFocus(n) {
     const x = n.at[1] + 180, y = 90 - n.at[0];
-    if (x < at.x + at.w * .08 || x > at.x + at.w * .92 || y < at.y + at.h * .08 || y > at.y + at.h * .92) { at.x = clamp(x - at.w / 2, -60, 420 - at.w); at.y = clamp(y - at.h / 2, -30, 210 - at.h); at.region = ""; atRegionChips(); atApply(); }
+    if (x < at.x + at.w * .08 || x > at.x + at.w * .92 || y < at.y + at.h * .08 || y > at.y + at.h * .92) { at.region = ""; atRegionChips(); atTween(clamp(x - at.w / 2, -60, 420 - at.w), clamp(y - at.h / 2, -30, 210 - at.h), at.w, at.h); }
   }
 
   /* ═════════════════════ THE MANIFESTO ═════════════════════ */
@@ -675,12 +717,17 @@
     if (v === "atlas") return '<div class="intro"><div class="sd-k">How to read it</div><div class="sd-t">Where doctrines are born</div><p style="margin-top:8px">Each dot is the place a doctrine, thinker or founding text first appeared. A numbered ring is a crowd — click it to zoom in. Paris, London and Berlin produced most of the nineteenth century\'s ideas; exile produced the rest (Brussels, Geneva, Zürich).</p><p>Click a dot to draw its lines of descent across the map: gold from its sources, blue to its offspring. <b>The Red Century</b> switches to the party-states, year by year.</p><div class="sd-k">Try</div><div>' + ["marxism", "leninism", "maoism", "guevarism", "neolib", "gandhism"].map(chip).join("") + "</div></div>";
     return "";
   }
+  let sideKey = "";
   function renderSide() {
     const side = $("dc-side"), n = state.sel ? BY[state.sel] : null;
     side.hidden = !n && (TEXTVIEWS[state.view] || mobile());
-    if (side.hidden) return;
-    side.innerHTML = n ? nodeCard(n) : introCard();
+    if (side.hidden) { sideKey = ""; return; }
+    side.innerHTML = '<div class="dc-card">' + (n ? nodeCard(n) : introCard()) + "</div>";
     if (n) side.scrollTop = 0;
+    /* ease the card in when its subject changes — not on the re-renders that follow the year sliders */
+    const key = n ? n.id : "intro:" + state.view + (state.view === "atlas" ? state.atMode : "");
+    if (key !== sideKey && !REDUCED && side.firstChild.animate) side.firstChild.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });
+    sideKey = key;
   }
 
   /* ═════════════════════ SELECTION · VIEWS · HASH ═════════════════════ */
@@ -697,7 +744,7 @@
     if (n && state.view === "atlas" && n.yr > state.atYear) { state.atYear = state.atMode === "red" ? clamp(n.yr, 1917, 2026) : 2026; built.atYear.show(); }
     if (n && n.f && !state.fams.has(n.f)) { state.fams.add(n.f); $("cp-fams").querySelectorAll("[data-f]").forEach(x => x.classList.toggle("on", state.fams.has(x.dataset.f))); }
     renderSide(); refresh();
-    if (n && o && o.focus) { if (state.view === "lineage") lnFocus(n.id); else if (state.view === "atlas") atFocus(n); }
+    if (n && o && o.focus) { if (state.view === "lineage") lnFocus(n.id); else if (state.view === "atlas") atFocus(n); else if (state.view === "compass") cpFocus(n); }
     pushHash();
   }
   function setView(v, o) {
@@ -785,9 +832,9 @@
       if (e.key >= "1" && e.key <= "6") setView(VIEWS[+e.key - 1]);
       else if (e.key === "Escape") select(null);
       else if (e.key === "/") { e.preventDefault(); $("dc-q").focus(); }
-      else if (state.view === "compass" && (e.key === "+" || e.key === "=")) cpZoom(1.5);
-      else if (state.view === "compass" && (e.key === "-" || e.key === "_")) cpZoom(1 / 1.5);
-      else if (state.view === "compass" && e.key === "0") { cp.k = 1; cp.tx = cp.ty = 0; drawCompass(); }
+      else if (state.view === "compass" && (e.key === "+" || e.key === "=")) cpZoom(1.5, null, null, true);
+      else if (state.view === "compass" && (e.key === "-" || e.key === "_")) cpZoom(1 / 1.5, null, null, true);
+      else if (state.view === "compass" && e.key === "0") cpTween(1, 0, 0);
     });
     window.addEventListener("hashchange", applyHash);
     window.addEventListener("resize", () => { if (!state.sel) renderSide(); });

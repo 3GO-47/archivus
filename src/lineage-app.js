@@ -459,13 +459,17 @@
     if (selected != null && nodeEls[selected]) nodeEls[selected].classList.remove("sel");
     selected = null;
     edgeEls.forEach(x => x.classList.remove("hl"));
+    setHash("");
   }
+  /* v10: the address follows the selection (lineage.html#n=<id>), so the frame can bring you back to it */
+  function setHash(h) { try { history.replaceState(null, "", h || (location.pathname + location.search)); } catch (_) {} }
   document.getElementById("bl-close").addEventListener("click", closePanel);
   const shortOf = id => byId[id].n.split(" - ")[0];
   const link = id => '<a data-go="' + id + '">' + shortOf(id) + "</a>";
   function select(id) {
     if (selected != null && nodeEls[selected]) nodeEls[selected].classList.remove("sel");
     selected = id;
+    setHash("#n=" + id);
     nodeEls[id].classList.add("sel");
     edgeEls.forEach(x => x.classList.toggle("hl", +x.dataset.a === id || +x.dataset.b === id));
     const n = byId[id];
@@ -580,4 +584,11 @@
   /* v8: open at reading zoom on a desk too — at 0.55 the names were ~5px; the minimap gives the overview */
   centerOn(PX(adam), PY(adam) + (phone ? 40 : 150), phone ? 0.95 : 0.9);
   window.addEventListener("resize", apply);
+  /* v10: deep links from the search palette and from the frame's memory */
+  function applyHash() {
+    const m = location.hash.match(/[#&]n=(\d+)/), n = m && byId[+m[1]];
+    if (n && selected !== n.i) { centerOn(PX(n), PY(n), Math.max(k, 0.9)); select(n.i); }
+  }
+  window.addEventListener("hashchange", applyHash);
+  applyHash();
 })();
