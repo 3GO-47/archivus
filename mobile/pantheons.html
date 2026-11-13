@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ARCHIVUS — The Pantheons</title>
+<meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a0c12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1018,6 +1019,165 @@ body.has-rail #masthead { padding-top: 9px; padding-bottom: 8px; }
 .w-door.war:hover { border-color: #ff8a73; box-shadow: 0 8px 26px rgba(210,69,47,0.25); }
 #bar #wr-link { font-family: var(--display); font-size: 10.5px; letter-spacing: 0.1em; color: var(--gold); text-decoration: none; border: 1px solid var(--gold-dim); border-radius: 4px; padding: 6px 10px; }
 
+/* ============================================================
+   v10 — ONE INSTRUMENT
+   · one header on every page (src/nav.js): brand · instruments · search
+     — the per-page mastheads are hidden once it is in place
+   · page-to-page: native cross-document view transitions where the
+     browser has them, a hand-made fade everywhere else
+   · search everything (Ctrl/⌘ K) · first-arrival title card
+   · gliding tab markers · eased view changes · quiet scrollbars
+   ============================================================ */
+html { background: var(--obsidian); color-scheme: dark; }
+* { scrollbar-width: thin; scrollbar-color: #2b3348 transparent; }
+::selection { background: rgba(201,162,39,0.34); color: #fff; }
+:focus-visible { outline: 1px solid var(--gold); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+
+/* ---- the header ---- */
+html.hdr-on #masthead { display: none !important; }
+html.hdr-on #bar > .sigil.mini, html.hdr-on #bar-title { display: none; }
+#hdr {
+  flex: 0 0 auto; height: 44px; display: flex; align-items: stretch; gap: 4px;
+  padding: 0 12px 0 14px; position: sticky; top: 0; z-index: 45;
+  background: linear-gradient(180deg, #0c0f18, #0a0c12);
+  border-bottom: 1px solid var(--line);
+  view-transition-name: hdr;
+}
+#hdr::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 22%, var(--gold) 50%, var(--gold-dim) 78%, transparent); opacity: 0.45;
+}
+.hdr-brand { display: flex; align-items: center; gap: 11px; flex: 0 0 auto; text-decoration: none; padding: 0 16px 0 2px; margin-right: 6px; border-right: 1px solid var(--line-faint); }
+.hdr-brand b { font-family: var(--engraved); font-weight: 600; font-size: 14px; letter-spacing: 0.26em; color: var(--gold-bright); transition: text-shadow 0.2s; }
+.hdr-brand:hover b { text-shadow: 0 0 14px rgba(232,196,85,0.55); }
+#hdr #rail { flex: 1 1 auto; min-width: 0; height: auto; padding: 0; background: none; border: 0; gap: 0; z-index: auto; }
+#hdr #rail a { border: 0; padding: 0 12px; position: relative; z-index: 1; }
+#hdr #rail a:hover { background: none; }
+#hdr #rail a.here { background: none; }
+#rail-pill {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0; opacity: 0; pointer-events: none;
+  border-bottom: 2px solid var(--gold);
+  background: linear-gradient(180deg, transparent 25%, rgba(201,162,39,0.13));
+  transition: transform 0.42s cubic-bezier(0.3, 0.85, 0.3, 1), width 0.42s cubic-bezier(0.3, 0.85, 0.3, 1), opacity 0.2s;
+}
+#omni-btn {
+  flex: 0 0 auto; align-self: center; display: inline-flex; align-items: center; gap: 8px; margin-left: 8px;
+  height: 28px; padding: 0 9px 0 10px; cursor: pointer;
+  background: var(--obsidian-3); border: 1px solid var(--line); border-radius: 14px;
+  color: #8792ad; font: 500 11.5px var(--display); letter-spacing: 0.03em; white-space: nowrap;
+  transition: border-color 0.16s, color 0.16s, box-shadow 0.16s;
+}
+#omni-btn:hover { border-color: var(--gold-dim); color: var(--gold-bright); box-shadow: 0 0 14px rgba(201,162,39,0.14); }
+#omni-btn kbd, #omni kbd { font: 9.5px var(--mono); color: #7d87a1; border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; background: rgba(255,255,255,0.03); }
+#hdr #rail a { letter-spacing: 0.15em; }
+/* all eleven instruments must fit without scrolling, so their places never move from page to page */
+#hdr #rail a i { font-style: normal; }
+@media (max-width: 1900px) { #omni-btn span { display: none; } }
+@media (max-width: 1700px) { #hdr #rail a { padding: 0 9px; letter-spacing: 0.11em; gap: 6px; } .hdr-brand { padding-right: 12px; margin-right: 2px; } #hdr #rail a i { display: none; } }
+@media (max-width: 1500px) { #omni-btn kbd { display: none; } #omni-btn { padding: 0 9px; margin-left: 2px; } #hdr #rail a { padding: 0 7px; letter-spacing: 0.08em; gap: 5px; } }
+@media (max-width: 1400px) { .hdr-brand b { display: none; } .hdr-brand { padding-right: 9px; } #hdr #rail a { letter-spacing: 0.06em; } }
+@media (max-width: 1300px) { #hdr #rail a { padding: 0 6px; letter-spacing: 0.04em; font-size: 10px; } #hdr #rail a svg { display: none; } }
+@media (max-width: 1080px) { #hdr #rail a { padding: 0 5px; letter-spacing: 0.02em; font-size: 9.5px; } }
+@media (max-width: 700px) { #hdr { height: 42px; padding: 0 8px 0 10px; } #hdr #rail { height: auto; padding: 0; } }
+
+/* ---- page to page ---- */
+/* the opt-in rule itself (@view-transition { navigation: auto }) is added by src/nav.js, and only on http(s):
+   on file:// the browser has nothing to transition to and logs an aborted transition on every hop */
+::view-transition-old(root) { animation: vt-out 0.15s ease-in both; }
+::view-transition-new(root) { animation: vt-in 0.3s ease-out both; }
+::view-transition-old(hdr) { display: none; }          /* the header is the same object on both pages: no cross-fade, */
+::view-transition-new(hdr) { animation: none; }         /* just the live one, with its marker gliding */
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; } }
+@keyframes arrive { from { opacity: 0; } }
+html.vtf.arriving body > :not(#hdr):not(script):not(#omni) { animation: arrive 0.32s ease-out backwards; }
+html.vtf.leaving body > :not(#hdr):not(#omni) { opacity: 0; transition: opacity 0.12s ease-in; }
+@media (prefers-reduced-motion: reduce) { #rail-pill, .tab-pill { transition: none !important; } }
+
+/* ---- gliding markers for tab strips ---- */
+.glides { position: relative; }
+.glides > button.on, #wr-tabs.glides button.on { border-bottom-color: transparent; }
+.tab-pill { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; opacity: 0; background: var(--gold); pointer-events: none; box-shadow: 0 0 10px rgba(232,196,85,0.5);
+  transition: transform 0.32s cubic-bezier(0.3, 0.85, 0.3, 1), width 0.32s cubic-bezier(0.3, 0.85, 0.3, 1), opacity 0.2s; }
+
+/* ---- views ease in rather than cut ---- */
+@keyframes view-in { from { opacity: 0; transform: translateY(5px); } }
+@media (prefers-reduced-motion: no-preference) { .wr-view:not([hidden]) { animation: view-in 0.26s ease-out; } }
+
+/* ---- the first-arrival title card ---- */
+#arrive-card {
+  position: fixed; left: 0; bottom: 92px; z-index: 44; pointer-events: none; max-width: min(640px, 92vw);
+  padding: 14px 70px 15px 22px; border-left: 2px solid var(--gold);
+  background: linear-gradient(90deg, rgba(8,10,16,0.94) 55%, rgba(8,10,16,0));
+  animation: card-pass 4.5s ease both;
+}
+#arrive-card b { display: block; font-family: var(--engraved); font-weight: 600; font-size: 21px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold-bright); }
+#arrive-card span { display: block; margin-top: 5px; font-family: var(--display); font-size: 13px; letter-spacing: 0.03em; color: var(--paper-dim); }
+@keyframes card-pass { 0% { opacity: 0; transform: translateX(-14px); } 9%, 78% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateX(-8px); } }
+
+/* ---- search everything ---- */
+#omni { position: fixed; inset: 0; z-index: 200; display: flex; justify-content: center; align-items: flex-start; padding-top: 11vh; background: rgba(4,5,9,0.62); backdrop-filter: blur(3px); animation: vt-in 0.14s ease-out; }
+#omni[hidden] { display: none; }
+#omni-box { width: min(680px, 94vw); background: #0e1119; border: 1px solid var(--gold-dim); border-radius: 10px; box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 40px rgba(201,162,39,0.08); overflow: hidden; animation: view-in 0.18s ease-out; }
+#omni-top { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); color: var(--gold); }
+#omni-top svg { width: 16px; height: 16px; flex: 0 0 auto; }
+#omni-q { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--paper); font: 15px var(--sans); }
+#omni-q::placeholder { color: #66708c; }
+#omni-list { max-height: min(56vh, 520px); overflow-y: auto; padding: 4px 0; }
+.om-h { padding: 9px 16px 4px; font: 9px var(--display); letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); }
+.om-row { display: flex; align-items: baseline; gap: 10px; width: 100%; text-align: left; background: none; border: 0; border-left: 2px solid transparent; color: var(--paper); cursor: pointer; padding: 7px 14px 7px 12px; font: 13.5px var(--sans); }
+.om-row.on { background: rgba(201,162,39,0.1); border-left-color: var(--gold); }
+.om-row i { flex: 0 0 92px; font: normal 9px var(--display); letter-spacing: 0.14em; text-transform: uppercase; color: var(--k); }
+.om-row b { flex: 0 1 auto; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 52%; }
+.om-row span { flex: 1 1 0; min-width: 0; font-size: 11.5px; color: #8d96af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.om-row em { flex: 0 0 auto; font: normal 10px var(--mono); color: #66708c; }
+.om-row.on em { color: var(--gold-bright); }
+.om-none { padding: 16px; font-size: 13px; color: #8d96af; }
+#omni-foot { display: flex; gap: 16px; align-items: center; padding: 8px 14px; border-top: 1px solid var(--line); font: 10.5px var(--display); color: #7d87a1; }
+#omni-count { margin-left: auto; font-family: var(--mono); font-size: 10px; }
+@media (max-width: 700px) { #omni { padding-top: 6vh; } .om-row i { flex-basis: 70px; } .om-row em { display: none; } .om-row span { display: none; } .om-row b { max-width: none; flex: 1; } #arrive-card { bottom: 70px; } #arrive-card b { font-size: 16px; } }
+
+/* ============================================================
+   v11 — SEEN AT A GLANCE
+   · the Archive: a reading of whatever is in view stays docked
+     beside the chart on wide screens (src/core.js, "the standing
+     digest"); lane names are legible; the portal fits one screen
+   · every instrument: long reading views are cut into sections,
+     one screen each, by a pinned row of section chips (src/nav.js)
+   ============================================================ */
+#dock-btn { display: none; }
+@media (min-width: 1180px) {
+  #dock-btn { display: inline-flex; }
+  body.docked #panel { position: relative; transform: none; transition: none; flex: 0 0 336px; width: 336px; max-width: none; box-shadow: none; padding: 16px 18px 14px; z-index: 5; }
+  body.docked #panel #panel-close { top: 10px; right: 10px; }
+  body.docked #panel-content { padding-top: 26px; }
+}
+#panel-oracle .dg-k { margin: 12px 0 6px; }
+#panel-oracle .o-span b { color: var(--gold-bright); font-weight: 500; }
+.dg-bars .o-bar-row { width: 100%; background: none; border: 0; padding: 1px 0; margin: 0 0 2px; cursor: pointer; border-radius: 3px; }
+.dg-bars .o-bar-row:hover { background: rgba(255,255,255,0.05); } .dg-bars .o-bar-row.on .o-bar-name { color: var(--gold-bright); }
+.dg-bars .o-bar-name { width: 136px; font-size: 9.5px; white-space: nowrap; } .dg-bars .o-bar-track { height: 6px; } .dg-bars .o-bar-n { text-align: right; color: #8d96af; }
+.dg-list .o-evt { display: block; width: 100%; text-align: left; border-top: 0; border-right: 0; border-bottom: 0; font: 12.5px/1.3 var(--sans); padding: 3px 9px 4px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#panel-oracle .dg-list .o-evt .oe-date { display: inline; margin-right: 8px; color: #7d87a1; }
+#panel-oracle .dg-list .o-evt { margin-bottom: 3px; padding: 3px 9px 4px; font-size: 12.5px; }
+#panel-oracle .o-title { line-height: 1.25; }
+.dg-civs { display: flex; flex-wrap: wrap; gap: 4px; }
+.dg-civs span { font: 10.5px var(--display); color: var(--paper-dim); border: 1px solid var(--line); border-radius: 10px; padding: 2px 8px; white-space: nowrap; }
+.dg-civs i { font: normal 9px var(--mono); color: #66708c; }
+.lane-label { fill: #8b95b0; font-size: 10px; letter-spacing: 0.14em; }
+/* the portal: nine doors on a three-by-three board */
+#welcome-card { width: min(900px, 96vw); padding: 24px 26px 18px; }
+.w-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 760px) { .w-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .w-grid { grid-template-columns: 1fr; } }
+/* section chips for long views */
+.pg-off { display: none !important; }
+.pg-bar { position: sticky; top: -22px; z-index: 6; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: -22px calc(-1 * clamp(14px, 3vw, 40px)) 16px; padding: 9px clamp(14px, 3vw, 40px) 9px; background: linear-gradient(180deg, #0c0f18 78%, rgba(12,15,24,0.86)); border-bottom: 1px solid var(--line-faint); }
+.pg-bar::-webkit-scrollbar { display: none; }
+.pg-bar .chipbtn { flex: 0 0 auto; padding: 5px 12px; font-size: 11px; }
+.pg-bar .pg-all { margin-left: auto; opacity: .75; }
+
 </style>
 <style>
   #pn-toolbar { display:flex; align-items:center; gap:8px; padding:8px 16px; border-bottom:1px solid var(--line-faint); flex-wrap:wrap; }
@@ -1118,8 +1278,388 @@ body.has-rail #masthead { padding-top: 9px; padding-bottom: 8px; }
     #pn-panel { width:100vw; max-width:100vw; }
   }
 </style>
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
 </head>
 <body>
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script>
+/* ============================================================
+   ARCHIVUS — the frame (v10; eleven instruments since v11)
+   ------------------------------------------------------------
+   Eleven pages that should feel like one instrument. This script
+   is the first thing in every <body> and gives every page
+
+     · ONE HEADER, identical everywhere: brand, the eleven
+       instruments, and a search-everything button. It is in
+       place before the page paints, so nothing shifts. The
+       per-page mastheads stay in the markup as a no-script
+       fallback and are hidden (styles.css, "v10").
+     · A GLIDING MARKER under the current instrument: it starts
+       where it stood on the page you came from and slides over.
+     · SOFT PAGE CHANGES. Browsers with cross-document view
+       transitions cross-fade natively (see @view-transition in
+       styles.css) and prerender the page you hover; everywhere
+       else — including file:// — the stage fades out and in.
+     · MEMORY. Each instrument's last deep link is remembered
+       for the session, so coming back to one returns you to
+       where you were.
+     · SEARCH EVERYTHING (Ctrl/⌘ K): records, doctrines, battles,
+       leaders, bloodline, gods and transmissions in one palette;
+       each result opens the item itself on its own instrument.
+       The index (src/data/omni.js, built by tools/build-index.js)
+       is fetched the first time the palette opens.
+     · A title card the first time you enter an instrument, and
+       gliding markers for in-page tab strips.
+
+   To add an instrument: add one row to ITEMS.
+   ============================================================ */
+(function () {
+  "use strict";
+  const root = document.documentElement;
+  const I = d => '<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">' + d + "</svg>";
+  const ITEMS = [
+    { id: "archive", href: "index.html", label: "<i>The </i>Archive", tip: "Chronicle · Atlas · Wheel — all recorded history on one instrument",
+      icon: I('<circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/>') },
+    { id: "astrolabe", href: "astrolabe.html", label: "Astrolabe", tip: "The transit instrument — history in Keplerian rotation",
+      icon: I('<circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="3.2"/><path d="M8 1.8v12.4M1.8 8h12.4"/>') },
+    { id: "codex", href: "codex.html", label: "Codex", tip: "Read the whole archive as a book",
+      icon: I('<path d="M8 3.6C6.4 2.6 4 2.4 2 3v9.6c2-.6 4.4-.4 6 .6 1.6-1 4-1.2 6-.6V3c-2-.6-4.4-.4-6 .6zM8 3.6v9.6"/>') },
+    { id: "wars", href: "wars.html", label: "War Room", tip: "The two World Wars, day by day: fronts, powers, leaders, cost",
+      icon: I('<path d="M2.5 2.5l8.2 8.2M13.5 2.5l-8.2 8.2M9.2 12.2l3-3M6.8 12.2l-3-3M11.6 11.6l1.9 1.9M4.4 11.6l-1.9 1.9"/>') },
+    { id: "doctrines", href: "doctrines.html", label: "Doctrines", tip: "Every ideology on one compass — and Marxism dissected, from its ancestors to its heirs",
+      icon: I('<rect x="2.2" y="2.2" width="11.6" height="11.6" rx="1"/><path d="M8 2.2v11.6M2.2 8h11.6"/><circle cx="5" cy="5.2" r="1" fill="currentColor"/><circle cx="10.6" cy="10.4" r="1" fill="currentColor"/>') },
+    { id: "realms", href: "realms.html", label: "Realms", tip: "Every country weighed — how free, how governed, in whose name — and the United States in detail",
+      icon: I('<circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c2.4 2 2.4 10.4 0 12.4M8 1.8c-2.4 2-2.4 10.4 0 12.4"/>') },
+    { id: "coups", href: "coups.html", label: "Coups", tip: "Every seizure of power on record — by creed, by declared aim, and what came before",
+      icon: I('<path d="M2.6 11.4L2 5.2l3.4 2.6L8 3.4l2.6 4.4L14 5.2l-.6 6.2zM3.2 13.6h9.6"/>') },
+    { id: "lineage", href: "lineage.html", label: "Bloodline", tip: "The family tree — pantheon of Sumer to the lines of the Messiah",
+      icon: I('<path d="M8 2v4M8 6H4v3M8 6h4v3M4 9v2M12 9v2"/><circle cx="8" cy="2.4" r="1" fill="currentColor"/><circle cx="4" cy="12.4" r="1.3"/><circle cx="12" cy="12.4" r="1.3"/>') },
+    { id: "pantheons", href: "pantheons.html", label: "Pantheons", tip: "Seven divine family trees and the roads between religions",
+      icon: I('<path d="M2 5.6L8 2l6 3.6M3 6.5h10M4.3 6.8v5.4M8 6.8v5.4M11.7 6.8v5.4M2.5 13h11"/>') },
+    { id: "transmissions", href: "transmissions.html", label: "Transmissions", tip: "Claims of taught knowledge, against the documented record",
+      icon: I('<path d="M8 1.8l1.5 4.7 4.7 1.5-4.7 1.5L8 14.2 6.5 9.5 1.8 8l4.7-1.5z"/>') },
+    { id: "trial", href: "trial.html", label: "Trial", tip: "Ten questions drawn fresh from the archive",
+      icon: I('<path d="M8 2.2v11.3M5 13.5h6M3 4.2h10M3 4.2L1.5 8.4h3zM13 4.2l-1.5 4.2h3z"/>') }
+  ];
+  const FILES = ITEMS.map(it => it.href);
+  const fileOf = p => (p.split("/").pop() || "index.html").toLowerCase();
+  const file = fileOf(location.pathname);
+  const here = (ITEMS.find(it => it.href === file) || ITEMS[0]).id;
+  const POCKET = /\/mobile\/[^/]*$/.test(location.pathname);          /* the single-file builds live in /mobile/ */
+  const MAC = /Mac|iPhone|iPad/.test(navigator.platform || "");
+  const reduced = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const nativeVT = location.protocol !== "file:" && "CSSViewTransitionRule" in window;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const mem = {
+    get(k) { try { return sessionStorage.getItem("archivus:" + k); } catch (_) { return null; } },
+    set(k, v) { try { sessionStorage.setItem("archivus:" + k, v); } catch (_) {} }
+  };
+
+  root.classList.add("hdr-on");
+  if (nativeVT && !reduced) {
+    /* the browser cross-fades: each page opts in from a small script in its <head>, because the rule
+       must be known before the page first renders — too early for this file */
+  } else if (!reduced) {
+    /* no native cross-page transition here (file://, older browsers): fade the stage in by hand; the header never fades */
+    root.classList.add("vtf", "arriving");
+    setTimeout(() => root.classList.remove("arriving"), 520);
+  }
+
+  /* ───────────── the header ───────────── */
+  const hrefFor = it => it.href + (it.id !== here ? (mem.get("hash:" + it.id) || "") : "");
+  function buildHeader() {
+    if ($("hdr") || !document.body) return;
+    const h = document.createElement("header");
+    h.id = "hdr";
+    h.innerHTML =
+      '<a class="hdr-brand" href="index.html" title="Archivus — begin again at the Archive"><span class="sigil mini" aria-hidden="true"></span><b>ARCHIVUS</b></a>' +
+      '<nav id="rail" aria-label="Archivus instruments">' +
+      ITEMS.map(it => '<a href="' + hrefFor(it) + '" data-id="' + it.id + '" title="' + it.tip + '"' + (it.id === here ? ' class="here" aria-current="page"' : "") + ">" + it.icon + "<span>" + it.label + "</span></a>").join("") +
+      '<i id="rail-pill" aria-hidden="true"></i></nav>' +
+      '<button id="omni-btn" type="button" title="Search every instrument at once (' + (MAC ? "⌘" : "Ctrl ") + 'K)" aria-label="Search every instrument">' +
+      I('<circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3l3.4 3.4"/>') + "<span>Search everything</span><kbd>" + (MAC ? "⌘K" : "Ctrl K") + "</kbd></button>";
+    document.body.insertBefore(h, document.body.firstChild);
+    $("omni-btn").addEventListener("click", () => openOmni());
+    const cur = h.querySelector("#rail .here"), rail = $("rail");
+    if (cur && rail.scrollWidth > rail.clientWidth) rail.scrollLeft = cur.offsetLeft - (rail.clientWidth - cur.offsetWidth) / 2;
+    placePill(!document.prerendering);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => placePill(false));
+  }
+  /* the marker under the current instrument: starts where it stood on the previous page, then glides */
+  function placePill(travel) {
+    const rail = $("rail"), pill = $("rail-pill"), cur = rail && rail.querySelector(".here");
+    if (!cur || !pill) return;
+    const to = [cur.offsetLeft, cur.offsetWidth];
+    const set = p => { pill.style.transform = "translateX(" + p[0] + "px)"; pill.style.width = p[1] + "px"; };
+    let from = null;
+    if (travel && !reduced) { try { from = JSON.parse(mem.get("pill") || "null"); } catch (_) {} }
+    if (from && from[0] !== to[0]) {
+      pill.style.transition = "none"; set(from); pill.style.opacity = 1;
+      pill.getBoundingClientRect();                       /* commit the start position before the glide */
+      pill.style.transition = "";
+      requestAnimationFrame(() => set(to));
+    } else { set(to); pill.style.opacity = 1; }
+    if (!document.prerendering) mem.set("pill", JSON.stringify(to));
+  }
+
+  /* ───────────── memory: each instrument reopens where you left it ───────────── */
+  const saveState = () => { if (!document.prerendering) mem.set("hash:" + here, location.hash.length > 1 ? location.hash : ""); };
+  window.addEventListener("hashchange", saveState);
+  window.addEventListener("pagehide", saveState);
+  window.addEventListener("pageshow", e => {
+    root.classList.remove("leaving");                      /* back/forward cache restores the page as it was left */
+    if (e.persisted) document.querySelectorAll("#rail a[data-id]").forEach(a => { const it = ITEMS.find(x => x.id === a.dataset.id); if (it) a.setAttribute("href", hrefFor(it)); });
+  });
+
+  /* ───────────── leaving: instrument-to-instrument hops ───────────── */
+  function go(href) {
+    saveState();
+    if (!root.classList.contains("vtf")) { location.href = href; return; }
+    root.classList.add("leaving");
+    setTimeout(() => { location.href = href; }, 130);
+  }
+  window.ARCHIVUS_GO = go;
+  document.addEventListener("click", e => {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest && e.target.closest("a[href]");
+    if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
+    let u; try { u = new URL(a.getAttribute("href"), location.href); } catch (_) { return; }
+    if (u.protocol !== location.protocol || u.host !== location.host) return;
+    if (FILES.indexOf(fileOf(u.pathname)) < 0 || u.pathname === location.pathname) return;
+    saveState();
+    if (!root.classList.contains("vtf")) return;           /* the browser's own view transition takes it from here */
+    e.preventDefault();
+    go(u.href);
+  });
+
+  /* ───────────── prerender the page under the pointer (Chromium; ignored elsewhere) ───────────── */
+  function speculate() {
+    if (location.protocol === "file:" || !(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules"))) return;
+    const s = document.createElement("script");
+    s.type = "speculationrules";
+    s.textContent = JSON.stringify({ prerender: [{ where: { selector_matches: "#rail a, .hdr-brand" }, eagerness: "moderate" }] });
+    document.head.appendChild(s);
+  }
+
+  /* ───────────── a title card, the first time you enter an instrument ───────────── */
+  function titleCard() {
+    const mh = $("masthead"), tag = mh && mh.querySelector(".tagline"), h1 = mh && mh.querySelector("h1");
+    if (!tag || reduced || mem.get("seen:" + here)) return;
+    mem.set("seen:" + here, "1");
+    const d = document.createElement("div");
+    d.id = "arrive-card";
+    d.innerHTML = "<b>" + esc((h1 ? h1.textContent : "").split("·").pop().trim()) + "</b><span>" + esc(tag.textContent.trim()) + "</span>";
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 4600);
+  }
+
+  /* ───────────── gliding markers for in-page tab strips ───────────── */
+  function glide(box, sel) {
+    if (!box || box.querySelector(":scope > .tab-pill")) return;
+    const pill = document.createElement("i");
+    pill.className = "tab-pill"; pill.setAttribute("aria-hidden", "true");
+    box.appendChild(pill); box.classList.add("glides");
+    let first = true;
+    const place = () => {
+      const cur = box.querySelector(sel);
+      if (!cur) { pill.style.opacity = 0; return; }
+      if (first) pill.style.transition = "none";
+      pill.style.width = cur.offsetWidth + "px"; pill.style.transform = "translateX(" + cur.offsetLeft + "px)"; pill.style.opacity = 1;
+      if (first) { pill.getBoundingClientRect(); pill.style.transition = ""; first = false; }
+    };
+    new MutationObserver(place).observe(box, { attributes: true, subtree: true, attributeFilter: ["class"] });
+    window.addEventListener("resize", place);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+    place();
+  }
+  window.ARCHIVUS_GLIDE = glide;
+
+  /* ───────────── search everything ───────────── */
+  const KINDS = { go: ["Instrument", "#e8c455"], ev: ["Record", "#c9a227"], "do": ["Doctrine", "#e5484d"], th: ["Forerunner", "#d8c690"], ba: ["Battle", "#ff7a66"],
+    le: ["Leader", "#5b9be0"], bl: ["Bloodline", "#b48ef0"], gd: ["God", "#5bc8dd"], tx: ["Transmission", "#62c073"], cn: ["Country", "#49c9b8"], cu: ["Seizure", "#e08a3c"] };
+  const WHERE = { ev: "The Archive", "do": "Doctrines", th: "Doctrines", ba: "War Room", le: "War Room", bl: "Bloodline", gd: "Pantheons", tx: "Transmissions", cn: "Realms", cu: "Coups" };
+  const norm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const rec = r => ({ l: r[0], k: r[1], h: r[2], s: r[3] || "", w: r[4] || 0, nl: norm(r[0]), ns: norm(r[3] || "") });
+  const GO = ITEMS.map(it => rec([it.label.replace(/<[^>]+>/g, ""), "go", it.href, it.tip, 9]));
+  const om = { el: null, idx: null, state: "idle", hits: [], sel: 0, back: null };
+  function loadIndex() {
+    if (om.state !== "idle") return;
+    om.state = "loading";
+    const s = document.createElement("script");
+    s.src = (POCKET ? "../" : "") + "src/data/omni.js";
+    s.onload = () => { om.idx = (window.ARCHIVUS_OMNI || []).map(rec); om.state = "ready"; paintOmni(); };
+    s.onerror = () => { om.idx = []; om.state = "missing"; paintOmni(); };
+    document.head.appendChild(s);
+  }
+  function find(q) {
+    const toks = norm(q).split(/\s+/).filter(Boolean), nq = toks.join(" "), out = [];
+    if (!toks.length) return out;
+    const pool = GO.concat(om.idx || []);
+    for (let p = 0; p < pool.length; p++) {
+      const r = pool[p]; let sc = 0, ok = true;
+      for (let t = 0; t < toks.length; t++) {
+        const i = r.nl.indexOf(toks[t]);
+        if (i === 0) sc += 0; else if (i > 0 && /[\s\-·(,/'’:]/.test(r.nl[i - 1])) sc += 1; else if (i > 0) sc += 2.5;
+        else if (r.ns.indexOf(toks[t]) >= 0) sc += 4; else { ok = false; break; }
+      }
+      if (!ok) continue;
+      if (r.nl === nq) sc -= 3; else if (r.nl.indexOf(nq) === 0) sc -= 1.5;
+      out.push([sc - r.w * 0.07 + r.nl.length * 0.004, r]);
+    }
+    out.sort((a, b) => a[0] - b[0]);
+    return out.slice(0, 40).map(x => x[1]);
+  }
+  const recent = () => { try { return (JSON.parse(localStorage.getItem("archivus:recent") || "[]") || []).map(rec); } catch (_) { return []; } };
+  function remember(r) {
+    if (r.k === "go") return;
+    try {
+      const a = (JSON.parse(localStorage.getItem("archivus:recent") || "[]") || []).filter(x => x[2] !== r.h);
+      a.unshift([r.l, r.k, r.h, r.s]);
+      localStorage.setItem("archivus:recent", JSON.stringify(a.slice(0, 7)));
+    } catch (_) {}
+  }
+  function paintOmni() {
+    if (!om.el || om.el.hidden) return;
+    const q = $("omni-q").value.trim(), list = $("omni-list");
+    let h = "";
+    const row = (r, i) => '<button type="button" class="om-row' + (i === om.sel ? " on" : "") + '" data-i="' + i + '"><i style="--k:' + KINDS[r.k][1] + '">' + KINDS[r.k][0] + "</i><b>" + esc(r.l) + "</b><span>" + esc(r.s) + "</span><em>" + (WHERE[r.k] || "open") + " ⟶</em></button>";
+    if (!q) {
+      const rc = recent();
+      om.hits = rc.concat(GO);
+      if (rc.length) h += '<div class="om-h">Recently opened</div>' + rc.map((r, i) => row(r, i)).join("");
+      h += '<div class="om-h">The instruments</div>' + GO.map((r, i) => row(r, i + rc.length)).join("");
+    } else {
+      om.hits = find(q);
+      h = om.hits.length ? om.hits.map(row).join("") : '<div class="om-none">' + (om.state === "loading" ? "Opening the index…" : "Nothing by that name in any instrument.") + "</div>";
+    }
+    if (om.state === "missing") h += '<div class="om-none">The full index is not available in this copy — instruments only.</div>';
+    list.innerHTML = h;
+    const on = list.querySelector(".om-row.on"); if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest" });
+    $("omni-count").textContent = om.state === "ready" ? om.idx.length.toLocaleString() + " entries across eleven instruments" : om.state === "loading" ? "opening the index…" : "";
+  }
+  function openOmni(seed) {
+    if (!om.el) {
+      const d = document.createElement("div");
+      d.id = "omni"; d.hidden = true;
+      d.innerHTML = '<div id="omni-box" role="dialog" aria-modal="true" aria-label="Search every instrument"><div id="omni-top">' + I('<circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3l3.4 3.4"/>') +
+        '<input id="omni-q" type="text" autocomplete="off" spellcheck="false" placeholder="Search every instrument — a record, a doctrine, a battle, a god…" aria-label="Search every instrument"><kbd>Esc</kbd></div>' +
+        '<div id="omni-list" role="listbox"></div><div id="omni-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span id="omni-count"></span></div></div>';
+      document.body.appendChild(d);
+      om.el = d;
+      d.addEventListener("mousedown", e => { if (e.target === d) closeOmni(); });
+      $("omni-q").addEventListener("input", () => { om.sel = 0; paintOmni(); });
+      $("omni-list").addEventListener("click", e => { const b = e.target.closest(".om-row"); if (b) pick(om.hits[+b.dataset.i]); });
+      $("omni-list").addEventListener("mousemove", e => { const b = e.target.closest(".om-row"); if (b && +b.dataset.i !== om.sel) { om.sel = +b.dataset.i; $("omni-list").querySelectorAll(".om-row").forEach(x => x.classList.toggle("on", x === b)); } });
+    }
+    om.back = document.activeElement;
+    om.el.hidden = false; root.classList.add("omni-open");
+    const q = $("omni-q"); q.value = seed || ""; om.sel = 0;
+    loadIndex(); paintOmni();
+    q.focus();
+  }
+  function closeOmni() {
+    if (!om.el || om.el.hidden) return;
+    om.el.hidden = true; root.classList.remove("omni-open");
+    if (om.back && om.back.focus) { try { om.back.focus(); } catch (_) {} }
+  }
+  function pick(r) {
+    if (!r) return;
+    remember(r); closeOmni();
+    const parts = r.h.split("#");
+    if (fileOf(parts[0]) === file) { if (parts[1]) location.hash = parts[1]; return; }      /* already on that instrument */
+    go(r.h);
+  }
+  window.ARCHIVUS_SEARCH = openOmni;
+  /* capture phase: the palette owns the keyboard while it is open, and Ctrl/⌘ K works on every page */
+  document.addEventListener("keydown", e => {
+    const open = om.el && !om.el.hidden;
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key === "k" || e.key === "K")) { e.preventDefault(); e.stopPropagation(); if (open) closeOmni(); else openOmni(); return; }
+    if (!open) return;
+    e.stopPropagation();
+    if (e.key === "Escape") { e.preventDefault(); closeOmni(); }
+    else if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (om.hits.length) { om.sel = (om.sel + (e.key === "ArrowDown" ? 1 : om.hits.length - 1)) % om.hits.length; paintOmni(); } }
+    else if (e.key === "Enter") { e.preventDefault(); pick(om.hits[om.sel]); }
+    else if (e.key === "Tab") { e.preventDefault(); }
+  }, true);
+
+  /* ───────────── once the page is parsed ───────────── */
+  /* ───────────── long views, one section at a time (v11) ─────────────
+     The War Room and the Doctrines have reading views that ran to many screens. Any scrolling view
+     (.wr-scroll) whose content is cut by section headings (.wr-h, or the Manifesto's .mf-sec) now
+     gets a row of section chips pinned to its top and shows one section at a time — the headings
+     double as a table of contents. "All" restores the single long page. Nothing is removed from the
+     page: the other sections are only hidden, and a link that scrolls to something inside one
+     opens that section first. Views re-rendered by their instrument are re-cut automatically. */
+  const PG = new WeakMap();
+  const pgAll = () => { try { return localStorage.getItem("archivus-pager") === "all"; } catch (_) { return false; } };
+  const pgIsBreak = el => el.matches && el.matches(".wr-h, .mf-sec");
+  const pgLabel = el => { const hd = el.matches(".mf-sec") && el.querySelector("header"), t = (hd ? Array.from(hd.children).map(c => c.textContent).join(" · ") : el.textContent).replace(/\s+/g, " ").trim().split(" — ")[0]; return t.length > 34 ? t.slice(0, 32).replace(/\s+\S*$/, "") + "…" : t; };
+  function pgCut(sec) {
+    const box = sec.querySelector(":scope > .dc-doc") || sec, st = PG.get(sec) || { page: 0 };
+    const kids = Array.from(box.children).filter(k => !k.classList.contains("pg-bar")), heads = kids.filter(pgIsBreak);
+    let bar = sec.querySelector(":scope > .pg-bar");
+    if (heads.length < 2) { if (bar) bar.remove(); kids.forEach(k => k.classList.remove("pg-off")); st.obs && st.obs.takeRecords(); return; }
+    let g = 0, seen = false; kids.forEach(k => { if (pgIsBreak(k)) { if (seen) g++; seen = true; } k._pg = g; });
+    if (st.page !== "all" && !(st.page <= g)) st.page = 0;
+    kids.forEach(k => k.classList.toggle("pg-off", st.page !== "all" && k._pg !== st.page));
+    if (!bar) { bar = document.createElement("div"); bar.className = "pg-bar"; bar.setAttribute("role", "tablist"); sec.insertBefore(bar, sec.firstChild); }
+    bar.innerHTML = heads.map((h, i) => '<button type="button" class="chipbtn' + (i === st.page ? " on" : "") + '" data-pg="' + i + '">' + pgLabel(h).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])) + "</button>").join("") +
+      '<button type="button" class="chipbtn pg-all' + (st.page === "all" ? " on" : "") + '" data-pg="all" title="Every section on one long page">All</button>';
+    PG.set(sec, st);
+    st.obs && st.obs.takeRecords();                          /* our own edits are not a re-render */
+  }
+  function paginate() {
+    document.querySelectorAll(".wr-scroll").forEach(sec => {
+      if (PG.has(sec)) return;
+      const st = { page: pgAll() ? "all" : 0 }; PG.set(sec, st);
+      sec.addEventListener("click", e => {
+        const b = e.target.closest(".pg-bar [data-pg]"); if (!b) return;
+        st.page = b.dataset.pg === "all" ? "all" : +b.dataset.pg;
+        try { if (st.page === "all") localStorage.setItem("archivus-pager", "all"); else localStorage.removeItem("archivus-pager"); } catch (_) {}   /* "All" is remembered as a preference */
+        pgCut(sec); sec.scrollTop = 0;
+      });
+      st.obs = new MutationObserver(ms => { if (ms.some(m => m.target === sec || (m.target.classList && m.target.classList.contains("dc-doc") && m.target.parentNode === sec))) pgCut(sec); });
+      st.obs.observe(sec, { childList: true, subtree: true });
+      pgCut(sec);
+    });
+    /* a jump to something inside a hidden section opens that section first */
+    const siv = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function () {
+      const sec = this.closest && this.closest(".wr-scroll"), st = sec && PG.get(sec);
+      if (st) { pgCut(sec); const off = this.closest(".pg-off"); if (off) { st.page = off._pg; pgCut(sec); } }   /* cut first: the view may have just been re-rendered */
+      return siv.apply(this, arguments);
+    };
+  }
+
+  function ready() {
+    buildHeader();
+    /* the older per-page link buttons are redundant now — hidden, not deleted (no-script fallback) */
+    document.querySelectorAll("#bar > a[href], #masthead a[href], #as-bar a[href], #cx-bar a[href]").forEach(a => {
+      if (FILES.indexOf(fileOf((a.getAttribute("href") || "").split("#")[0])) >= 0) a.classList.add("legacy-nav");
+    });
+    document.body.classList.add("has-rail");
+    /* overlays that hang below the chrome (the Archive's filter drawer) read its height from here */
+    const hdr = $("hdr"), bar = $("bar");
+    const setH = () => root.style.setProperty("--chrome-h", ((hdr ? hdr.offsetHeight : 0) + (bar ? bar.offsetHeight : 0)) + "px");
+    setH(); window.addEventListener("resize", setH);
+    if (window.ResizeObserver && bar) new ResizeObserver(setH).observe(bar);
+    glide($("wr-tabs"), "button.on");
+    paginate();
+    speculate();
+    if (document.prerendering) document.addEventListener("prerenderingchange", () => { placePill(true); titleCard(); }, { once: true });
+    else titleCard();
+  }
+  buildHeader();                                             /* runs at the top of <body>: the header exists before first paint */
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ready); else ready();
+})();
+
+</script>
 
   <header id="masthead">
     <div class="sigil" aria-hidden="true"></div>
@@ -1340,79 +1880,6 @@ window.ARCHIVUS_PANTHEONS = {
     { a:"hephaestus", b:"enki", k:"p", t:"The smith-craftsman under the king: the maker's office. The board's Tubal-Cain 'the Vulcan' carries it into the Bloodline." }
   ]
 };
-
-</script>
-  <script>
-/* ============================================================
-   ARCHIVUS — the instrument rail (v8)
-   ------------------------------------------------------------
-   One navigation strip, identical on every page, so every
-   instrument is one click from every other. Before v8 each page
-   carried its own hand-picked subset of links (the Trial could
-   reach only two instruments; at 1440px the Archive's header
-   clipped Wheel and Astrolabe out of sight).
-
-   The rail is injected after the page's header. The older
-   per-page link buttons stay in the markup as a no-script
-   fallback and are hidden once the rail is in place.
-   To add an instrument: add one row to ITEMS.
-   ============================================================ */
-(function () {
-  "use strict";
-  const I = d => '<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">' + d + "</svg>";
-  const ITEMS = [
-    { id: "archive", href: "index.html", label: "The Archive", tip: "Chronicle · Atlas · Wheel — all recorded history on one instrument",
-      icon: I('<circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/>') },
-    { id: "astrolabe", href: "astrolabe.html", label: "Astrolabe", tip: "The transit instrument — history in Keplerian rotation",
-      icon: I('<circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="3.2"/><path d="M8 1.8v12.4M1.8 8h12.4"/>') },
-    { id: "codex", href: "codex.html", label: "Codex", tip: "Read the whole archive as a book",
-      icon: I('<path d="M8 3.6C6.4 2.6 4 2.4 2 3v9.6c2-.6 4.4-.4 6 .6 1.6-1 4-1.2 6-.6V3c-2-.6-4.4-.4-6 .6zM8 3.6v9.6"/>') },
-    { id: "wars", href: "wars.html", label: "War Room", tip: "The two World Wars, day by day: fronts, powers, leaders, cost", isNew: true,
-      icon: I('<path d="M2.5 2.5l8.2 8.2M13.5 2.5l-8.2 8.2M9.2 12.2l3-3M6.8 12.2l-3-3M11.6 11.6l1.9 1.9M4.4 11.6l-1.9 1.9"/>') },
-    { id: "doctrines", href: "doctrines.html", label: "Doctrines", tip: "Every ideology on one compass — and Marxism dissected, from its ancestors to its heirs", isNew: true,
-      icon: I('<rect x="2.2" y="2.2" width="11.6" height="11.6" rx="1"/><path d="M8 2.2v11.6M2.2 8h11.6"/><circle cx="5" cy="5.2" r="1" fill="currentColor"/><circle cx="10.6" cy="10.4" r="1" fill="currentColor"/>') },
-    { id: "lineage", href: "lineage.html", label: "Bloodline", tip: "The family tree — pantheon of Sumer to the lines of the Messiah",
-      icon: I('<path d="M8 2v4M8 6H4v3M8 6h4v3M4 9v2M12 9v2"/><circle cx="8" cy="2.4" r="1" fill="currentColor"/><circle cx="4" cy="12.4" r="1.3"/><circle cx="12" cy="12.4" r="1.3"/>') },
-    { id: "pantheons", href: "pantheons.html", label: "Pantheons", tip: "Seven divine family trees and the roads between religions",
-      icon: I('<path d="M2 5.6L8 2l6 3.6M3 6.5h10M4.3 6.8v5.4M8 6.8v5.4M11.7 6.8v5.4M2.5 13h11"/>') },
-    { id: "transmissions", href: "transmissions.html", label: "Transmissions", tip: "Claims of taught knowledge, against the documented record",
-      icon: I('<path d="M8 1.8l1.5 4.7 4.7 1.5-4.7 1.5L8 14.2 6.5 9.5 1.8 8l4.7-1.5z"/>') },
-    { id: "trial", href: "trial.html", label: "Trial", tip: "Ten questions drawn fresh from the archive",
-      icon: I('<path d="M8 2.2v11.3M5 13.5h6M3 4.2h10M3 4.2L1.5 8.4h3zM13 4.2l-1.5 4.2h3z"/>') }
-  ];
-  const file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
-  const here = (ITEMS.find(it => it.href === file) || ITEMS[0]).id;
-  const FILES = ITEMS.map(it => it.href);
-
-  function build() {
-    const header = document.getElementById("bar") || document.getElementById("masthead");
-    if (!header || document.getElementById("rail")) return;
-    const rail = document.createElement("nav");
-    rail.id = "rail";
-    rail.setAttribute("aria-label", "Archivus instruments");
-    rail.innerHTML = ITEMS.map(it =>
-      '<a href="' + it.href + '" title="' + it.tip + '"' + (it.id === here ? ' class="here" aria-current="page"' : "") + ">" +
-      it.icon + "<span>" + it.label + "</span>" + (it.isNew && it.id !== here ? '<b class="new">new</b>' : "") + "</a>").join("");
-    header.parentNode.insertBefore(rail, header.nextSibling);
-
-    /* the old ad-hoc link buttons are now redundant — hide, don't delete (no-script fallback).
-       The Archive keeps its Astrolabe button inside the view switch. */
-    document.querySelectorAll("#bar > a[href], #masthead a[href], #as-bar a[href], #cx-bar a[href]").forEach(a => {
-      const f = (a.getAttribute("href") || "").split("#")[0].toLowerCase();
-      if (FILES.indexOf(f) >= 0) a.classList.add("legacy-nav");
-    });
-    document.body.classList.add("has-rail");
-
-    /* overlays that sit under the chrome (the filter drawer) read its height from here */
-    const setH = () => document.documentElement.style.setProperty("--chrome-h", (header.offsetHeight + rail.offsetHeight) + "px");
-    setH();
-    window.addEventListener("resize", setH);
-    if (window.ResizeObserver) new ResizeObserver(setH).observe(header);
-    const cur = rail.querySelector(".here");
-    if (cur && cur.scrollIntoView && rail.scrollWidth > rail.clientWidth) cur.scrollIntoView({ block: "nearest", inline: "center" });
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build); else build();
-})();
 
 </script>
   <script>
@@ -1645,7 +2112,10 @@ window.ARCHIVUS_PANTHEONS = {
   /* ---- selection panel ---- */
   const panel = document.getElementById("pn-panel");
   function closePanel() { panel.classList.remove("open"); document.querySelectorAll(".pn-node.sel").forEach(n => n.classList.remove("sel")); arcEls.forEach(a => a.classList.remove("sel")); }
-  document.getElementById("pn-close").addEventListener("click", closePanel);
+  /* v10: the address follows the selection (pantheons.html#g=<id>), so the frame can bring you back to it */
+  let shown = null;
+  function setHash(h) { try { history.replaceState(null, "", h || (location.pathname + location.search)); } catch (_) {} }
+  document.getElementById("pn-close").addEventListener("click", () => { closePanel(); shown = null; setHash(""); });
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const link = id => '<a data-go="' + id + '">' + esc(byId[id].n) + "</a>";
   function wirePanelLinks() {
@@ -1654,6 +2124,7 @@ window.ARCHIVUS_PANTHEONS = {
   }
   function selectGod(id) {
     closePanel();
+    shown = id; setHash("#g=" + id);
     const g = byId[id];
     nodeEls[id].classList.add("sel");
     const c = PAN[g.pa].color;
@@ -1757,11 +2228,18 @@ window.ARCHIVUS_PANTHEONS = {
   });
 
   fit();
-  /* a phone opens on the Mesopotamian sky at reading zoom, not the whole tiny heavens */
-  if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches && clusterX.meso != null) {
-    centerOn(clusterX.meso + clusterW.meso / 2, clusterY.meso + clusterH.meso / 2, 0.85);
+  /* open on the Mesopotamian sky at reading zoom, not the whole tiny heavens (v10: on a desk as well as a phone —
+     at "fit" the names are a few pixels tall; "Fit all" is one click away) */
+  const phone = window.matchMedia && window.matchMedia("(max-width: 760px)").matches;
+  if (clusterX.meso != null) centerOn(clusterX.meso + clusterW.meso / 2, clusterY.meso + clusterH.meso / 2, phone ? 0.85 : 0.8);
+  window.addEventListener("resize", apply);          /* keep the reader's place; "Fit all" restores the overview */
+  /* v10: deep links from the search palette and from the frame's memory */
+  function applyHash() {
+    const m = location.hash.match(/[#&]g=([\w-]+)/), g = m && byId[m[1]];
+    if (g && shown !== g.id && pos[g.id]) { centerOn(pos[g.id].x, pos[g.id].y, Math.max(k, 0.95)); selectGod(g.id); }
   }
-  window.addEventListener("resize", fit);
+  window.addEventListener("hashchange", applyHash);
+  applyHash();
 })();
 
 </script>
