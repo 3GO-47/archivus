@@ -107,8 +107,16 @@
   }
   #masthead a.back:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.2); }
 </style>
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
 </head>
 <body>
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
 
   <header id="masthead">
     <div class="sigil" aria-hidden="true"></div>
@@ -141,7 +149,6 @@
   </main>
 
   <script src="src/data/transmissions.js"></script>
-  <script src="src/nav.js"></script>
   <script>
   (function () {
     "use strict";

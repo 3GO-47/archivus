@@ -8,13 +8,22 @@
 <meta property="og:title" content="ARCHIVUS — Oracle of Recorded History">
 <meta property="og:description" content="All of human history on one instrument: 628 sourced events, both World Wars on an animated map, seven pantheons, one bloodline, the anticipated future — explorable, readable, and quizzing you back.">
 <meta property="og:type" content="website">
+<meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a0c12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="src/styles.css">
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
 </head>
 <body class="app">
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
 
   <!-- single compact command bar -->
   <header id="bar">
@@ -31,6 +40,7 @@
     <div class="toolbar-spacer"></div>
     <button id="tours-btn" class="tool-btn accent" title="Narrative tours — the oracle walks you along a thread (T)">Tours</button>
     <button id="oracle-btn" class="tool-btn accent" title="Ask the oracle about this window (O)">Oracle</button>
+    <button id="dock-btn" class="tool-btn" title="Keep a reading of whatever is in view docked beside the chart">◨ In view</button>
     <button id="export-btn" class="tool-btn" title="Export current view as PNG">&#10515;</button>
     <button id="reset" class="tool-btn" title="Reset everything">Reset</button>
     <a id="tx-link" href="transmissions.html" title="Claims of taught knowledge vs the record">Transmissions</a>
@@ -192,14 +202,15 @@
         <a class="w-door" href="trial.html"><span class="w-ic">⚖️</span><b>Face the Trial</b><span>Ten questions drawn fresh from the archive. The oracle judges what you know</span></a>
         <a class="w-door war" href="wars.html"><span class="w-ic">⚔️</span><b>Enter the War Room</b><span>Both World Wars, day by day — moving fronts, Allies vs Axis, the leaders and their family ties</span></a>
         <a class="w-door doc" href="doctrines.html"><span class="w-ic">📜</span><b>Consult the Doctrines</b><span>Every ideology on one compass — and Marxism dissected: its ancestors, the Manifesto, and the quarrel of its heirs</span></a>
+        <a class="w-door" href="realms.html"><span class="w-ic">🌐</span><b>Weigh the Realms</b><span>Every country today — how free, how governed, in whose name — and the United States in detail</span></a>
+        <a class="w-door" href="coups.html"><span class="w-ic">👑</span><b>Study the Coups</b><span>Every seizure of power on record, by creed and declared aim — and what came before the red and the green ones</span></a>
         <button class="w-door" id="w-dice"><span class="w-ic">⚄</span><b>Surprise me</b><span>Fly to one of history's greatest records and pull its thread</span></button>
-        <button class="w-door wide" id="w-explore"><span class="w-ic">🗺</span><b>Explore freely</b><span>Scroll to zoom through 40,000 years · Atlas &amp; Wheel up top · click anything</span></button>
+        <button class="w-door" id="w-explore"><span class="w-ic">🗺</span><b>Explore freely</b><span>Scroll to zoom through 40,000 years · Atlas &amp; Wheel up top · click anything</span></button>
       </div>
       <div class="w-foot">press <b>?</b> anytime for the keys · click the ☉ sigil to reopen this portal</div>
     </div>
   </div>
 
-  <script src="src/nav.js"></script>
   <script src="src/core.js"></script>
   <script>
   /* the portal — the first-visit answer to "what do I do here?" */

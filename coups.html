@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Coups</title>
+<meta name="description" content="Every seizure of power on record: the coups worth knowing by name from Athens to last year, classed by creed and by declared aim; every coup attempt since 1950 and every regime ended by force since 1789; and two studies — the Marxist and the Islamist seizures — of what came before.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<link rel="stylesheet" href="src/wars.css">
+<link rel="stylesheet" href="src/doctrines.css">
+<link rel="stylesheet" href="src/realms.css">
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
+</head>
+<body class="wr dc rl cu">
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE COUPS</h1>
+      <p class="tagline">every seizure of power on record — who took it, under what banner, for what declared end, and what came before</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="wr-bar" aria-label="Views">
+    <div id="wr-tabs" role="tablist">
+      <button role="tab" data-v="roll" title="The seizures worth knowing by name, classed by creed and declared aim (1)">The Roll</button>
+      <button role="tab" data-v="record" title="Every coup attempt since 1950 and every forced ending since 1789, on the map (2)">The Record</button>
+      <button role="tab" data-v="red" title="The Marxist seizures beyond 1917, and what came before them (3)">The Red Seizures</button>
+      <button role="tab" data-v="green" title="The Islamist seizures beyond 1979, and what came before them (4)">The Green Seizures</button>
+      <button role="tab" data-v="patterns" title="What the whole record shows about when coups happen (5)">Patterns</button>
+    </div>
+    <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a coup or a country…  ( / )" autocomplete="off" aria-label="Find a coup or a country"></div>
+  </nav>
+
+  <main id="dc-main">
+    <div id="dc-stage">
+
+      <!-- THE ROLL -->
+      <section id="v-roll" class="wr-view dc-view">
+        <div class="dc-bar">
+          <div class="chips" id="ro-ideo" role="group" aria-label="Creed of those who took power"></div>
+          <div class="chips" id="ro-ok" role="group" aria-label="Outcome"></div>
+        </div>
+        <div class="pane" id="ro-pane">
+          <div class="chart-host" id="ro-strip" style="flex:1.15"></div>
+          <div class="grid2" style="grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);flex:1">
+            <div class="col"><h4>Creed against declared aim<small id="ro-hn"></small></h4><div class="mx-wrap" style="flex:1;overflow:auto" id="ro-heat"></div></div>
+            <div class="col"><h4 id="ro-lh"></h4><div class="cu-list" id="ro-list"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- THE RECORD -->
+      <section id="v-record" class="wr-view dc-view" hidden>
+        <div class="dc-bar">
+          <div class="chips" id="rc-m" role="group" aria-label="Measure"></div>
+          <span class="wr-note" id="rc-n"></span>
+        </div>
+        <div class="rl-map" id="rc-wrap">
+          <svg id="rc" role="img" aria-label="World map of coups by country"></svg>
+          <div class="rl-zoom"><button class="chipbtn" id="rc-zi" title="Zoom in">+</button><button class="chipbtn" id="rc-zo" title="Zoom out">−</button><button class="chipbtn" id="rc-zr" title="Reset the view">⟲</button></div>
+          <div id="rc-leg" class="plate rl-leg"></div>
+          <div id="rc-tip" class="plate rl-tip" hidden></div>
+        </div>
+        <div class="rank" style="padding-top:8px"><div class="chart-host" id="rc-years" style="height:104px;flex:none;min-height:0"></div></div>
+      </section>
+
+      <!-- THE RED SEIZURES / THE GREEN SEIZURES — one screen per section -->
+      <section id="v-red" class="wr-view dc-view" hidden><div class="dc-bar secs" id="red-secs"></div><div class="pane" id="red-pane"></div></section>
+      <section id="v-green" class="wr-view dc-view" hidden><div class="dc-bar secs" id="green-secs"></div><div class="pane" id="green-pane"></div></section>
+
+      <!-- PATTERNS -->
+      <section id="v-patterns" class="wr-view dc-view" hidden><div class="pane" id="pt-pane"></div></section>
+    </div>
+
+    <aside id="dc-side" aria-live="polite"></aside>
+  </main>
+
+  <noscript><p style="padding:24px">The Coups needs JavaScript. The data is readable in <code>src/data/coups.js</code>.</p></noscript>
+
+  <script src="assets/world2.js"></script>
+  <script src="src/data/coups.js"></script>
+  <script src="src/data/coups-record.js"></script>
+  <script src="src/realms-kit.js"></script>
+  <script src="src/coups-app.js"></script>
+</body>
+</html>

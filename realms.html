@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Realms</title>
+<meta name="description" content="Every country scored: Freedom House and V-Dem side by side, the form of government, the ideology each government claims, who is rising and who is sliding, coups and overthrows — and the United States in detail.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<link rel="stylesheet" href="src/wars.css">
+<link rel="stylesheet" href="src/doctrines.css">
+<link rel="stylesheet" href="src/realms.css">
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
+</head>
+<body class="wr dc rl">
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE REALMS</h1>
+      <p class="tagline">every country weighed — how free, how governed, in whose name, and which way it is moving</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="wr-bar" aria-label="Views">
+    <div id="wr-tabs" role="tablist">
+      <button role="tab" data-v="map" title="The world coloured by freedom, regime, ideology or drift (1)">The Map</button>
+      <button role="tab" data-v="compass" title="Every country placed by who owns the economy and how free its politics are (2)">The Compass</button>
+      <button role="tab" data-v="ledger" title="Every country in one sortable table (3)">The Ledger</button>
+      <button role="tab" data-v="drift" title="Who is rising, who is sliding, and where governments have fallen by force (4)">The Drift</button>
+      <button role="tab" data-v="usa" title="The United States: indices, timeline, disputes and five readings of what comes next (5)">United States</button>
+    </div>
+    <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a country…  ( / )" autocomplete="off" aria-label="Find a country"></div>
+  </nav>
+
+  <main id="dc-main">
+    <div id="dc-stage">
+
+      <!-- THE MAP -->
+      <section id="v-map" class="wr-view dc-view">
+        <div class="dc-bar">
+          <div class="chips" id="mp-modes" role="group" aria-label="Colour the map by"></div>
+        </div>
+        <div class="rl-map" id="mp-wrap">
+          <svg id="mp" role="img" aria-label="World map of countries coloured by the chosen measure"></svg>
+          <div class="plate rl-year yearctl" id="mp-year" title="V-Dem's record runs from 1900; Freedom House's score is the 2026 edition only"></div>
+          <div class="rl-zoom"><button class="chipbtn" id="mp-zi" title="Zoom in">+</button><button class="chipbtn" id="mp-zo" title="Zoom out">−</button><button class="chipbtn" id="mp-zr" title="Reset the view">⟲</button></div>
+          <div id="mp-leg" class="plate rl-leg"></div>
+          <div id="mp-tip" class="plate rl-tip" hidden></div>
+        </div>
+        <!-- every country as one bar, in order: the whole distribution at a glance, small states included -->
+        <div id="mp-rank" class="rank" aria-label="Every country in order of the chosen measure"></div>
+      </section>
+
+      <!-- THE COMPASS OF NATIONS -->
+      <section id="v-compass" class="wr-view dc-view" hidden>
+        <div class="dc-bar">
+          <div class="chips" id="nc-col" role="group" aria-label="Colour by"></div>
+          <div class="chips" id="nc-y" role="group" aria-label="Vertical axis"></div>
+          <span class="wr-note">Dot size is population. Across: who owns the economy and how secure property is — not left and right in the party sense.</span>
+        </div>
+        <div id="nc-wrap">
+          <svg id="nc" role="img" aria-label="Countries plotted by economic system and political freedom"></svg>
+          <div id="nc-tip" class="plate rl-tip" hidden></div>
+        </div>
+      </section>
+
+      <!-- THE LEDGER -->
+      <section id="v-ledger" class="wr-view dc-view" hidden>
+        <div class="dc-bar">
+          <div class="chips" id="lg-rg" role="group" aria-label="Region"></div>
+          <div class="chips" id="lg-st" role="group" aria-label="Freedom House status"></div>
+          <span class="wr-note" id="lg-n"></span>
+        </div>
+        <div id="lg-wrap"><table class="lg" id="lg"></table></div>
+      </section>
+
+      <!-- THE DRIFT — one screen per section -->
+      <section id="v-drift" class="wr-view dc-view" hidden>
+        <div class="dc-bar secs" id="dr-secs"></div>
+        <div class="pane" id="dr-pane"></div>
+      </section>
+
+      <!-- THE UNITED STATES — one screen per section -->
+      <section id="v-usa" class="wr-view dc-view" hidden>
+        <div class="dc-bar secs" id="us-secs"></div>
+        <div class="pane" id="us-pane"></div>
+      </section>
+    </div>
+
+    <aside id="dc-side" aria-live="polite"></aside>
+  </main>
+
+  <noscript><p style="padding:24px">The Realms needs JavaScript. The data is readable in <code>src/data/realms.js</code>.</p></noscript>
+
+  <script src="assets/world2.js"></script>
+  <script src="src/data/realms.js"></script>
+  <script src="src/data/realms-notes.js"></script>
+  <script src="src/data/realms-usa.js"></script>
+  <script src="src/realms-kit.js"></script>
+  <script src="src/realms-app.js"></script>
+</body>
+</html>

@@ -6,11 +6,13 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v9.0** — deployed 2026-11-11 (War Room, instrument rail and the Doctrines went up together, in four commits: data, engines and styles, pocket builds, pages). The live repository matches this folder byte for byte except `tools/` and `research/`, which are not published.
+**Live version: v11.0** — deployed 2026-11-13, together with v10 (the single header and search-everything), in four commits: data, engines and styles, pocket builds, pages. The live repository matches this folder byte for byte except `tools/`, `research/` and `exports/`, which are not published. New on the site: the Realms (`/realms.html`), the Coups (`/coups.html`), the Archive's density-stretched time axis and docked "In view" panel, and section chips on long views.
+
+**Earlier: v9.0** — deployed 2026-11-11 (War Room, instrument rail and the Doctrines went up together, in four commits: data, engines and styles, pocket builds, pages).
 
 How it was deployed: uploaded through github.com (`/upload/main/<folder>`), folders first and the root pages last, so no page ever pointed at a script that was not there yet. After any edit, run `node tools/build-mobile.js --zip` first so `mobile/` and `exports/archivus-site.zip` match the sources, then upload the changed files the same way. GitHub Pages caches files for ten minutes — hard-refresh (Ctrl+F5) to see a change at once.
 
-Deep links: `/doctrines.html#v=compass&i=maoism` · `/doctrines.html#v=red&c=menshevism,leninism,trotskyism,maoism` · `/doctrines.html#v=atlas&m=red&y=1980` · `/wars.html#w=ww2` · `/wars.html#w=ww1&v=leaders` · `/wars.html#w=ww2&i=stalingrad1942`.
+Deep links: `/realms.html#v=usa&s=read` · `/realms.html#v=map&m=row&y=1975` · `/coups.html#v=roll&i=prague` · `/coups.html#v=green&s=before` · `/doctrines.html#v=compass&i=maoism` · `/doctrines.html#v=red&c=menshevism,leninism,trotskyism,maoism` · `/doctrines.html#v=atlas&m=red&y=1980` · `/wars.html#w=ww2` · `/wars.html#w=ww1&v=leaders` · `/wars.html#w=ww2&i=stalingrad1942`.
 
 
 ## Fastest: send one file

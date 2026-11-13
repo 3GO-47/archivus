@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ARCHIVUS — The Bloodline</title>
+<meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a0c12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -109,8 +110,16 @@
   #bl-note { font-size:13px; line-height:1.6; color:var(--paper); margin-top:14px; padding-top:12px;
     border-top:1px solid var(--line-faint); }
 </style>
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
 </head>
 <body>
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
 
   <header id="masthead">
     <div class="sigil" aria-hidden="true"></div>
@@ -156,7 +165,6 @@
   <script src="src/data/events6.js"></script>
   <script src="src/data/lineage2.js"></script>
   <script src="src/data/lineage3.js"></script>
-  <script src="src/nav.js"></script>
   <script src="src/lineage-app.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 
 **Live: https://3go-47.github.io/archivus/**
 
-Archivus is a self-contained instrument for exploring the whole arc of human history — nine linked instruments over one hand-curated, fully-sourced archive of 628 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus. **v8.0** adds the War Room (both World Wars on an animated map), a navigation rail shared by every page, and a legibility pass over the Archive:
+Archivus is a self-contained instrument for exploring the whole arc of human history — eleven linked instruments over one hand-curated, fully-sourced archive of 628 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus. **v8.0** adds the War Room (both World Wars on an animated map), a navigation rail shared by every page, and a legibility pass over the Archive:
 
 | Instrument | File | What it holds |
 |---|---|---|
@@ -15,6 +15,8 @@ Archivus is a self-contained instrument for exploring the whole arc of human his
 | **The Codex** | `codex.html` | The whole archive as an open book: all 628 records in chronological order (the world-war records in true calendar order, to the day) on parchment spreads, era chapter headings, a winding gilt river of time down every margin, and causation threads (⟵ what it grew from / ⟶ what grew from it) that flip the book when clicked. Era/theme/region filters re-bind the book live (threads escape a filter gracefully); search, table of contents, folio navigation, swipe to turn, deep links |
 | **The War Room** *(new in v8)* | `wars.html` | The two World Wars, day by day. **The Map** — every country coloured by allegiance on the scrubber's date; front lines and occupied zones that move (Western & Eastern Fronts 1914–18; the Eastern Front, the Red Army's and the Western Allies' advances, Italy, the Desert War and the Japanese perimeter 1937–45); 87 offensives that draw themselves; 105 battles and turning points; seven theatres per war. **The Powers** — Allies vs Axis / Entente vs Central Powers as a face-off board plus a "ribbon of belligerence" showing who joined, switched sides or fell, and when. **The Leaders** — 112 monarchs, heads of government and commanders grouped by country, with 149 threads between them (blood kin, marriage, partnership, succession, rivalry, patron–client) — Queen Victoria's grandchildren on three thrones, the Big Three, the Axis — and, for 1939–45, where each figure was in the last war. **The Campaigns**, **The Cost** (Britannica / National WWII Museum casualty tables) and **Causes & Aftermath**. Deep-links both ways with the Archive |
 | **The Doctrines** *(new in v9)* | `doctrines.html` | Every major political ideology on one instrument. **The Compass** — 70 doctrines placed on the customary two axes (economic left–right × libertarian–authoritarian) in nine colour-coded families, each with a halo for how far its adherents range, plus 5 cross-cutting currents (nationalism, feminism, populism, anti-colonialism, Zionism) that have no single point; a year slider shows the chart filling from 1640; click a dot for the doctrine in its own terms, its critics' case, and its lines of descent. **The Lineage** — 133 nodes (75 doctrines + 58 forerunner thinkers, texts, movements and events) in 14 tradition lanes on a stretched time axis, joined by 307 typed links (*descends from* · *written against* · *split from*); click any node and its whole ancestry lights gold, its progeny blue. **The Manifesto** — the 1848 pamphlet dissected: publication facts, 15 paraphrased theses each set between where the idea came from and what its heirs did with it, the ten-point programme and its fate, the prefaces. **The Red Family** — the eight beliefs Marx's heirs share, a comparison matrix of 14 currents (Marx, Bernstein, Menshevism, Leninism, Luxemburgism, council communism, Trotskyism, Marxism–Leninism, Maoism, Titoism, Guevarism, Juche, Eurocommunism, Dengism) on ten dividing questions, the 14 schisms, and the record in power with defenders' and critics' cases and sourced ranges. **The Atlas** — every birthplace on the world map with lines of descent, and the party-states year by year (1917–today) by alignment. **The Library** — 140 founding texts in order. |
+| **The Realms** *(new in v11)* | `realms.html` | Every country today, from two independent measurements — Freedom House's *Freedom in the World 2026* (0–100) and V-Dem v16 (expert-coded indices, 1900–2025) — plus the archive's own notes on form of government and state doctrine. **The Map** — colour the world by freedom score, liberal democracy, regime type, form of government, claimed ideology, five-year drift or pressure signals; drag the year back to 1900; a *rank ribbon* under the map shows all 199 rated countries as one bar each, small states included. **The Compass** — the Doctrines chart places ideas; this one places states, by who owns the economy and how free politics are. **The Ledger** — all 200 in one sortable table. **The Drift** — who is rising, who is sliding, a six-condition strain count (labelled as a count, not a forecast), and every government ended by force since 2020. **United States** — the indices since 1900 and what moved in 2025; a timeline of 47 dated, sourced events (2000–Nov 2026); eight live disputes with each side stated in its own terms; legislation; and *five rival readings* of where the country is heading, each with the evidence for, the evidence against and what to watch — none of them the archive's own. |
+| **The Coups** *(new in v11)* | `coups.html` | Every seizure of power on record, in three layers. **The Roll** — 182 seizures worth knowing by name, 411 BCE–2025, each classed by *kind* (coup, palace coup, self-coup, legal seizure, revolution, civil war, foreign-imposed), by the *creed* of those who took power (nine classes) and by their *declared aim* (ten), drawn as one strip across 2,400 years and crossed in a creed × aim table. **The Record** — the systematic count: 492 coup attempts in 95 countries since 1950 (Powell & Thyne) and 1,171 regimes ended by force since 1790 (V-Dem), on the map and year by year. **The Red Seizures** and **The Green Seizures** — the two studies: 36 Marxist and 23 Islamist attempts beyond 1917 and 1979, each with the road taken and the conditions present beforehand, the conditions counted for those that held power and those that failed, the recurring patterns, what never happened, and the coups made *against* each. **Patterns** — nine small charts of what the whole record shows: decade, region, the coup trap, regime type and income the year before, what follows. |
 | **The Trial** | `trial.html` | Ten questions drawn fresh from the archive across five ordeals — Precedence, the Date, the Thread, the Horizon and (v8) the Alliance |
 
 The archive ends in **The Horizon — Anticipated** (2026–2140). Anticipated events are not a separate theme: they live in their real categories (a fusion plant is Science, a sea-level projection is Climate) and wear a dashed spectral-white ring in every view — `event.future` is a flag, filterable via the Horizon era. Each carries its epistemic grade: orbital mechanics is certain (Apophis 2029, Halley 2061, Venus 2117), schedules slip (Artemis, Mars), projections carry ranges (IPCC, UN), and claims (the Singularity) are recorded as claims, filed beside the prophecies they descend from. Every future record is wired to its historical ancestors — Fusion back to the Manhattan Project, AMR back to Fleming, the urban century back to Uruk.
@@ -38,7 +40,8 @@ Press **`?`** in the app for this card.
 | Key | Action |
 |---|---|
 | `1` `2` `3` | Chronicle · Atlas · Wheel |
-| `4` `5` `6` | Astrolabe · Codex · War Room (every instrument is also one click away on the rail under the header) |
+| `4` `5` `6` `7` | Astrolabe · Codex · War Room · Doctrines (every instrument is also one click away in the header) |
+| `Ctrl K` / `⌘ K` | **Search everything**, from any page — records, doctrines, battles, leaders, bloodline, gods, transmissions. A result opens the item itself on its own instrument |
 | `Space` | **Play the Atlas** (a 90s sweep — civilization ignites across the map, with a narrated feed and era banners) / **Spin the Wheel** (a golden hand sweeps your window, lighting events as it passes) |
 | `T` | **Narrative tours** — the oracle flies you along a thread, one flight at a time (The Written Word, The Long Plague, The Bomb's Ancestry, The Empire Relay, How Knowledge Travels) |
 | `O` | **Consult the Oracle** — a live synthesis of the current window: eras, theme balance, powers active, what begins, what ends, what runs beneath, and the Transmissions' claims upon it |
@@ -48,6 +51,33 @@ Press **`?`** in the app for this card.
 | `Esc` | Stop / close / deselect |
 
 Mouse: scroll = zoom (about the cursor; in the Wheel, about the pointer's angle; in the Atlas, geographic zoom to 16×) · drag = pan · click = inspect · era band = enter that era · overview brush = scrub · double-click map = reset. Every view and selection is a shareable URL (`#t0=-500&t1=1500&e=printing&v=chronicle`); ⤓ exports the current view as PNG.
+
+## The frame (v10)
+
+Eleven pages, one instrument. `src/nav.js` is the first thing in every `<body>` and gives each page the same header — brand, the eleven instruments, search — in place before first paint, so nothing moves between pages except a gold marker that glides from the instrument you left to the one you entered. Page changes cross-fade (native cross-document view transitions on http(s) in browsers that have them, with the hovered page prerendered; a hand-made fade on `file://` and elsewhere). Each instrument reopens where you left it: view, selection and time window are remembered for the session. The first time you enter an instrument a title card passes; after that, nothing interrupts.
+
+## Seen at a glance (v11)
+
+v11 was built to one rule: what matters should be on screen without scrolling for it.
+
+- **The Archive's time axis** is no longer pure log time. On that axis the 114 anticipated years of the Horizon took a third of the default view and the whole twentieth century under a twelfth. The axis is now log time *stretched where the record is thick* (`core.js`, "the time scale"): every stretch of time still gets room for its length, plus room for how much happened in it. The Horizon now takes about a tenth of the default view; 1900–2000 about a fifth. Pan, zoom, flights and the Wheel are unchanged.
+- **The standing digest.** On a wide screen a reading of whatever is in view stays docked beside the chart: the eras spanned, the count, what dominates (click a theme to filter by it), the defining records in time order (click one to fly to it) and the powers active. It re-reads the window as you pan, zoom or filter. `×` folds it away; `◨ In view` brings it back. Selecting a record or asking the Oracle uses the same panel.
+- **More names.** A label that has no room to the right of its node is now tried on the left before being dropped, and no label runs off the chart.
+- **Long views are cut into sections.** Any reading view that ran to many screens (the War Room's Powers and Cost, the Doctrines' Manifesto, Red Family and Library) now carries a pinned row of section chips and shows one section at a time; *All* restores the single long page and is remembered. A link that jumps to something inside a section opens it first. The two new instruments are built this way from the start: every view of the Realms and the Coups fits one screen at 1440×900.
+- **The portal** is a three-by-three board with doors to the two new instruments.
+
+## The Realms and the Coups: where the numbers come from (v11)
+
+`src/data/realms.js` and `src/data/coups-record.js` are **generated** — do not edit them by hand. `tools/build-realms.py` builds both from:
+
+- **V-Dem v16** (country-year dataset, 1789–2025), as distributed in the `vdemdata` R package: `python3 tools/build-realms.py path/to/vdem.RData` (needs `pip install pandas pyreadr pycountry`). It carries Powell & Thyne's coup counts and V-Dem's historical-regimes record.
+- **Freedom House, *Freedom in the World 2026*** — `research/data/freedomhouse-fiw2026.psv`, as captured from freedomhouse.org; every row is checked (political rights + civil liberties = total).
+
+Everything derived is computed in the open in that script: the five-year drift, the colour key for claimed ideology, and the six "pressure signals" (a coup attempt or a forced ending within ten years; the liberal-democracy index down 0.10+ in five years; V-Dem's political-violence and polarisation scores above stated thresholds; a military executive). The signals are a count of recorded conditions, labelled as such everywhere they appear — not a probability and not a forecast. One V-Dem entry is set aside as a plain miscoding and listed in the script (the United States' Civil Rights Act of 1964, entered as a coup).
+
+The hand-written layers are `realms-notes.js` (form of government for all 200; 57 short briefs), `realms-usa.js` (the United States) and `coups.js` (the roll and the two studies). Their house rule is in the file headers: **the archive does not pick a side.** Disputes are stated as each side states them; "where is it heading" is given as rival readings with evidence for and against; classing a seizure by creed and aim is declared judgment, and where calling an event a coup at all is disputed the entry says so. `node tools/validate-realms.js` checks all of it.
+
+**To add a seizure to the roll:** append a row to `list` in `coups.js` — `[id, year, name, place, iso3, kind, creed, aim, outcome, text, wikipedia-title]`. **To add it to a study:** add `[id, road, conditions]` to `red.cases` or `green.cases`. **To update the United States:** add rows to `tl`, and revise `topics`, `bills` and each reading's `pro` / `con` / `watch` in `realms-usa.js`.
 
 ## The design
 
@@ -66,6 +96,7 @@ All data lives in `src/data/` as window-global script files (no fetch, so `file:
 - `events7.js` — the bridge: every war item flagged `ar: [importance, theme, region, civ, related[]]` becomes an archive record (59 of them), so the wars' text lives in one place. Also publishes `ARCHIVUS_WAR_LINKS` (event → War Room deep link), exact `date` / `dateLabel` fields, and the two war tours.
 
 - `doctrines.js` / `doctrines-marx.js` — the Doctrines (schema at the top of each file). One `nodes` list drives four views: an **ideology** has a family `f` and compass coordinates `x` (−10 left … +10 right), `y` (−10 libertarian … +10 authoritarian), or `xc` + `span` if it cuts across the chart; a **root** is a forerunner (`k`: t/o/e). Every node carries `yr`, `pl`, `at`, `d` (what it holds, in its own terms), `c` (its critics' case), `u` (source) and `fr: [[parentId, kind, note]]` with kind `s` source / `x` against / `p` split. `doctrines-marx.js` holds the Manifesto dissection, the Red Family matrix, the schisms, the record and the party-state table.
+- `omni.js` — the search-everything index, **generated** by `tools/build-index.js` (1,598 rows: `[label, kind, href, sub, weight]`); fetched the first time the palette opens. Never edit by hand.
 - `events8.js` — the second bridge: nodes flagged `ar: [importance, theme, region, civ, title]` become archive records (19 of them, plus the Soviet famine and the Great Terror). Publishes `ARCHIVUS_DOCTRINE_LINKS` and two tours.
 
 **To add an event:** append to `events4.js` following the schema, add its coordinate to the same file's pattern (`at: [lat, lon]`), reload.
@@ -74,7 +105,7 @@ All data lives in `src/data/` as window-global script files (no fetch, so `file:
 
 **To add a doctrine:** append a node to `doctrines.js` with its family, coordinates, origin, `d`, `c`, `u` and `fr`; it appears on the Compass, Lineage, Atlas and Library at once. Placements are editorial conventions — keep the critics' case beside every doctrine. Validate with `node tools/validate-doctrines.js` (`--urls` lists every citation).
 
-**After any change:** `node tools/build-mobile.js --zip` rebuilds the nine single-file `mobile/` builds and `exports/archivus-site.zip`. Sourcing standards and the research trail live in `research/`.
+**After any change:** `node tools/build-mobile.js --zip` regenerates the search index and rebuilds the eleven single-file `mobile/` builds and `exports/archivus-site.zip`. Sourcing standards and the research trail live in `research/`.
 
 ## Epistemics
 
@@ -93,25 +124,31 @@ archivus/
 ├── codex.html            the Codex
 ├── wars.html             the War Room (v8)
 ├── doctrines.html        the Doctrines (v9)
+├── realms.html           the Realms (v11)
+├── coups.html            the Coups (v11)
 ├── lineage.html          the Bloodline
 ├── pantheons.html        the Pantheons
 ├── transmissions.html    the Transmissions codex
 ├── trial.html            the Trial
 ├── assets/               world.js (land + borders) · world2.js (176 countries)
 ├── src/
-│   ├── nav.js            the instrument rail shared by every page (v8)
+│   ├── nav.js            the frame: one header, page transitions, memory, search-everything (v10)
 │   ├── core.js           Archive engine (views, physics, oracle, play, tours)
 │   ├── wars-app.js       War Room engine (map, powers, leaders, campaigns, cost)
 │   ├── wars.css          War Room theme
 │   ├── doctrines-app.js  Doctrines engine (compass, lineage, manifesto, red family, atlas, library)
 │   ├── doctrines.css     Doctrines theme (builds on wars.css)
+│   ├── realms-app.js     Realms engine (map, compass, ledger, drift, United States)
+│   ├── coups-app.js      Coups engine (roll, record, the two studies, patterns)
+│   ├── realms-kit.js     shared by both: world map, year slider, tooltips, hash state
+│   ├── realms.css        theme for both (builds on doctrines.css)
 │   ├── *-app.js          one renderer per instrument
 │   ├── styles.css        the observatory theme (shared)
 │   └── data/             all datasets (see schema above)
-├── mobile/               single-file builds of all nine pages
-├── tools/                build-mobile.js · validate-wars.js · validate-doctrines.js
+├── mobile/               single-file builds of all eleven pages
+├── tools/                build-mobile.js · build-index.js · build-realms.py · validate-wars.js · validate-doctrines.js · validate-realms.js
 ├── exports/              archivus-site.zip (deploy-ready) · archivus-v7.2-backup.zip
-└── research/             sources, notes, provenance, expansion plans
+└── research/             sources, notes, provenance, expansion plans · data/ (Freedom House scores as captured)
 ```
 
 ## Version history
@@ -131,4 +168,22 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 - *Archive depth* — 21 new records in the history of ideas (628 total, zero dangling threads), two new tours (The Red Thread; Left and Right), a "Trace it in the Doctrines" link in 44 event panels, key `7`.
 - *Tooling* — `tools/validate-doctrines.js`.
 
-Current state: **v9.0** — nine instruments, all cross-linked through one rail, all datasets validated.
+**v10.0 — one instrument (2026-11-13)**
+- *One header* — the per-page mastheads and the separate rail are replaced by a single 44px header that is pixel-identical on all nine pages (it was at three different heights, and its items shifted when a "new" badge hid). Eight instruments gain ~40px of stage.
+- *Seamless hops* — cross-fades between pages, a gliding marker, prerender on hover, and per-instrument memory (leave the Doctrines on Maoism's lineage, come back to it).
+- *Search everything* — `Ctrl/⌘ K` on any page; 1,598 entries across every dataset; each result deep-links to the item. The Bloodline (`lineage.html#n=<id>`) and Pantheons (`pantheons.html#g=<id>`) gained deep links for it.
+- *Motion* — tab markers glide (War Room, Doctrines); views ease in; the Archive's Chronicle/Atlas/Wheel cross-fade; compass zoom, atlas region changes and "bring into view" are eased; the phone card slides up. All of it respects `prefers-reduced-motion`.
+- *Polish* — the Pantheons open at reading zoom instead of the unreadable seven-tree overview; quiet scrollbars; consistent focus rings and selection colour.
+- *Tooling* — `tools/build-index.js` (run automatically by `build-mobile.js`).
+
+**v11.0 — the Realms, the Coups, and seen at a glance (2026-11-13)**
+- *The Realms* — `realms.html`, described above: 200 countries and territories scored by Freedom House and V-Dem, with form of government, claimed ideology, drift and strain; the United States in detail.
+- *The Coups* — `coups.html`, described above: a classed roll of 182 seizures, the systematic record since 1789/1950, and the Marxist and Islamist studies.
+- *Seen at a glance* — the Archive's density-stretched time axis and standing digest; section chips for every long view; the three-by-three portal (see the section above).
+- *Search* — 1,981 entries: every country (`realms.html#v=map&c=<ISO3>`) and every seizure (`coups.html#v=roll&i=<id>`) is findable from any page.
+- *Header* — eleven instruments fit without scrolling from 768px up.
+- *Tooling* — `tools/build-realms.py`, `tools/validate-realms.js`. All 181 Wikipedia article links in the roll and the United States view were checked against the live encyclopedia on 13 Nov 2026: every one resolves.
+
+- Published to the live site on 2026-11-13, together with v10 — see `SHARE.md`.
+
+Current state: **v11.0** — eleven instruments behind one header, all datasets validated, live.
