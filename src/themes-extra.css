@@ -1,0 +1,27 @@
+/* ============================================================
+   ARCHIVUS — colourways, by hand. Appended verbatim to the generated src/themes.css
+   by tools/build-themes.js. Two kinds of thing live here and nothing else:
+     1. the colourway switch itself — its swatches show the three pages as they are,
+        so they must NOT pass through the rule;
+     2. the few places where the rule needs help, each with its reason.
+   ============================================================ */
+#tone { flex: 0 0 auto; align-self: center; display: inline-flex; align-items: center; gap: 6px; margin: 0 10px 0 8px; height: 28px; padding: 0 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--obsidian-3); }
+#tone button { width: 14px; height: 14px; border-radius: 50%; padding: 0; cursor: pointer; border: 1px solid #868b98; transition: transform .15s; }
+#tone button:hover { transform: scale(1.18); }
+#tone button[data-tone="blue"] { background: linear-gradient(135deg, #1d2f57 50%, #0a0c12 50%); }
+#tone button[data-tone="black"] { background: #000; }
+#tone button[data-tone="white"] { background: #fff; }
+#tone button.on { box-shadow: 0 0 0 2px var(--obsidian-3), 0 0 0 3.5px var(--gold); }
+#tone button:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+/* a narrow header shows only the current swatch; pressing it steps to the next colourway */
+@media (max-width: 1560px) {
+  #tone { gap: 0; padding: 0 7px; margin: 0 8px 0 6px; } #tone button:not(.on) { display: none; }
+  /* alone, a black disc on black or a white one on white says nothing: the lone button shows all three, and a gold rim */
+  #tone button.on { background: conic-gradient(from -60deg, #1d2f57 0 33.4%, #fff 0 66.7%, #000 0); border-color: var(--gold); box-shadow: none; width: 15px; height: 15px; }
+}
+@media (max-width: 840px) { #tone { border: 0; background: none; padding: 0 4px; margin: 0 4px 0 0; } }
+
+/* ---------- exceptions: where the general rule is not enough ---------- */
+/* on white an accent is already deepened to hold 4.5:1; fading it again would undo that */
+html[data-theme="white"] .as-blood text,
+html[data-theme="white"] .pn-plate-title { opacity: 1; }

@@ -12,7 +12,7 @@ body.dc { --anc: #e8c455; --desc: #7fd4ff; --against: #ff7a66; }
 .fdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; flex: 0 0 auto; }
 .chipbtn .fdot { margin-right: 5px; }
 .chipbtn.fam { display: inline-flex; align-items: center; }
-.chipbtn.fam:not(.on) { opacity: .42; }
+.chipbtn.fam:not(.on) { opacity: .56; }
 .yearctl { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--gold-bright); white-space: nowrap; }
 .yearctl input[type=range] { width: clamp(110px, 16vw, 220px); accent-color: var(--gold); }
 .yearctl .yc-v { min-width: 9ch; }
@@ -49,7 +49,7 @@ body.dc { --anc: #e8c455; --desc: #7fd4ff; --against: #ff7a66; }
 .cl { font-family: var(--display); font-size: 11px; fill: #d6d1c2; paint-order: stroke; stroke: rgba(10,12,18,.92); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
 .cl.p1 { font-weight: 600; font-size: 11.5px; fill: #f1ecdc; }
 .cl.sel { fill: var(--gold-bright); font-weight: 600; }
-.cl.dim { opacity: .28; }
+.cl.dim { opacity: .45; }
 .cp-ln { fill: none; stroke-width: 1; opacity: .2; }
 .cp-ln.hot { stroke-width: 1.7; opacity: .95; }
 .cp-ln.x { stroke-dasharray: 5 3; } .cp-ln.p { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }

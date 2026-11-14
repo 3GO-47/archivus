@@ -161,7 +161,7 @@
   el("circle", { class: "as-core-ring", cx: 0, cy: 0, r: R0 - 14 }, ringsG);
   el("text", { class: "as-core-label", x: 0, y: -2, "text-anchor": "middle" }, ringsG).textContent = "NOW";
   el("text", { class: "as-core-sub", x: 0, y: 12, "text-anchor": "middle" }, ringsG).textContent = "EVENT HORIZON · " + NOW + " CE";
-  el("text", { class: "as-core-sub", x: 0, y: 24, "text-anchor": "middle", opacity: 0.7 }, ringsG).textContent = "THE ANTICIPATED LIES WITHIN";
+  el("text", { class: "as-core-sub", x: 0, y: 24, "text-anchor": "middle" }, ringsG).textContent = "THE ANTICIPATED LIES WITHIN";
 
   /* ---------- stars ---------- */
   const hash = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };

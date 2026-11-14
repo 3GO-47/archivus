@@ -402,7 +402,7 @@
       const lbl = el("text", { class: "lane-label", x: 8, y: y + 12 }, layers.lanes);
       lbl.textContent = t.name;
       lbl.setAttribute("fill", t.color);
-      lbl.setAttribute("opacity", "0.6");
+      lbl.setAttribute("opacity", "0.9");
     });
     const yA = plotBottom();
     el("line", { class: "axis-line", x1: 0, y1: yA, x2: W, y2: yA }, layers.axis);
@@ -703,7 +703,7 @@
 
     const gy = plotBottom() - F.GUTTER_H / 2;
     el("line", { class: "lane-line", x1: 0, y1: plotBottom() - F.GUTTER_H, x2: W, y2: plotBottom() - F.GUTTER_H }, layers.map);
-    el("text", { class: "lane-label", x: 8, y: plotBottom() - F.GUTTER_H + 13, fill: "#8f9ab5", opacity: 0.6 }, layers.map)
+    el("text", { class: "lane-label", x: 8, y: plotBottom() - F.GUTTER_H + 13, fill: "#8f9ab5", opacity: 0.9 }, layers.map)
       .textContent = "Global currents (unplaced)";
 
     const gPlaced = el("g", { "clip-path": "url(#map-clip)" }, layers.events);

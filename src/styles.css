@@ -1067,6 +1067,7 @@ html.hdr-on #bar > .sigil.mini, html.hdr-on #bar-title { display: none; }
 @media (max-width: 1400px) { .hdr-brand b { display: none; } .hdr-brand { padding-right: 9px; } #hdr #rail a { letter-spacing: 0.06em; } }
 @media (max-width: 1300px) { #hdr #rail a { padding: 0 6px; letter-spacing: 0.04em; font-size: 10px; } #hdr #rail a svg { display: none; } }
 @media (max-width: 1080px) { #hdr #rail a { padding: 0 5px; letter-spacing: 0.02em; font-size: 9.5px; } }
+@media (max-width: 840px) { #hdr #rail a { padding: 0 3.5px; letter-spacing: 0; } }   /* room for the colourway switch (v12) */
 @media (max-width: 700px) { #hdr { height: 42px; padding: 0 8px 0 10px; } #hdr #rail { height: auto; padding: 0; } }
 
 /* ---- page to page ---- */
@@ -1164,4 +1165,4 @@ html.vtf.leaving body > :not(#hdr):not(#omni) { opacity: 0; transition: opacity 
 .pg-bar { position: sticky; top: -22px; z-index: 6; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: -22px calc(-1 * clamp(14px, 3vw, 40px)) 16px; padding: 9px clamp(14px, 3vw, 40px) 9px; background: linear-gradient(180deg, #0c0f18 78%, rgba(12,15,24,0.86)); border-bottom: 1px solid var(--line-faint); }
 .pg-bar::-webkit-scrollbar { display: none; }
 .pg-bar .chipbtn { flex: 0 0 auto; padding: 5px 12px; font-size: 11px; }
-.pg-bar .pg-all { margin-left: auto; opacity: .75; }
+.pg-bar .pg-all { margin-left: auto; }

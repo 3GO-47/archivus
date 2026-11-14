@@ -83,6 +83,7 @@
 
   /* ───────────── the header ───────────── */
   const hrefFor = it => it.href + (it.id !== here ? (mem.get("hash:" + it.id) || "") : "");
+  const TH = window.ARCHIVUS_THEME;                      /* absent only if src/theme.js failed to load */
   function buildHeader() {
     if ($("hdr") || !document.body) return;
     const h = document.createElement("header");
@@ -93,9 +94,16 @@
       ITEMS.map(it => '<a href="' + hrefFor(it) + '" data-id="' + it.id + '" title="' + it.tip + '"' + (it.id === here ? ' class="here" aria-current="page"' : "") + ">" + it.icon + "<span>" + it.label + "</span></a>").join("") +
       '<i id="rail-pill" aria-hidden="true"></i></nav>' +
       '<button id="omni-btn" type="button" title="Search every instrument at once (' + (MAC ? "⌘" : "Ctrl ") + 'K)" aria-label="Search every instrument">' +
-      I('<circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3l3.4 3.4"/>') + "<span>Search everything</span><kbd>" + (MAC ? "⌘K" : "Ctrl K") + "</kbd></button>";
+      I('<circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3l3.4 3.4"/>') + "<span>Search everything</span><kbd>" + (MAC ? "⌘K" : "Ctrl K") + "</kbd></button>" +
+      /* the colourway switch (src/theme.js): three swatches — the original blue, black, white */
+      (TH ? '<div id="tone" role="group" aria-label="Colourway">' + TH.ORDER.map(t => '<button type="button" data-tone="' + t + '"' + (t === TH.current ? ' class="on"' : "") + ' aria-pressed="' + (t === TH.current) + '" aria-label="Colourway: ' + TH.NAMES[t] + '" title="Colourway: ' + TH.NAMES[t] + (t === TH.current ? " (current — press to step to the next)" : "") + '"></button>').join("") + "</div>" : "");
     document.body.insertBefore(h, document.body.firstChild);
     $("omni-btn").addEventListener("click", () => openOmni());
+    if (TH) $("tone").addEventListener("click", e => {
+      const b = e.target.closest("[data-tone]"); if (!b) return;
+      const t = b.dataset.tone; saveState();
+      TH.set(t === TH.current ? TH.ORDER[(TH.ORDER.indexOf(t) + 1) % TH.ORDER.length] : t);
+    });
     const cur = h.querySelector("#rail .here"), rail = $("rail");
     if (cur && rail.scrollWidth > rail.clientWidth) rail.scrollLeft = cur.offsetLeft - (rail.clientWidth - cur.offsetWidth) / 2;
     placePill(!document.prerendering);

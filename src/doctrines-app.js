@@ -673,7 +673,7 @@
     h += '<div class="sd-t">' + esc(n.n) + '</div><div class="sd-d">' + yr(n) + " · " + esc(n.pl) + "</div><div>";
     if (n.f && !n.xc) {
       const q = quadOf(n), ax = Math.abs(n.x) < 1, ay = Math.abs(n.y) < 1;
-      if (!ax && !ay) h += '<span class="tag" style="border-color:' + q.c + ";color:" + q.c + '">' + q.n + "</span>";
+      if (!ax && !ay) h += '<span class="tag" style="border-color:' + q.c + ";color:" + (window.ARCHIVUS_THEME ? ARCHIVUS_THEME.tone(q.c, "ink", "blue") : q.c) + '">' + q.n + "</span>";
       else h += '<span class="tag G">' + (ax && ay ? "the centre" : ay ? (n.x < 0 ? "Left" : "Right") + " · astride the authority axis" : (n.y > 0 ? "Authoritarian" : "Libertarian") + " · economic centre") + "</span>";
       h += '<span class="tag">' + (ax ? "economic centre" : "economic " + (n.x < 0 ? "left " : "right ") + Math.abs(n.x)) + '</span><span class="tag">' + (ay ? "authority ≈ 0" : (n.y > 0 ? "authoritarian " : "libertarian ") + Math.abs(n.y)) + "</span>";
     }
