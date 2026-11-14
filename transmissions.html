@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a0c12">
+<script src="src/theme.js"></script><!-- the colourway, set before anything paints -->
 <title>ARCHIVUS — The Transmissions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -113,6 +116,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
   var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
   addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
 }</script>
+<link rel="stylesheet" href="src/themes.css"><!-- generated: the three colourways (tools/build-themes.js) -->
 </head>
 <body>
   <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
