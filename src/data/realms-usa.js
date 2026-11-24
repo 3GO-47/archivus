@@ -1,5 +1,5 @@
 /* ============================================================
-   ARCHIVUS — the Realms: the United States in detail (v11).
+   ARCHIVUS — the Realms: the United States in detail (v11; whole record v13.2).
    Hand-written from the sources listed in `src`; read 13 Nov 2026.
    The numbers on this view (index series, component scores) come
    from the generated file src/data/realms.js, not from here.
@@ -9,16 +9,26 @@
    other side's answer next to it; "where this is heading" is given
    as rival readings with the evidence for and against each, and
    things to watch — not as a prediction.
-     tl:     [date, kind, title, text, source]
-     kinds:  exec executive power · court the courts · cong Congress & law ·
-             vote elections & voting rules · war war & foreign policy ·
+     eras:   the long arc, 1607 to now, in twelve eras: who governed and who
+             could vote, the governing idea, the quarrel, how it ended
+     hist:   [year, kind, title, text, source] — 1607–1999
+     arc:    [year, kind, title, text, source] — the run-up, 2000–2024
+     tl:     [date, kind, title, text, source] — 2025–26, event by event
+     pre:    for each dispute, measure and reading, the earlier events on the same question ("year:title")
+     source: a key of `src`, or "a:slug" (a National Archives milestone
+             document, archives.gov/milestone-documents/slug), or "w:Title"
+             (a Wikipedia article). Every slug and title below was checked
+             against the Archives' own list or a live Wikipedia link.
+     kinds:  cons constitution & union · exec executive power · court the courts ·
+             cong Congress & law · vote elections & voting rules ·
+             right rights & citizenship · war war & foreign policy ·
              econ trade & economy · unrest protest & political violence ·
              imm immigration & policing
    ============================================================ */
 window.ARCHIVUS_REALMS_USA = {
   asOf: "13 November 2026",
-  kinds: { exec: ["Executive power", "#e8c455"], court: ["The courts", "#9a7fd1"], cong: ["Congress & law", "#5b93b8"], vote: ["Elections & voting", "#49c9b8"],
-           war: ["War & foreign policy", "#d2452f"], econ: ["Trade & economy", "#c9953a"], unrest: ["Protest & violence", "#ff7a66"], imm: ["Immigration & policing", "#8fd6a0"] },
+  kinds: { cons: ["Constitution & union", "#cfd6e6"], exec: ["Executive power", "#e8c455"], court: ["The courts", "#9a7fd1"], cong: ["Congress & law", "#5b93b8"], vote: ["Elections & voting", "#49c9b8"],
+           right: ["Rights & citizenship", "#e39ad0"], war: ["War & foreign policy", "#d2452f"], econ: ["Trade & economy", "#c9953a"], unrest: ["Protest & violence", "#ff7a66"], imm: ["Immigration & policing", "#8fd6a0"] },
   src: {
     y26: ["Wikipedia — 2026 in the United States", "https://en.wikipedia.org/wiki/2026_in_the_United_States"],
     y25: ["Wikipedia — 2025 in the United States", "https://en.wikipedia.org/wiki/2025_in_the_United_States"],
@@ -39,12 +49,162 @@ window.ARCHIVUS_REALMS_USA = {
     cal: ["Wikipedia — Louisiana v. Callais", "https://en.wikipedia.org/wiki/Louisiana_v._Callais"]
   },
 
+  /* THE LONG ARC (added v13.1). The view first shipped with nothing before 2000 in its timeline and nothing before
+     1900 in its chart. A country's direction cannot be read from its last two years. */
+  eras: [
+    { id: "col", y0: 1607, y1: 1763, n: "Colonies of the Crown", s: "Colonies",
+      idea: "English liberties carried overseas: government by charter and covenant, the rights of freeborn subjects, an established church in most colonies. Slavery, legal in all thirteen colonies, is written into law from the 1660s.",
+      who: "Governors named by the Crown or by proprietors; lower houses elected by men who own property. The first such assembly met at Jamestown in 1619.",
+      fight: "Assemblies against governors over taxes and salaries; settlers against Native nations for land; established churches against revival preachers.",
+      end: "Britain's victory over France in 1763 leaves it in debt and in command of a continent. London begins to tax the colonies directly.", src: ["w:Thirteen_Colonies", "w:Jamestown,_Virginia", "w:First_Great_Awakening"] },
+    { id: "rev", y0: 1763, y1: 1789, n: "Revolution and founding", s: "Founding",
+      idea: "Republicanism: power comes from the people, rights precede government, standing power is to be distrusted. The Declaration states it; the Constitution tries to build a government that can survive it.",
+      who: "State legislatures, and a Congress under the Articles of Confederation that can neither tax nor compel. Property tests for voters loosen in several states.",
+      fight: "Independence; then debtors against creditors, large states against small, and how strong a centre a free people can bear.",
+      end: "The Constitution is ratified in 1788 on the promise of a bill of rights, and the new government meets in 1789.", src: ["a:declaration-of-independence", "a:articles-of-confederation", "a:constitution"] },
+    { id: "fed", y0: 1789, y1: 1828, n: "The early republic", s: "Republic",
+      idea: "Two answers to what the republic is for. Hamilton's Federalists: a strong national government, public credit, commerce. Jefferson's Republicans: farmers, the states, a small centre.",
+      who: "Propertied white men, with the tests falling state by state. Presidents from Virginia and Massachusetts; a small political class that doubts whether organised opposition is legitimate at all.",
+      fight: "The national bank, the Sedition Act, whether courts may overrule Congress, war with Britain, and in 1820 whether new states may hold slaves.",
+      end: "The Federalists collapse after 1815; the caucus system breaks down in 1824, and mass parties take its place.", src: ["w:First_Party_System", "a:bill-of-rights", "a:marbury-v-madison", "a:missouri-compromise"] },
+    { id: "jack", y0: 1828, y1: 1854, n: "Jacksonian democracy", s: "Jackson",
+      idea: "Rule by the majority of ordinary white men, a strong president as their tribune, suspicion of banks and chartered privilege. The Whigs answer with Congress, tariffs and public works.",
+      who: "Nearly all white men can vote. Women, the enslaved, Native people and — in a growing number of states — free Black men cannot.",
+      fight: "The Bank of the United States, nullification, the removal of the eastern Native nations, and whether slavery may follow the flag west.",
+      end: "The Kansas–Nebraska Act of 1854 reopens the slavery question in the territories and destroys the Whig party.", src: ["w:Timeline_of_voting_rights_in_the_United_States", "a:jacksons-message-to-congress-on-indian-removal", "w:Nullification_crisis"] },
+    { id: "cw", y0: 1854, y1: 1877, n: "Disunion, war and Reconstruction", s: "Civil War",
+      idea: "Free labour and the Union against a slaveholders' republic; then, written into the Constitution by the victors, equal citizenship and a national government with the power to enforce it.",
+      who: "Republicans hold Washington from 1861. From 1867 Black men vote and hold office across the South, under the protection of federal troops.",
+      fight: "Secession; four years of war; the terms on which the South returns; and a campaign of terror against Black voters and their allies.",
+      end: "A disputed election in 1876 is settled by a bargain, and the last federal troops leave the South in 1877.", src: ["w:Reconstruction_era", "a:13th-amendment", "a:14th-amendment", "a:15th-amendment"] },
+    { id: "gild", y0: 1877, y1: 1896, n: "The Gilded Age and the making of Jim Crow", s: "Gilded Age",
+      idea: "Laissez-faire: sound money, liberty of contract, courts that protect property from legislatures. In the South, white supremacy restored by law.",
+      who: "National elections decided by a few thousand votes; party machines and patronage, slowly giving way to a civil service. Southern states strip Black citizens of the ballot.",
+      fight: "Railroads and trusts against farmers and labour; silver against gold; the exclusion of Chinese immigrants; the Populist revolt.",
+      end: "McKinley's victory in 1896 settles the money question for a generation; the same year the Court upholds segregation.", src: ["w:Gilded_Age", "w:Disenfranchisement_after_the_Reconstruction_era", "w:People's_Party_(United_States)", "a:plessy-v-ferguson"] },
+    { id: "prog", y0: 1896, y1: 1932, n: "The Progressive era and its aftermath", s: "Progressive",
+      idea: "That industry needs public regulation by experts, and that democracy should be more direct. The same years bring an overseas empire, wartime repression and the closing of the gates.",
+      who: "Republicans dominant except under Wilson. Senators are chosen by voters from 1913 and women vote from 1920; Black southerners remain shut out.",
+      fight: "Trusts, the tariff, child labour, the League of Nations, Prohibition, and who counts as an American.",
+      end: "The crash of 1929 and three years of deepening depression discredit the governing party.", src: ["w:Progressive_Era", "a:16th-amendment", "a:17th-amendment", "a:19th-amendment"] },
+    { id: "nd", y0: 1932, y1: 1968, n: "The New Deal order", s: "New Deal",
+      idea: "That the federal government answers for economic security at home and for holding the line against communism abroad; from the 1950s, that it must also end segregation.",
+      who: "A Democratic coalition of labour, the cities, the white South and, increasingly, Black voters holds Congress almost without a break. The presidency grows with depression, war and Cold War.",
+      fight: "The Court against the New Deal; loyalty and McCarthyism; segregation; and finally Vietnam.",
+      end: "Civil rights splits the coalition, and 1968 — assassinations, riots, an unwinnable war — breaks it.", src: ["w:New_Deal_coalition", "a:social-security-act", "a:civil-rights-act", "a:voting-rights-act"] },
+    { id: "real", y0: 1968, y1: 1980, n: "Realignment", s: "Realign.",
+      idea: "A rights revolution, largely made in the courts, against a politics of 'law and order' and the 'silent majority'. After Vietnam and Watergate, distrust of government becomes common ground.",
+      who: "Divided government becomes the normal condition. The white South begins its move to the Republicans.",
+      fight: "School busing, abortion, the war, and presidential secrecy. Congress reclaims ground with the War Powers Resolution and new oversight of budgets and intelligence.",
+      end: "Inflation, unemployment and a hostage crisis sink the Carter presidency.", src: ["w:1968_United_States_presidential_election", "w:Watergate_scandal", "w:Roe_v._Wade"] },
+    { id: "reag", y0: 1980, y1: 2000, n: "The Reagan settlement", s: "Reagan",
+      idea: "Lower taxes, lighter regulation, strong defence, freer trade. By the 1990s the leaders of both parties govern within it.",
+      who: "Republican presidents from 1981 to 1993; a Democrat, Clinton, who declares the era of big government over; from 1995 the first Republican House in forty years.",
+      fight: "The size of government; abortion, guns and religion in public life; and, in 1998, an impeachment.",
+      end: "A presidential election settled by the Supreme Court, and then the attacks of 11 September 2001.", src: ["w:Reaganomics", "w:Republican_Revolution", "w:Impeachment_of_Bill_Clinton"] },
+    { id: "run", y0: 2000, y1: 2025, n: "The run-up", s: "Run-up",
+      idea: "No governing idea commands a lasting majority. After the financial crisis of 2008 both parties face revolts from within: the Tea Party and then Trump on the right, Occupy and the Sanders campaigns on the left.",
+      who: "Narrow, alternating majorities; power moves from Congress to the president and the courts under administrations of both parties.",
+      fight: "War powers and surveillance, money in elections, the rules of voting, immigration, and whether the other side's victories are legitimate.",
+      end: "It has not ended. The events of 2025–26 are on the timeline.", src: ["w:Bush_v._Gore", "w:Citizens_United_v._FEC", "w:Shelby_County_v._Holder"] },
+    { id: "now", y0: 2025, y1: 2027, n: "The present", s: "Now",
+      idea: "The second Trump administration asserts a president's direct control of the whole executive branch, tariffs by decree and mass deportation; its opponents call this a break with the constitutional order, its supporters a restoration of it. The two cases are set out under Disputes.",
+      who: "A Republican president and, through 2026, a Republican Congress; from January 2027, a Democratic Congress.",
+      fight: "See the eight disputes, each in its own side's terms, and the five readings of where it leads.",
+      end: "Open.", src: ["y25", "y26"] }
+  ],
+
+  hist: [
+    [1607, "cons", "Jamestown", "The Virginia Company plants the first permanent English colony, governed under a royal charter.", "w:Jamestown,_Virginia"],
+    [1619, "cons", "An assembly, and the first Africans", "In July the first elected assembly in English America meets at Jamestown. In August a privateer lands some twenty captive Africans nearby. Self-government and slavery arrive within weeks of each other.", "w:Jamestown,_Virginia"],
+    [1620, "cons", "The Mayflower Compact", "The Plymouth settlers bind themselves by written agreement into a 'civil body politic' and promise to obey laws of their own making.", "w:Mayflower_Compact"],
+    [1676, "unrest", "Bacon's Rebellion", "Frontier settlers under Nathaniel Bacon turn on Virginia's royal governor and burn Jamestown: the first armed rising of colonists against the Crown's authority.", "w:Nathaniel_Bacon_(Virginia_colonist)"],
+    [1740, "right", "The Great Awakening", "A wave of revival preaching crosses the colonies in the 1730s and 1740s, challenging established churches and teaching ordinary people to judge their ministers.", "w:First_Great_Awakening"],
+    [1765, "unrest", "The Stamp Act crisis", "Parliament taxes the colonies directly. Riots, and a congress of nine colonies, answer that only their own assemblies may tax them; the Act is repealed within a year.", "w:Stamp_Act_of_1765"],
+    [1776, "cons", "Independence", "Congress votes for independence on 2 July and adopts the Declaration on the 4th: governments derive 'their just powers from the consent of the governed'.", "a:declaration-of-independence"],
+    [1781, "cons", "Articles of Confederation", "The first constitution takes effect: a league of sovereign states whose Congress can neither tax nor regulate trade.", "a:articles-of-confederation"],
+    [1787, "cons", "The Constitution", "Delegates at Philadelphia draft a federal government of separated powers. It counts three-fifths of the enslaved towards representation, and is ratified in 1788.", "a:constitution"],
+    [1787, "cong", "Northwest Ordinance", "Congress sets the path from territory to equal statehood and bars slavery north of the Ohio.", "a:northwest-ordinance"],
+    [1789, "exec", "Washington takes office", "The first president is inaugurated in New York; the first Congress creates the departments and the federal courts.", "a:president-george-washingtons-first-inaugural-speech"],
+    [1789, "econ", "The first tariff", "Among the first laws of the new Congress: duties on imports, the federal government's main income for more than a century. The Constitution gives the power to lay them to Congress.", "w:Tariff_of_1789"],
+    [1791, "right", "Bill of Rights", "Ten amendments, the price the Constitution's critics set for ratifying it, bind the federal government: speech, press, religion, arms, trial by jury.", "a:bill-of-rights"],
+    [1798, "right", "Alien and Sedition Acts", "With war against France feared, a Federalist Congress makes it a crime to publish 'false, scandalous and malicious' criticism of the government and lets the president deport foreigners. Editors are jailed.", "a:alien-and-sedition-acts"],
+    [1800, "vote", "The 'Revolution of 1800'", "Jefferson defeats Adams, and after a deadlock in the House power passes from one party to its opponents without violence, for the first time.", "w:1800_United_States_presidential_election"],
+    [1803, "court", "Marbury v. Madison", "The Supreme Court claims the power to strike down an act of Congress that conflicts with the Constitution.", "a:marbury-v-madison"],
+    [1803, "exec", "Louisiana Purchase", "Jefferson, the advocate of a small federal government, doubles the country by treaty with France.", "a:louisiana-purchase-treaty"],
+    [1820, "cong", "Missouri Compromise", "Missouri enters as a slave state and Maine as a free one; slavery is barred from the rest of the Louisiana territory north of 36°30′.", "a:missouri-compromise"],
+    [1823, "war", "Monroe Doctrine", "The president declares the Americas closed to further European colonisation.", "a:monroe-doctrine"],
+    [1828, "vote", "Jackson and the white man's vote", "With property tests gone in most states, Andrew Jackson wins as the candidate of the common man. The same decades take the vote away from free Black men in several states.", "w:Timeline_of_voting_rights_in_the_United_States"],
+    [1830, "exec", "Indian removal", "Jackson signs the Indian Removal Act. Over the next decade the eastern nations are forced west of the Mississippi, thousands dying on the way.", "a:jacksons-message-to-congress-on-indian-removal"],
+    [1832, "cons", "Nullification crisis", "South Carolina declares a federal tariff void within its borders. Jackson threatens force and Congress lowers the tariff; whether a state may defy the Union is left for later.", "w:Nullification_crisis"],
+    [1848, "war", "The Mexican cession", "The treaty ending the war with Mexico adds California and the Southwest, and reopens the question of slavery in new territory.", "a:treaty-of-guadalupe-hidalgo"],
+    [1848, "right", "Seneca Falls", "The first women's rights convention declares that 'all men and women are created equal' and demands the vote.", "w:Seneca_Falls_Convention"],
+    [1850, "cong", "Compromise of 1850", "California enters free; a new Fugitive Slave Act obliges the free states to return people who escape slavery.", "a:compromise-of-1850"],
+    [1854, "cong", "Kansas–Nebraska Act", "Congress repeals the Missouri line and leaves slavery in the territories to their settlers. The Whig party breaks up; the Republican party forms to stop slavery's spread.", "a:kansas-nebraska-act"],
+    [1857, "court", "Dred Scott v. Sandford", "The Supreme Court holds that Black Americans are not citizens and that Congress cannot bar slavery from the territories.", "a:dred-scott-v-sandford"],
+    [1860, "vote", "Lincoln elected; the South secedes", "Lincoln wins without a single southern electoral vote. Seven states leave the Union before he takes office and four more after.", "w:1860_United_States_presidential_election"],
+    [1861, "war", "Civil War", "Confederate guns open on Fort Sumter in April. Four years of war kill more Americans than any other conflict, before or since.", "w:American_Civil_War"],
+    [1861, "exec", "Lincoln suspends habeas corpus", "The president authorises the army to hold suspects without trial. The Chief Justice rules that only Congress may do so, and is ignored; Congress approves the suspension in 1863.", "w:Ex_parte_Merryman"],
+    [1863, "right", "Emancipation Proclamation", "As a measure of war Lincoln declares free the enslaved people of the rebel states and opens the army to Black soldiers.", "a:emancipation-proclamation"],
+    [1865, "right", "Thirteenth Amendment", "Slavery is abolished. Lincoln is assassinated five days after Lee's surrender.", "a:13th-amendment"],
+    [1865, "unrest", "Lincoln assassinated", "Five days after Lee's surrender the president is shot in a Washington theatre by a Confederate sympathiser — the first president to be murdered. Andrew Johnson inherits the peace.", "w:Assassination_of_Abraham_Lincoln"],
+    [1868, "right", "Fourteenth Amendment", "All persons born or naturalised in the United States, and subject to its jurisdiction, are citizens; no state may deny any person due process or the equal protection of the laws.", "a:14th-amendment"],
+    [1868, "cong", "Andrew Johnson impeached", "The House impeaches a president for the first time, over his defiance of Congress on Reconstruction. The Senate acquits by one vote.", "w:Impeachment_of_Andrew_Johnson"],
+    [1870, "vote", "Fifteenth Amendment", "The vote may not be denied on account of race. Black men vote, and sit in Congress and in southern legislatures.", "a:15th-amendment"],
+    [1877, "vote", "The Compromise of 1877", "A disputed presidential election is settled by a bargain: the Republican takes office and the last federal troops leave the South. Reconstruction ends.", "w:Compromise_of_1877"],
+    [1882, "imm", "Chinese Exclusion Act", "The first law to bar immigrants by nationality. It stays in force until 1943.", "a:chinese-exclusion-act"],
+    [1883, "cong", "Pendleton Act", "After a disappointed office-seeker assassinates President Garfield, federal jobs begin to be filled by examination rather than party loyalty.", "a:pendleton-act"],
+    [1890, "econ", "Sherman Antitrust Act", "The first federal law against monopoly.", "a:sherman-anti-trust-act"],
+    [1890, "vote", "The ballot taken back", "Mississippi's new constitution uses poll taxes and literacy tests to remove Black voters. By 1908 every former Confederate state has followed.", "w:Disenfranchisement_after_the_Reconstruction_era"],
+    [1896, "court", "Plessy v. Ferguson", "'Separate but equal' is held constitutional. Segregation by law stands for fifty-eight years.", "a:plessy-v-ferguson"],
+    [1898, "court", "United States v. Wong Kim Ark", "A man born in San Francisco to Chinese parents is a citizen by birth, the Court holds under the Fourteenth Amendment. It is the ruling at issue in the birthright-citizenship dispute of 2025–26.", "w:United_States_v._Wong_Kim_Ark"],
+    [1898, "war", "War with Spain; an overseas empire", "In ten weeks the United States takes Puerto Rico, Guam and the Philippines; it annexes Hawaii the same summer.", "w:Spanish%E2%80%93American_War"],
+    [1901, "unrest", "McKinley assassinated", "An anarchist shoots the president at an exposition in Buffalo. Theodore Roosevelt succeeds him.", "w:Assassination_of_William_McKinley"],
+    [1913, "cong", "Income tax, elected senators, a central bank", "The Sixteenth Amendment allows a federal income tax; the Seventeenth has senators chosen by voters instead of legislatures. The Federal Reserve is created the same year.", "a:16th-amendment"],
+    [1917, "right", "Espionage and Sedition Acts", "On entering the First World War, Congress makes it a crime to obstruct the draft and, in 1918, to speak 'disloyally'. The Socialist leader Eugene Debs is among those imprisoned.", "w:Espionage_Act_of_1917"],
+    [1920, "vote", "Nineteenth Amendment", "Women win the vote nationwide.", "a:19th-amendment"],
+    [1924, "imm", "National-origins quotas", "The Immigration Act cuts arrivals sharply, favours northern and western Europe and bars Asians.", "w:Immigration_Act_of_1924"],
+    [1929, "econ", "The Crash", "The stock market collapses in October. By 1933 about a quarter of the workforce is unemployed.", "w:Great_Depression_in_the_United_States"],
+    [1933, "econ", "The New Deal", "Franklin Roosevelt's first hundred days bring bank regulation, public works and relief on a scale no peacetime government had attempted.", "w:New_Deal"],
+    [1934, "econ", "Congress lends the tariff to the president", "Four years after the Smoot–Hawley tariff raised duties and trading partners answered in kind, Congress lets the president cut tariffs by agreement with other countries. From here trade policy is made largely in the White House.", "w:Reciprocal_Tariff_Act"],
+    [1935, "cong", "Social Security", "Old-age pensions and unemployment insurance; the same summer, a legal right to join a union.", "a:social-security-act"],
+    [1935, "court", "Humphrey's Executor", "The Court holds that a president may not dismiss a commissioner of an independent agency at will. It is the precedent at the centre of the removal-power cases of 2025–26.", "w:Humphrey%27s_Executor_v._United_States"],
+    [1937, "court", "The court-packing fight", "After the Court strikes down New Deal laws, Roosevelt asks for power to add up to six justices. A Senate of his own party refuses. The Court begins to uphold his programme.", "w:Judicial_Procedures_Reform_Bill_of_1937"],
+    [1942, "right", "Executive Order 9066", "Some 120,000 people of Japanese descent, most of them citizens, are removed from the West Coast and confined. The Court upholds it in Korematsu.", "a:executive-order-9066"],
+    [1947, "war", "The Truman Doctrine", "The president commits the country to resisting communist expansion; a permanent national-security establishment follows.", "a:truman-doctrine"],
+    [1950, "war", "Korea: war without a declaration", "Truman sends American forces to Korea under a United Nations resolution and does not ask Congress to declare war. No war since has been declared.", "w:Korean_War"],
+    [1951, "cons", "Twenty-second Amendment", "After Roosevelt's four elections, no one may be elected president more than twice.", "w:Twenty-second_Amendment_to_the_United_States_Constitution"],
+    [1952, "court", "The steel seizure case", "During the Korean War Truman orders the steel mills seized to head off a strike. The Supreme Court rules, 6–3, that a president cannot take private property without authority from Congress.", "w:Youngstown_Sheet_%26_Tube_Co._v._Sawyer"],
+    [1954, "court", "Brown v. Board of Education", "Segregated public schools are unconstitutional, the Court rules unanimously.", "a:brown-v-board-of-education"],
+    [1954, "cong", "McCarthy censured", "The Senate condemns Joseph McCarthy, whose accusations of communist sympathy had dominated four years of public life.", "a:censure-of-senator-joseph-mccarthy"],
+    [1957, "right", "Troops to Little Rock", "Arkansas's governor uses the National Guard to keep nine Black students out of a white high school. Eisenhower takes command of the Guard and sends the army to escort them in.", "a:executive-order-10730"],
+    [1963, "unrest", "Kennedy assassinated", "The president is shot dead in Dallas on 22 November. Lyndon Johnson takes the oath the same afternoon.", "w:Assassination_of_John_F._Kennedy"],
+    [1964, "right", "Civil Rights Act", "Segregation in public places and discrimination in employment are outlawed.", "a:civil-rights-act"],
+    [1964, "war", "Tonkin Gulf Resolution", "Congress authorises the president to use force in Vietnam without a declaration of war.", "a:tonkin-gulf-resolution"],
+    [1965, "vote", "Voting Rights Act", "Literacy tests are suspended and federal officials sent to register voters. Southern states must clear changes to their voting rules with Washington — the requirement the Court set aside in 2013.", "a:voting-rights-act"],
+    [1965, "imm", "The quotas end", "The Hart–Celler Act replaces national-origins quotas with preferences for family and skills. Immigration from Asia and Latin America grows.", "w:Hart-Celler_Act"],
+    [1965, "econ", "Medicare and Medicaid", "Federal health insurance for people of sixty-five and over, and for the poor: the largest addition to the safety net since Social Security.", "a:medicare-and-medicaid-act"],
+    [1968, "unrest", "1968", "Martin Luther King and Robert Kennedy are assassinated; cities burn; police and protesters fight outside the Democratic convention. Richard Nixon wins on 'law and order'.", "w:1968_United_States_presidential_election"],
+    [1973, "court", "Roe v. Wade", "The Court finds a constitutional right to abortion, 7–2. It is overruled in 2022.", "w:Roe_v._Wade"],
+    [1973, "cong", "War Powers Resolution", "Over Nixon's veto, Congress requires presidents to report any use of force and to withdraw within sixty days unless it approves.", "w:War_Powers_Clause"],
+    [1974, "exec", "Nixon resigns", "Facing impeachment over the Watergate cover-up, and ordered by a unanimous Court to hand over his tapes, the president resigns.", "w:Watergate_scandal"],
+    [1980, "vote", "Reagan elected", "Ronald Reagan wins forty-four states on a promise to cut taxes and shrink government; Republicans take the Senate for the first time in a quarter of a century.", "w:1980_United_States_presidential_election"],
+    [1981, "econ", "The Reagan tax cut", "Income-tax rates are cut by about a quarter over three years. The same summer the president dismisses more than eleven thousand striking air-traffic controllers.", "w:Economic_Recovery_Tax_Act_of_1981"],
+    [1986, "imm", "Immigration Reform and Control Act", "Legal status for nearly three million people already in the country and, for the first time, penalties for employers who hire the undocumented.", "w:Immigration_Reform_and_Control_Act_of_1986"],
+    [1991, "war", "Gulf War; the Cold War ends", "A US-led coalition expels Iraq from Kuwait in six weeks. In December the Soviet Union dissolves.", "w:Gulf_War"],
+    [1994, "cong", "The Republican Revolution", "Republicans win the House for the first time in forty years, on a national platform, the Contract with America.", "w:Republican_Revolution"],
+    [1995, "unrest", "Oklahoma City", "A truck bomb set by an anti-government extremist destroys a federal building and kills 168 people — the deadliest act of home-grown terrorism in the country's history.", "w:Oklahoma_City_bombing"],
+    [1996, "econ", "Welfare reform", "A Republican Congress and a Democratic president end the federal guarantee of cash aid to poor families, replacing it with time limits and work requirements.", "w:Personal_Responsibility_and_Work_Opportunity_Reconciliation_Act_of_1996"],
+    [1998, "cong", "Clinton impeached", "The House impeaches the president for perjury and obstruction of justice. The Senate acquits him in 1999.", "w:Impeachment_of_Bill_Clinton"]
+  ],
+
   /* the long run-up, 2000–2024: the disputes of 2025–26 did not begin in 2025 */
   arc: [
     [2000, "court", "Bush v. Gore", "The Supreme Court ends the Florida recount, 5–4, and with it the election.", "w:Bush_v._Gore"],
     [2001, "exec", "11 September and its laws", "The Authorization for Use of Military Force and the Patriot Act widen presidential war-making and surveillance — powers every later president has used.", "w:Patriot_Act"],
     [2008, "econ", "The financial crisis", "Bank rescues under two presidents. The Tea Party on the right and Occupy on the left both date from the aftermath.", "w:2008_financial_crisis"],
     [2010, "court", "Citizens United v. FEC", "Corporate and union spending on elections is protected speech, 5–4; outside spending multiplies.", "w:Citizens_United_v._FEC"],
+    [2010, "econ", "Affordable Care Act", "Passed without a Republican vote: Medicaid is widened and private insurance subsidised and regulated. The Supreme Court upholds it in 2012; repeal fails in the Senate by one vote in 2017.", "w:Affordable_Care_Act"],
     [2013, "vote", "Shelby County v. Holder", "The Court ends federal pre-clearance of voting changes in states with a history of discrimination, 5–4.", "w:Shelby_County_v._Holder"],
     [2016, "vote", "Donald Trump elected", "He loses the popular vote and wins the Electoral College on a platform of trade protection and immigration restriction that breaks with his party's orthodoxy.", "w:2016_United_States_presidential_election"],
     [2020, "unrest", "Pandemic, protest and a disputed count", "The largest street protests in decades follow the killing of George Floyd; Joe Biden wins; the loser refuses to concede.", "w:2020_United_States_presidential_election"],
@@ -177,6 +337,37 @@ window.ARCHIVUS_REALMS_USA = {
             "Polarised electorates have de-polarised before, usually around a new issue or a decisive election."],
       watch: ["Redistricting after Callais.", "Whether either party abandons a norm the other then keeps.", "The frequency of attacks on officials."], u: ["y25", "y26", "cal"] }
   ],
+
+  /* the long record behind each dispute, measure and reading: events already on the timeline, named as
+     "year:title". These are the earlier turns on the same question — not a claim that either side cites them. */
+  pre: {
+    topics: [
+      ["1787:The Constitution", "1898:War with Spain; an overseas empire", "1950:Korea: war without a declaration", "1952:The steel seizure case", "1964:Tonkin Gulf Resolution", "1973:War Powers Resolution", "1991:Gulf War; the Cold War ends", "2001:11 September and its laws"],
+      ["1765:The Stamp Act crisis", "1789:The first tariff", "1832:Nullification crisis", "1913:Income tax, elected senators, a central bank", "1934:Congress lends the tariff to the president", "1952:The steel seizure case"],
+      ["1789:Washington takes office", "1803:Marbury v. Madison", "1868:Andrew Johnson impeached", "1883:Pendleton Act", "1935:Humphrey's Executor", "1937:The court-packing fight", "1952:The steel seizure case", "1974:Nixon resigns", "2024:Trump v. United States"],
+      ["1798:Alien and Sedition Acts", "1917:Espionage and Sedition Acts", "1954:McCarthy censured", "1974:Nixon resigns", "1998:Clinton impeached", "2024:Trump v. United States"],
+      ["1798:Alien and Sedition Acts", "1868:Fourteenth Amendment", "1882:Chinese Exclusion Act", "1898:United States v. Wong Kim Ark", "1924:National-origins quotas", "1942:Executive Order 9066", "1957:Troops to Little Rock", "1965:The quotas end", "1986:Immigration Reform and Control Act"],
+      ["1800:The 'Revolution of 1800'", "1828:Jackson and the white man's vote", "1870:Fifteenth Amendment", "1877:The Compromise of 1877", "1890:The ballot taken back", "1913:Income tax, elected senators, a central bank", "1920:Nineteenth Amendment", "1965:Voting Rights Act", "2000:Bush v. Gore", "2013:Shelby County v. Holder", "2020:Pandemic, protest and a disputed count"],
+      ["1933:The New Deal", "1935:Social Security", "1965:Medicare and Medicaid", "1981:The Reagan tax cut", "1996:Welfare reform", "2010:Affordable Care Act"],
+      ["1676:Bacon's Rebellion", "1861:Civil War", "1865:Lincoln assassinated", "1877:The Compromise of 1877", "1901:McKinley assassinated", "1963:Kennedy assassinated", "1968:1968", "1995:Oklahoma City", "2021:6 January"]
+    ],
+    bills: [
+      ["1913:Income tax, elected senators, a central bank", "1935:Social Security", "1965:Medicare and Medicaid", "1981:The Reagan tax cut", "1996:Welfare reform", "2010:Affordable Care Act"],
+      ["1950:Korea: war without a declaration", "1964:Tonkin Gulf Resolution", "1973:War Powers Resolution", "1991:Gulf War; the Cold War ends", "2001:11 September and its laws"],
+      ["1870:Fifteenth Amendment", "1890:The ballot taken back", "1920:Nineteenth Amendment", "1965:Voting Rights Act", "2013:Shelby County v. Holder"],
+      ["1933:The New Deal"],
+      ["1882:Chinese Exclusion Act", "1924:National-origins quotas", "1965:The quotas end", "1986:Immigration Reform and Control Act"],
+      ["2001:11 September and its laws"],
+      ["1789:The first tariff", "1934:Congress lends the tariff to the president", "1965:Medicare and Medicaid", "2010:Affordable Care Act"]
+    ],
+    theses: [
+      ["1798:Alien and Sedition Acts", "1877:The Compromise of 1877", "1890:The ballot taken back", "1917:Espionage and Sedition Acts", "1942:Executive Order 9066", "1954:McCarthy censured", "1974:Nixon resigns"],
+      ["1789:Washington takes office", "1828:Jackson and the white man's vote", "1883:Pendleton Act", "1935:Humphrey's Executor", "1937:The court-packing fight", "1952:The steel seizure case", "1980:Reagan elected"],
+      ["1800:The 'Revolution of 1800'", "1828:Jackson and the white man's vote", "1860:Lincoln elected; the South secedes", "1933:The New Deal", "1968:1968", "1980:Reagan elected", "1994:The Republican Revolution", "2016:Donald Trump elected", "2024:Trump returns"],
+      ["1828:Jackson and the white man's vote", "1890:Sherman Antitrust Act", "1913:Income tax, elected senators, a central bank", "1933:The New Deal", "1980:Reagan elected", "2008:The financial crisis", "2016:Donald Trump elected"],
+      ["1850:Compromise of 1850", "1854:Kansas–Nebraska Act", "1857:Dred Scott v. Sandford", "1877:The Compromise of 1877", "1968:1968", "1994:The Republican Revolution", "1998:Clinton impeached", "2000:Bush v. Gore", "2021:6 January"]
+    ]
+  },
 
   shared: [
     "The presidency has grown at the expense of Congress under presidents of both parties for a generation; the present dispute is over degree and use, not over the trend.",
