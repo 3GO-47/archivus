@@ -359,6 +359,37 @@
     };
   }
 
+  /* ---------- THE ILLUMINATION (v15): every instrument drawn to the Oracle's standard ----------
+     Three things no page has to do for itself (the styles are at the foot of src/styles.css):
+       · a masthead at the head of every view — the page's sign, "The Realms · II of V", the view's name, what it is for;
+       · light under everything drawn: one bloom filter, defined once here, given to each chart by the class .lux;
+       · the same on the two reading pages that have no tabs (the Transmissions, the Trial).
+     The Oracle draws its own and is left alone. */
+  function illuminate() {
+    const body = document.body; if (body.classList.contains("or")) return;
+    const RO = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"], me = ITEMS.find(it => it.id === here) || ITEMS[0];
+    const mh = $("masthead"), h1 = mh && mh.querySelector("h1"), tag = mh && mh.querySelector(".tagline");
+    const page = (h1 ? h1.textContent.split("·").pop().trim() : me.label.replace(/<[^>]+>/g, "")).toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+    const hero = (k, t2, l) => '<header class="vw-top"><div class="vw-emb">' + me.icon + '</div><div><div class="vw-k">' + esc(k) + '</div><h2 class="vw-t">' + esc(t2) + "</h2>" + (l ? '<p class="vw-l">' + esc(l) + "</p>" : "") + "</div></header>";
+    /* the bloom: a soft copy of whatever is drawn, laid under it. Referenced from a style element in this document, so the
+       fragment resolves here whether the page is served, opened from disk or inlined into one file. */
+    body.insertAdjacentHTML("beforeend", '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="ax-bloom" x="-4%" y="-8%" width="108%" height="116%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feComponentTransfer in="b" result="g"><feFuncA type="linear" slope=".6"/></feComponentTransfer><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>');
+    document.head.appendChild(document.createElement("style")).textContent = '.lux{filter:url(#ax-bloom)}[data-theme="white"] .lux{filter:none}';
+    const LIT = "svg.chart:not(.lux), svg.spark:not(.lux), svg.pspark:not(.lux), #cp:not(.lux), #ln:not(.lux), #tl:not(.lux), #pn-svg:not(.lux), #bl-svg:not(.lux)";
+    const tabs = Array.from(document.querySelectorAll("#wr-tabs button[data-v]")), rl = body.classList.contains("rl");
+    const dress = () => {
+      document.querySelectorAll(LIT).forEach(s => s.classList.add("lux"));
+      document.querySelectorAll(".wr-view:not([hidden])").forEach(sec => { const pane = sec.querySelector(".pane"), at = pane || sec;
+        if (at.querySelector(":scope > .vw-top") || (!pane && (!rl || sec.querySelector(".rl-map, #mp")))) return;     /* a map keeps the whole stage; a view with no pane is dressed at its own head */
+        const i = tabs.findIndex(b => "v-" + b.dataset.v === sec.id); if (i < 0) return;
+        at.insertAdjacentHTML("afterbegin", hero(page + " · " + RO[i + 1] + " of " + RO[tabs.length], tabs[i].textContent.trim(), (tabs[i].title || "").replace(/\s*\(\d\)\s*$/, "")).replace('class="vw-top"', pane ? 'class="vw-top"' : 'class="vw-top sec"')); });
+    };
+    dress();
+    if (rl) new MutationObserver(dress).observe($("dc-stage") || body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
+    const solo = { transmissions: "tx-main", trial: "tr-stage" }[here], at = solo && $(solo);
+    if (at && !at.querySelector(".vw-top")) at.insertAdjacentHTML("afterbegin", hero("Archivus", page, tag ? tag.textContent.trim().replace(/^./, c => c.toUpperCase()) + "." : ""));
+  }
+
   function ready() {
     buildHeader();
     /* the older per-page link buttons are redundant now — hidden, not deleted (no-script fallback) */
@@ -376,6 +407,7 @@
     speculate();
     if (document.prerendering) document.addEventListener("prerenderingchange", () => { placePill(true); titleCard(); }, { once: true });
     else titleCard();
+    illuminate();
   }
   buildHeader();                                             /* runs at the top of <body>: the header exists before first paint */
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ready); else ready();

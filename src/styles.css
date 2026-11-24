@@ -1170,3 +1170,66 @@ html.vtf.leaving body > :not(#hdr):not(#omni) { opacity: 0; transition: opacity 
 .pg-bar::-webkit-scrollbar { display: none; }
 .pg-bar .chipbtn { flex: 0 0 auto; padding: 5px 12px; font-size: 11px; }
 .pg-bar .pg-all { margin-left: auto; }
+
+/* ============================================================
+   THE ILLUMINATION (v15) — every instrument drawn to the Oracle's standard.
+   One layer, last in this sheet, so the look is shared and not copied page by page:
+     1 a masthead at the head of every view (built by src/nav.js)   2 framed panels with two brass corners
+     3 light under every drawn line (the .lux class, set by src/nav.js)   4 engraved headings   5 quiet motion
+   Selectors carry `body.has-rail` so they outrank each page's own sheet without !important.
+   ============================================================ */
+/* 1 · the view's masthead */
+.vw-top { display: flex; gap: 22px; align-items: center; padding: 4px 2px 6px; flex: none; }
+.vw-emb { flex: 0 0 auto; width: 66px; height: 66px; border-radius: 50%; border: 1px solid var(--gold-dim); color: var(--gold-bright); display: grid; place-items: center; position: relative; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.07), rgba(255,255,255,0) 70%); box-shadow: inset 0 0 20px rgba(232,196,85,.13), 0 0 28px rgba(232,196,85,.13); }
+.vw-emb::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 1px dashed var(--gold-dim); opacity: .55; animation: vw-spin 140s linear infinite; }
+.vw-emb svg { width: 29px; height: 29px; stroke-width: 1; }
+@keyframes vw-spin { to { transform: rotate(360deg); } }
+.vw-k { font: 600 10px var(--display); letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+.vw-t { font: 600 clamp(22px, 2.7vw, 36px)/1.08 var(--engraved); letter-spacing: .11em; text-transform: uppercase; color: var(--paper); margin: 6px 0 7px; text-shadow: 0 0 34px rgba(232,196,85,.24); }
+.vw-l { font: 15.5px/1.55 Georgia, "Times New Roman", serif; color: #d2ccbb; margin: 0; max-width: 104ch; }
+body.has-rail .pane { background-image: radial-gradient(1100px 420px at 50% -130px, rgba(201,162,39,.10), rgba(201,162,39,0) 70%), radial-gradient(900px 480px at 100% 0, rgba(91,147,184,.055), rgba(91,147,184,0) 70%); }
+.vw-top.sec { padding: 14px clamp(12px, 2vw, 26px) 4px; }                      /* at the head of a view that has no scrolling pane */
+/* the two reading pages: the masthead stands over the page, centred over the Trial's card */
+body.has-rail #tr-stage { flex-direction: column; gap: 26px; } body.has-rail #tr-stage > .vw-top { flex-direction: column; text-align: center; gap: 14px; padding: 0; } body.has-rail #tr-stage > .vw-top .vw-l { margin: 0 auto; }
+body.has-rail #tr-card { box-shadow: 0 22px 60px rgba(0,0,0,.45), 0 0 44px rgba(232,196,85,.08); } body.has-rail #tr-q { font: 400 clamp(20px, 2.6vw, 26px)/1.35 Georgia, "Times New Roman", serif; color: #f4efe0; }
+body.has-rail #tx-main > .vw-top { margin-bottom: 14px; }
+/* the documents of the Doctrines and the chapters of the War Room open the same way */
+body.has-rail .dc-doc > h2 { font: 600 clamp(22px, 2.6vw, 34px)/1.1 var(--engraved); letter-spacing: .1em; text-transform: uppercase; color: var(--paper); text-shadow: 0 0 34px rgba(232,196,85,.24); margin: 4px 0 10px; }
+body.has-rail .dc-doc > h2::before { content: "✦"; color: var(--gold); font-size: .42em; margin-right: .9em; vertical-align: .35em; }
+body.has-rail .dc-doc > .lead, body.has-rail .wr-sub { font: 15.5px/1.6 Georgia, "Times New Roman", serif; color: #d2ccbb; }
+body.has-rail .dc-doc .wr-h { font-size: 15px; letter-spacing: .22em; color: var(--gold-bright); text-shadow: none; } body.has-rail .dc-doc .wr-h::before { font-size: 9px; margin-right: 10px; vertical-align: 1.5px; }
+/* a view with a masthead scrolls instead of squeezing its charts into what is left of one screen */
+body.has-rail .pane > .grid2, body.has-rail .pane > .dash { flex: 1 0 auto; } body.has-rail .pane .chart-host { min-height: 230px; }
+/* 2 · framed panels: a lit surface, a deep shadow, two brass corners */
+body.has-rail .tiles2 > div, body.has-rail .tile, body.has-rail .pw-card, body.has-rail .ld-col, body.has-rail .dash > div, body.has-rail .tl-card, body.has-rail .tx-card, body.has-rail #tr-card, body.has-rail .rec, body.has-rail .callout, body.has-rail .mx-wrap, body.has-rail .cu-list {
+  background-image: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 46%); box-shadow: 0 14px 38px rgba(0,0,0,.24); }
+body.has-rail .tiles2 > div, body.has-rail .tile, body.has-rail .pw-card, body.has-rail .ld-col, body.has-rail .dash > div, body.has-rail .tl-card, body.has-rail .tx-card, body.has-rail #tr-card { position: relative; border-radius: 7px; }
+body.has-rail .tiles2 > div::before, body.has-rail .tile::before, body.has-rail .pw-card::before, body.has-rail .ld-col::before, body.has-rail .dash > div::before, body.has-rail .tl-card::before, body.has-rail .tx-card::before, body.has-rail #tr-card::before,
+body.has-rail .tiles2 > div::after, body.has-rail .tile::after, body.has-rail .pw-card::after, body.has-rail .ld-col::after, body.has-rail .dash > div::after, body.has-rail .tl-card::after, body.has-rail .tx-card::after, body.has-rail #tr-card::after {
+  content: ""; position: absolute; width: 15px; height: 15px; border: 1px solid var(--gold); opacity: .7; pointer-events: none; }
+body.has-rail .tiles2 > div::before, body.has-rail .tile::before, body.has-rail .pw-card::before, body.has-rail .ld-col::before, body.has-rail .dash > div::before, body.has-rail .tl-card::before, body.has-rail .tx-card::before, body.has-rail #tr-card::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; border-top-left-radius: 7px; }
+body.has-rail .tiles2 > div::after, body.has-rail .tile::after, body.has-rail .pw-card::after, body.has-rail .ld-col::after, body.has-rail .dash > div::after, body.has-rail .tl-card::after, body.has-rail .tx-card::after, body.has-rail #tr-card::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; border-bottom-right-radius: 7px; }
+body.has-rail .tx-card::before { top: 0; left: 0; } body.has-rail .tx-card::after { bottom: 0; right: 0; }      /* this card clips its overflow: the corners sit inside */
+body.has-rail .tiles2 b, body.has-rail .tile b { text-shadow: 0 0 26px rgba(232,196,85,.22); }
+/* the side panels: light falling from the top */
+body.has-rail #dc-side, body.has-rail #side, body.has-rail #panel, body.has-rail #as-panel, body.has-rail #bl-panel, body.has-rail #pn-panel { background-image: linear-gradient(180deg, rgba(201,162,39,.075), rgba(201,162,39,0) 220px); }
+body.has-rail .sd-t { text-shadow: 0 0 28px rgba(232,196,85,.2); }
+/* 4 · engraved headings */
+body.has-rail:not(.or) .pane h4::before { content: "✦"; color: var(--gold); font-size: 9px; margin-right: 10px; vertical-align: 1.5px; }
+body.has-rail .pane h4 { font-size: 12.5px; letter-spacing: .24em; }
+body.has-rail .wr-h { font-size: clamp(20px, 2.3vw, 30px); letter-spacing: .12em; color: var(--paper); text-shadow: 0 0 34px rgba(232,196,85,.24); margin-bottom: 8px; }
+body.has-rail .wr-h::before { content: "✦"; color: var(--gold); font-size: .42em; margin-right: .9em; vertical-align: .35em; }
+body.has-rail #wr-tabs button.on { text-shadow: 0 0 18px rgba(232,196,85,.55); }
+body.has-rail .tbl thead th, body.has-rail .mx thead th, body.has-rail .parts thead th { font-family: var(--engraved); letter-spacing: .16em; }
+body.has-rail .tbl tbody tr, body.has-rail .parts tbody tr { transition: background-color .14s; } body.has-rail .tbl tbody tr:hover td, body.has-rail .parts tbody tr:hover td { background-color: rgba(201,162,39,.055); }
+/* 5 · quiet motion: what can be pressed lifts toward the hand */
+body.has-rail .chipbtn { transition: border-color .15s, box-shadow .15s, color .15s, background-color .15s; }
+body.has-rail .chipbtn.on { box-shadow: 0 0 16px rgba(232,196,85,.2), inset 0 0 12px rgba(232,196,85,.08); }
+body.has-rail .ld-card, body.has-rail .pw-card, body.has-rail .tile, body.has-rail .mlist button, body.has-rail .tr-opt, body.has-rail .cu-row { transition: transform .16s, box-shadow .16s, border-color .16s, background-color .16s; }
+body.has-rail .ld-card:hover, body.has-rail .pw-card:hover, body.has-rail .mlist button:hover, body.has-rail .tr-opt:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(0,0,0,.36), 0 0 0 1px var(--gold-dim); }
+body.has-rail .mlist button.on { box-shadow: inset 0 0 22px rgba(201,162,39,.1); }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gold-dim), var(--line)); }
+* { scrollbar-width: thin; scrollbar-color: var(--gold-dim) transparent; }
+@media (prefers-reduced-motion: reduce) { .vw-emb::after { animation: none; } body.has-rail .ld-card, body.has-rail .pw-card, body.has-rail .tile, body.has-rail .mlist button, body.has-rail .tr-opt { transition: none; transform: none !important; } }
+@media (max-width: 860px) { .vw-top { gap: 14px; } .vw-emb { width: 48px; height: 48px; } .vw-emb svg { width: 21px; height: 21px; } .vw-l { font-size: 14px; } .vw-t { letter-spacing: .08em; } }
+@media (max-width: 480px) { .vw-emb { display: none; } }
