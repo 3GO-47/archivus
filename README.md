@@ -113,6 +113,29 @@ The rule reaches the page three ways. `tools/build-themes.js` reads the four sha
 
 **To update it:** edit `src/data/conflicts.js` (the header explains every field), set `meta.asOf`, then `node tools/validate-conflicts.js` and `node tools/build-mobile.js --zip`. The validator refuses a figure without a source, a map name that is not on the map, or a designation without the list in the card's sources.
 
+## The illumination (v15)
+
+The Oracle set a standard and the other twelve instruments did not meet it. v15 is one shared layer that brings them up to it, so the look is defined once and not copied page by page.
+
+Where it lives:
+
+- **`src/styles.css`, last block ("THE ILLUMINATION")** — the styles. Every selector carries `body.has-rail`, so it outranks each page's own sheet without `!important`.
+- **`src/nav.js`, `illuminate()`** — the two things CSS cannot do alone. It runs on every page except the Oracle, which draws its own.
+
+What it does:
+
+1. **A masthead at the head of every view.** The page's sign in a ringed emblem, a line such as "The Realms · IV of V", the view's name in engraved capitals, and what the view is for (taken from the tab's own tooltip). It is inserted at the top of each scrolling `.pane`, or at the head of a view that has none; map views keep the whole stage. The Transmissions and the Trial, which have no tabs, get one for the page. Views are re-rendered by their engines, so a `MutationObserver` puts the masthead back.
+2. **Light under everything drawn.** One SVG filter (`#ax-bloom`: a blurred copy of the drawing laid beneath it) is defined once and given to charts, sparklines, the Doctrines' compass and lineage, the War Room's timeline and the two family trees through the class `.lux`. It is switched off in the White colourway, where it reads as a smudge.
+3. **Framed panels.** Tiles, cards and columns get a lit surface, a deep shadow and two brass corners. Side panels get light falling from the top.
+4. **Engraved headings.** Section headings carry a ✦; the chapter titles of the War Room and the documents of the Doctrines are set the way the Oracle sets its lines.
+5. **Quiet motion.** Cards lift toward the pointer; the emblem's ring turns once every 140 seconds. All of it stops under "reduce motion".
+
+One behaviour changed on purpose: a view with a masthead **scrolls** when its content is taller than the screen, instead of squeezing its charts into what is left (`.pane > .grid2 { flex: 1 0 auto }`, charts at least 230px tall).
+
+To dress a new page: give it `#masthead` with an `h1` and a `.tagline`, use `.pane` inside `.wr-view` sections with `#wr-tabs` buttons that carry a `title`, and class its charts `chart`. Nothing else is needed.
+
+Not changed: the Archive's Chronicle, the Astrolabe and the Codex keep their own drawing (they were already the richest pages); only their side panels were touched.
+
 ## The Oracle (v14)
 
 **What the project is for.** The Archive gathers the record in one place; the Oracle (`oracle.html`, thirteenth instrument, last in the header) asks what that record points to. It is the tab for deductions: where each long line of history is heading, how far that can be trusted, and the best case against it.
@@ -325,5 +348,6 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 - Not yet published: the live site is v12.
 - *The whole record (v13.2)* — nothing is cut to a recent window: the Realms' world series, map slider, drift chart and country cards run from 1789; the United States components are shown across the whole record; every dispute, measure and reading is tied to its earlier history; twelve events added.
 - *The Oracle (v14, redrawn v14.1)* — a thirteenth instrument: what the whole record points to. Eleven lines drawn from their first year (38 world series plus the Archive's own data), led by Power and ending with Climate; the loom; 38 graded deductions each with the case against it, the 40 dated expectations sorted by how knowable they are. Header breakpoints moved again; thirteen instruments fit from 768px up.
+- *The illumination (v15)* — every instrument drawn to the Oracle's standard by one shared layer: a masthead on every view, light under every chart, framed panels, engraved headings.
 
-Current state: **v14.1** — thirteen instruments, three colourways, all datasets validated. Live: v14.1 (deployed 2026-11-24).
+Current state: **v15.0** — thirteen instruments, three colourways, all datasets validated. Live: v15.0 (deployed 2026-11-24).
