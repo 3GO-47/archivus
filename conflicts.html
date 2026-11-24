@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Conflicts</title>
+<meta name="description" content="Every armed conflict and standoff under way, on one ladder from tension to major war: who is fighting, which of them governments have designated terrorist organisations, and what each side has lost — every figure with its source and its date.">
+<meta name="color-scheme" content="dark">
+<script src="src/theme.js"></script><!-- the colourway, set before anything paints -->
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<link rel="stylesheet" href="src/wars.css">
+<link rel="stylesheet" href="src/doctrines.css">
+<link rel="stylesheet" href="src/realms.css">
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
+<style>
+/* ---------- THE CONFLICTS (v13). Page shell, tabs, map, side panel and chips come from the shared sheets. ---------- */
+.cf .lvd { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -0.5px; flex: 0 0 auto; }
+.cf .chipbtn.lvc { display: inline-flex; align-items: center; } .cf .chipbtn.lvc:not(.on) { opacity: .5; }
+.cf .chipbtn small { font: 10px var(--mono); color: #8d96af; margin-left: 6px; }
+/* map overlay: pins for conflicts, diamonds for armed groups. Sizes are in screen pixels (see place() in the engine). */
+.cf-pin { cursor: pointer; } .cf-pin .o { fill-opacity: .2; stroke-width: 1.5; vector-effect: non-scaling-stroke; } .cf-pin .i { stroke: #0a0c12; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.cf-pin.dim, .cf-mk.dim { opacity: .3; } .cf-pin.sel .o { fill-opacity: .42; stroke-width: 2.6; }
+.cf-pin text { font: 600 10.5px var(--display); fill: #f1ecdc; paint-order: stroke; stroke: #0a0c12; stroke-width: 3px; stroke-linejoin: round; pointer-events: none; letter-spacing: .02em; }
+.cf-mk { cursor: pointer; } .cf-mk path, .cf-mk circle { vector-effect: non-scaling-stroke; stroke-width: 1.2; }
+.cf-mk .d { fill: #ff7a66; stroke: #1d0b08; } .cf-mk .h { fill: #0e1119; stroke: #c3cbdd; } .cf-mk .r { fill: none; stroke: #ff7a66; } .cf-mk .u { fill: #0e1119; stroke: #ff7a66; }
+.rl-leg svg { width: 16px; height: 16px; display: inline-block; vertical-align: -3px; margin-right: 5px; cursor: default; } .cf-tbl svg { width: 18px; height: 18px; display: block; } #mp-leg2 { display: none; } .rl-leg .lg-h { display: block; font: 9.5px var(--display); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin: 6px 0 1px; }
+/* the scale under the map: tension → major war */
+#mp-scale { flex: 0 0 auto; display: flex; gap: 6px; padding: 8px 12px 10px; border-top: 1px solid var(--line-faint); max-height: 31%; min-height: 0; }
+.sc-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; min-height: 0; border-top: 3px solid var(--c); background: var(--obsidian-2); border-radius: 0 0 5px 5px; }
+.sc-h { display: flex; align-items: baseline; gap: 7px; padding: 5px 9px 3px; font: 600 11px var(--engraved); letter-spacing: .16em; text-transform: uppercase; color: var(--paper); white-space: nowrap; }
+.sc-h b { font: 700 15px var(--engraved); color: var(--c); } .sc-h i { margin-left: auto; font: normal 10.5px var(--mono); letter-spacing: 0; color: #8d96af; }
+.sc-b { flex: 1; min-height: 0; overflow: auto; padding: 2px 6px 6px; display: flex; flex-wrap: wrap; gap: 4px; align-content: flex-start; }
+.sc-c { background: none; border: 1px solid var(--line); border-radius: 3px; color: var(--paper-dim); cursor: pointer; padding: 2px 6px; font: 11px var(--sans); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.sc-c:hover { color: var(--gold-bright); border-color: var(--gold-dim); } .sc-c.sel { color: var(--gold-bright); border-color: var(--gold); background: rgba(201,162,39,.14); }
+.sc-c em { font-style: normal; font-size: 9px; margin-left: 4px; } .tr-up { color: #ff7a66; } .tr-down { color: #49c9b8; } .tr-flat { color: #8d96af; }
+.sc-ax { flex: 0 0 auto; display: flex; justify-content: space-between; padding: 0 12px 6px; font: 9.5px var(--display); letter-spacing: .22em; text-transform: uppercase; color: #8d96af; }
+/* the ladder */
+#ld-cols { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.ld-col { display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: 5px; background: var(--obsidian-2); }
+.ld-h { padding: 9px 11px 8px; border-bottom: 1px solid var(--line-faint); } .ld-h b { font: 700 22px var(--engraved); color: var(--c); margin-right: 8px; } .ld-h span { font: 600 12.5px var(--engraved); letter-spacing: .18em; text-transform: uppercase; color: var(--paper); }
+.ld-h p { margin: 5px 0 0; font-size: 11.5px; line-height: 1.45; color: var(--paper-dim); }
+.ld-b { flex: 1; min-height: 0; overflow: auto; padding: 7px; display: flex; flex-direction: column; gap: 6px; }
+.ld-card { text-align: left; background: var(--obsidian-3); border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 4px; color: var(--paper); cursor: pointer; padding: 7px 9px; font: 13px var(--sans); }
+.ld-card:hover { border-color: var(--gold-dim); border-left-color: var(--c); } .ld-card.sel { border-color: var(--gold); border-left-color: var(--c); background: rgba(201,162,39,.12); }
+.ld-card b { font: 600 13px var(--display); display: block; } .ld-card small { display: block; font: 10.5px/1.5 var(--mono); color: #8d96af; margin-top: 2px; } .ld-card small em { font-style: normal; }
+/* the toll and the belligerents: tables that scroll inside the screen */
+.cf-tbl-wrap { flex: 1; min-height: 0; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--obsidian-2); }
+.cf-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.cf-tbl th { position: sticky; top: 0; z-index: 1; background: var(--obsidian-3); font: 9.5px var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--gold-dim); white-space: nowrap; }
+.cf-tbl td { padding: 6px 9px; border-bottom: 1px solid var(--line-faint); color: #cfc9b8; vertical-align: top; line-height: 1.45; }
+.cf-tbl tr.row { cursor: pointer; } .cf-tbl tr.row:hover td { background: rgba(201,162,39,.06); } .cf-tbl tr.sel td { background: rgba(201,162,39,.13); }
+.cf-tbl td.nm { font: 500 13px var(--display); color: var(--paper); min-width: 170px; } .cf-tbl td.nm small { display: block; font: 10.5px var(--mono); color: #8d96af; }
+.cf-tbl td.num { font: 11.5px/1.45 var(--mono); color: var(--paper); max-width: 150px; min-width: 84px; } .cf-tbl td.num .bar { display: block; margin: 5px 0 4px; } .cf-tbl td.lv { white-space: nowrap; font: 11px var(--display); letter-spacing: .06em; color: var(--paper); }
+.cf-tbl td.sd b { font: 500 12.5px var(--sans); color: var(--paper); } .cf-tbl td.sd small { display: block; font: 10.5px var(--mono); color: #8d96af; } .cf-tbl td.sd { min-width: 190px; max-width: 300px; }
+.cf-tbl .grp td { background: var(--obsidian-3); font: 600 11px var(--engraved); letter-spacing: .16em; text-transform: uppercase; color: var(--paper); padding: 5px 9px; }
+.cf-tbl .des { font: 11px var(--mono); white-space: nowrap; } .cf-tbl .des.y { color: #ff9a8c; } .cf-tbl .des.n { color: #8d96af; }
+.bar { display: inline-block; height: 7px; border-radius: 1px; vertical-align: 1px; margin-right: 6px; background: var(--c); min-width: 2px; }
+/* the card */
+.lv-meter { display: flex; gap: 3px; margin: 8px 0 4px; } .lv-meter i { flex: 1; height: 7px; border-radius: 1px; background: var(--line); } .lv-meter i.on { background: var(--c); }
+.lv-ax { display: flex; justify-content: space-between; font: 9px var(--display); letter-spacing: .18em; text-transform: uppercase; color: #8d96af; margin-bottom: 10px; }
+.cf-side { border-left: 2px solid var(--line); padding: 2px 0 2px 10px; margin: 0 0 12px; } .cf-side > b { font: 600 13px var(--display); color: var(--paper); display: block; margin-bottom: 4px; }
+.pty { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; font-size: 12.5px; color: #cfc9b8; padding: 2px 0; } .pty .k { font: 9px var(--display); letter-spacing: .14em; text-transform: uppercase; color: #8d96af; }
+.pty .dz { font: 10px var(--mono); border: 1px solid rgba(255,122,102,.55); color: #ff9a8c; border-radius: 3px; padding: 0 5px; white-space: nowrap; } .pty .dz.no { border-color: var(--line); color: #8d96af; }
+.pty p { flex: 1 1 100%; margin: 0 0 2px; font: 10.5px/1.5 var(--mono); color: #8d96af; }
+.loss { margin: 6px 0 0; padding: 6px 8px; background: rgba(255,255,255,.025); border-radius: 3px; font-size: 12.5px; line-height: 1.45; color: #cfc9b8; }
+.loss b { color: var(--paper); font-weight: 600; } .loss small { display: block; font: 10.5px/1.5 var(--mono); color: #8d96af; margin-top: 2px; } .loss small a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); }
+.loss .kd { font: 9px var(--display); letter-spacing: .12em; text-transform: uppercase; border-radius: 2px; padding: 0 5px; margin-right: 6px; border: 1px solid var(--line); color: var(--paper-dim); white-space: nowrap; }
+.loss .kd.claim { border-color: rgba(255,122,102,.55); color: #ff9a8c; } .loss .kd.own { border-color: var(--gold-dim); color: var(--gold-bright); } .loss .kd.count { border-color: rgba(73,201,184,.5); color: #7fdccf; }
+.dth { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 2px 0 6px; } .dth div { background: var(--obsidian-2); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; }
+.dth span { display: block; font: 9px var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); } .dth b { font: 600 12.5px var(--mono); color: var(--paper); }
+.srcs a { display: block; white-space: normal; overflow-wrap: anywhere; font-family: var(--sans); font-size: 12px; line-height: 1.45; color: var(--paper-dim); text-decoration: none; padding: 4px 0; border-bottom: 1px solid var(--line-faint); } .srcs a:hover { color: var(--gold-bright); } .srcs a small { font: 10px var(--mono); color: #8d96af; margin-left: 6px; }
+.mth p, .mth li { font-size: 13px; line-height: 1.6; color: #cfc9b8; max-width: 78ch; } .mth ul { margin: 0; padding-left: 18px; } .mth .def { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 4px 12px; font-size: 13px; line-height: 1.5; color: #cfc9b8; margin: 0; }
+.mth .def dt { font: 600 12px var(--engraved); letter-spacing: .14em; text-transform: uppercase; color: var(--paper); } .mth .def dd { margin: 0 0 4px; }
+@media (max-width: 1100px) { #ld-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: auto; } .ld-col { min-height: 300px; } }
+@media (max-width: 860px) {
+  #mp-scale { flex-direction: column; max-height: none; } .sc-col { flex: none; } .sc-b { max-height: none; overflow: visible; }
+  #mp-leg { display: none; } #mp-leg2 { display: block; position: static; max-width: none; margin: 8px 12px 0; } #ld-cols { display: block; } .ld-col { margin-bottom: 10px; min-height: 0; } .ld-b { max-height: 46dvh; }
+  .cf-tbl-wrap { max-height: 66dvh; flex: none; } .mth .def { grid-template-columns: 1fr; } .dth { grid-template-columns: 1fr; }
+}
+</style>
+<link rel="stylesheet" href="src/themes.css"><!-- generated: the three colourways (tools/build-themes.js) -->
+</head>
+<body class="wr dc rl cf">
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE CONFLICTS</h1>
+      <p class="tagline">every conflict under way, from tension to major war — who fights, who is designated, and what each side has lost</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="wr-bar" aria-label="Views">
+    <div id="wr-tabs" role="tablist">
+      <button role="tab" data-v="map" title="Where the fighting is, how severe, and who is fighting (1)">The Map</button>
+      <button role="tab" data-v="ladder" title="Every conflict on one scale, from tension to major war (2)">The Ladder</button>
+      <button role="tab" data-v="toll" title="What each side has lost, and who says so (3)">The Toll</button>
+      <button role="tab" data-v="actors" title="The armed groups, and which governments list them as terrorist organisations (4)">The Belligerents</button>
+      <button role="tab" data-v="method" title="How the scale is set, what is counted, and every source (5)">Method &amp; sources</button>
+    </div>
+    <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a conflict, a country or a group…  ( / )" autocomplete="off" aria-label="Find a conflict, a country or an armed group"></div>
+  </nav>
+
+  <main id="dc-main">
+    <div id="dc-stage">
+
+      <!-- THE MAP -->
+      <section id="v-map" class="wr-view dc-view">
+        <div class="dc-bar">
+          <div class="chips" id="mp-lv" role="group" aria-label="Severity shown"></div>
+          <div class="chips" id="mp-lay" role="group" aria-label="Layers"></div>
+          <span class="wr-note" id="mp-n"></span>
+        </div>
+        <div class="rl-map" id="mp-wrap">
+          <svg id="mp" role="img" aria-label="World map of current conflicts by severity, with armed groups"></svg>
+          <div class="rl-zoom"><button class="chipbtn" id="mp-zi" title="Zoom in">+</button><button class="chipbtn" id="mp-zo" title="Zoom out">−</button><button class="chipbtn" id="mp-zr" title="Reset the view">⟲</button></div>
+          <div id="mp-leg" class="plate rl-leg"></div>
+          <div id="mp-tip" class="plate rl-tip" hidden></div>
+        </div>
+        <div id="mp-leg2" class="plate rl-leg"></div><!-- the legend again, below the map on a phone -->
+        <div id="mp-scale" aria-label="The scale, from tension to major war"></div>
+        <div class="sc-ax"><span>◂ tension</span><span>kinetic warfare ▸</span></div>
+      </section>
+
+      <!-- THE LADDER -->
+      <section id="v-ladder" class="wr-view dc-view" hidden><div class="pane"><div id="ld-cols"></div></div></section>
+
+      <!-- THE TOLL -->
+      <section id="v-toll" class="wr-view dc-view" hidden>
+        <div class="dc-bar"><span class="wr-note" id="tl-n"></span></div>
+        <div class="pane"><div class="cf-tbl-wrap" id="tl-wrap"></div></div>
+      </section>
+
+      <!-- THE BELLIGERENTS -->
+      <section id="v-actors" class="wr-view dc-view" hidden>
+        <div class="dc-bar"><div class="chips" id="ac-f" role="group" aria-label="Designation"></div><span class="wr-note" id="ac-n"></span></div>
+        <div class="pane"><div class="cf-tbl-wrap" id="ac-wrap"></div></div>
+      </section>
+
+      <!-- METHOD -->
+      <section id="v-method" class="wr-view dc-view" hidden><div class="pane mth" id="mt-pane"></div></section>
+    </div>
+
+    <aside id="dc-side" aria-live="polite"></aside>
+  </main>
+
+  <noscript><p style="padding:24px">The Conflicts needs JavaScript. The data is readable in <code>src/data/conflicts.js</code>.</p></noscript>
+
+  <script src="assets/world2.js"></script>
+  <script src="src/data/conflicts.js"></script>
+  <script src="src/realms-kit.js"></script>
+  <script src="src/conflicts-app.js"></script>
+</body>
+</html>

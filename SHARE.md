@@ -6,7 +6,9 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v12.0** — deployed 2026-11-13 in three commits (engines and styles, pocket builds, pages): three colourways (Blue, Black, White) with a switch in the header, and a contrast pass over every page. No data file changed. The live repository matches this folder byte for byte except `tools/`, `research/` and `exports/`, which are not published.
+**Live version: v14.1** — deployed 2026-11-24 in four commits (data, engines and styles, pocket builds, pages). New since v12: the Oracle, a thirteenth instrument (`oracle.html`) — what the whole record points to; the Conflicts, a twelfth (`conflicts.html`); the United States view extended back to 1607; and every Realms view extended to the first year of the record (1789).
+
+**Before that: v12.0** — deployed 2026-11-13 in three commits (engines and styles, pocket builds, pages): three colourways (Blue, Black, White) with a switch in the header, and a contrast pass over every page. No data file changed. The live repository matches this folder byte for byte except `tools/`, `research/` and `exports/`, which are not published.
 
 **Earlier: v11.0** — deployed 2026-11-13, together with v10 (the single header and search-everything), in four commits: data, engines and styles, pocket builds, pages. The live repository matches this folder byte for byte except `tools/`, `research/` and `exports/`, which are not published. New on the site: the Realms (`/realms.html`), the Coups (`/coups.html`), the Archive's density-stretched time axis and docked "In view" panel, and section chips on long views.
 

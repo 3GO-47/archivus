@@ -3,7 +3,7 @@
 
 **Live: https://3go-47.github.io/archivus/**
 
-Archivus is a self-contained instrument for exploring the whole arc of human history — eleven linked instruments over one hand-curated, fully-sourced archive of 628 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus. **v8.0** adds the War Room (both World Wars on an animated map), a navigation rail shared by every page, and a legibility pass over the Archive:
+Archivus is a self-contained instrument for exploring the whole arc of human history — thirteen linked instruments over one hand-curated, fully-sourced archive of 628 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus. **v8.0** adds the War Room (both World Wars on an animated map), a navigation rail shared by every page, and a legibility pass over the Archive:
 
 | Instrument | File | What it holds |
 |---|---|---|
@@ -54,7 +54,7 @@ Mouse: scroll = zoom (about the cursor; in the Wheel, about the pointer's angle;
 
 ## The frame (v10)
 
-Eleven pages, one instrument. `src/nav.js` is the first thing in every `<body>` and gives each page the same header — brand, the eleven instruments, search — in place before first paint, so nothing moves between pages except a gold marker that glides from the instrument you left to the one you entered. Page changes cross-fade (native cross-document view transitions on http(s) in browsers that have them, with the hovered page prerendered; a hand-made fade on `file://` and elsewhere). Each instrument reopens where you left it: view, selection and time window are remembered for the session. The first time you enter an instrument a title card passes; after that, nothing interrupts.
+Thirteen pages, one instrument. `src/nav.js` is the first thing in every `<body>` and gives each page the same header — brand, the thirteen instruments, search — in place before first paint, so nothing moves between pages except a gold marker that glides from the instrument you left to the one you entered. Page changes cross-fade (native cross-document view transitions on http(s) in browsers that have them, with the hovered page prerendered; a hand-made fade on `file://` and elsewhere). Each instrument reopens where you left it: view, selection and time window are remembered for the session. The first time you enter an instrument a title card passes; after that, nothing interrupts.
 
 ## Seen at a glance (v11)
 
@@ -68,7 +68,7 @@ v11 was built to one rule: what matters should be on screen without scrolling fo
 
 ## Three colourways (v12)
 
-The header carries a three-way switch at its right edge: **Blue** (the original navy observatory), **Black** (neutral greys on true black, no blue cast) and **White** (dark ink on a white page). The choice is remembered, follows you to every instrument, and can be forced in a link with `?theme=black` or `?theme=white`. On screens narrower than 1560px the switch folds into one three-coloured disc; press it to step to the next colourway.
+The header carries a three-way switch at its right edge: **Blue** (the original navy observatory), **Black** (neutral greys on true black, no blue cast) and **White** (dark ink on a white page). The choice is remembered, follows you to every instrument, and can be forced in a link with `?theme=black` or `?theme=white`. On screens narrower than 1620px the switch folds into one three-coloured disc; press it to step to the next colourway.
 
 **How it works.** The blue palette is still the only one written by hand. Every colour in the stylesheets, the data files and the scripts stays as it was; Black and White are *derived* from it by one rule in `src/theme.js`:
 
@@ -84,6 +84,100 @@ The rule reaches the page three ways. `tools/build-themes.js` reads the four sha
 **Checked.** A contrast audit walks 39 view states of the eleven pages in each colourway and measures every visible text element against what is actually behind it. Before this pass 371 (blue), 494 (black) and 547 (white) elements fell below AA; what remains in each is deliberate and still legible in context: the quadrant watermarks on the two compasses, and powers, leaders and labels dimmed because they are not yet active or not selected (their dimming was eased from 28–42% to 45–58% opacity). Fixes made at the source, so the original blue gained too: slate captions lifted, lane labels on the Chronicle raised from 60% to 90%, the faint inks of the Codex deepened to 4.5:1 on parchment, heat-table cells on the Coups capped so their numbers stay readable.
 
 **To change a colour:** edit it where it is written (blue), then run `node tools/build-themes.js` and `node tools/build-mobile.js --zip`. **To change how Black or White are derived:** edit `map()` in `src/theme.js` and rebuild. **For a one-off exception:** add a rule to `src/themes-extra.css` (appended to the generated file) and say why. **For an object that must keep its own colours:** add its selector to `FIXED` in the generator and `data-fixed` to its element.
+
+## The Conflicts (v13)
+
+`conflicts.html` — every armed conflict and armed standoff under way as of 14 November 2026: 40 of them, on one ladder from tension to major war.
+
+| View | What it shows |
+|---|---|
+| **The Map** | Countries shaded by the worst conflict on their soil; a pin per conflict; a diamond per armed group, filled where a government has listed it as a terrorist organisation. Under the map, the scale itself: five columns, tension → kinetic warfare, with every conflict in its place. |
+| **The Ladder** | The same 40 as cards in five columns, deadliest first within each. |
+| **The Toll** | One row per conflict: deaths in 2025 and in 2026 from a single comparable table, and one figure per side, labelled by who gave it. |
+| **The Belligerents** | The 89 armed groups and listed bodies, with their dates on the United States and United Kingdom lists (60 and 19; 27 are on neither). |
+| **Method & sources** | How levels are set, what the figures can bear, and all 66 sources. |
+
+**The scale.** 1 Tension (no killing between the parties) · 2 Crisis (force used, under about 100 deaths a year) · 3 Armed conflict (100–1,000) · 4 War (1,000–10,000, or open combat between armed forces) · 5 Major war (over 10,000). The thresholds are the Uppsala programme's and Wikipedia's; the five names follow the Heidelberg barometer. The level is the Archive's reading by that rule. The arrow (worsening / unchanging / easing) is taken from the Council on Foreign Relations' tracker and is left off where no outside assessment was found.
+
+**Losses.** Each side's losses are given as stated and labelled: *own account*, *opponent's claim*, *outside estimate*, or *count* (by name). Claims are never added to counts and nothing is totalled across sources. Where a side publishes nothing, the card says so.
+
+**Designations.** A designation is a government's act under its own law, and lists differ, so two full lists are shown side by side: the US State Department's Foreign Terrorist Organizations and the UK Home Office's proscribed organisations. The page takes no view on who belongs on either.
+
+**Honest limits.**
+- It is a snapshot. Every card carries the newest report read for it; the yearly death table stops in late August 2026.
+- Eight smaller conflicts (Cameroon, Mozambique, the Philippines, India's insurgencies, West Papua, Western Sahara, Brazil, Kosovo–Serbia) rest on the comparable table and the lists alone: no dated November 2026 report was read for them, and their cards say so.
+- The yearly table's rows are sometimes wider than the conflict named (the Sahel row runs from Algeria to Nigeria; Sudan's takes in South Sudan; Afghanistan's covers every conflict there). Each card says where.
+- Per-side losses do not exist for most conflicts. The page does not estimate them.
+- Whole-country shading is used only where fighting covers much of the country; Russia, India, Saudi Arabia, Brazil and Indonesia are not shaded for wars at their edge.
+- Wikipedia is used for the comparable table and for tabulations of each party's claims, alongside primary and news sources (UN bodies, the State Department, the Home Office, CFR, ACLED, Critical Threats, Al Jazeera, WAFA, Times of Israel, Mediazona and others).
+
+**To update it:** edit `src/data/conflicts.js` (the header explains every field), set `meta.asOf`, then `node tools/validate-conflicts.js` and `node tools/build-mobile.js --zip`. The validator refuses a figure without a source, a map name that is not on the map, or a designation without the list in the card's sources.
+
+## The Oracle (v14)
+
+**What the project is for.** The Archive gathers the record in one place; the Oracle (`oracle.html`, thirteenth instrument, last in the header) asks what that record points to. It is the tab for deductions: where each long line of history is heading, how far that can be trusted, and the best case against it.
+
+Four views:
+
+- **The Reading** — the eye, then **the loom**: all eleven lines on one frame from the dawn of farming to 2100, one row each on a shared, broken time axis, the Archive's eras along the top, the present as one bright thread through all of them and the 40 dated expectations at the foot. Under it, eight deductions as numbered tablets, and the ledger of every line (sparkline, the figure now, the verdict, the grades).
+- **The Lines** — each of the eleven in full, in the order the owner cares about them: **Power** (who makes the world's goods), **Orders**, **War**, **Rule**, **Force**, **Machines**, **Life and wealth**, **People**, **Plagues**, **Energy**, and **Climate** last. *Trends* are things that have moved one way; *returns* (Rule, Force, Orders, Plagues) are things that have happened before, with a base rate. Each has an emblem, four headline figures, its charts, **what the record shows**, **what it points to** (graded), **the case against**, **what to watch**, links into the other instruments, and its sources.
+- **The Horizon** — the Archive's 40 dated expectations for 2027–2117, sorted by the kind of knowledge each rests on: *Clockwork* (an orbit, the calendar), *Scheduled* (an institution's plan), *Projected* (a trend or a model), *Claimed* (a forecast by people with a stake in it).
+- **Method & sources** — the five rules, the four grades, what the instrument cannot do, the Archive's own lean (computed), and every series with its underlying source.
+
+Rules it is built on:
+
+1. **The whole record.** Every chart starts at its source's first year: population and towns from 10,000 BCE, carbon dioxide from 800,000 years ago, world output from year 1, democracy and regime endings from 1789–90. Where the last 75 years would vanish against 12,000, the time axis is **broken into equal panels** and the cuts are drawn. A source that starts late (conflict counts, 1989; internet use, 2005) says so in its title.
+2. **No number is typed.** The sentences in `src/data/oracle.js` carry `{{tokens}}`; `facts()` in `src/oracle-app.js` computes all 194 from the data when the page opens. Update a series and the text changes with it.
+3. **Every deduction is graded** by what it rests on — *In the pipeline* (already set in motion), *Likely* (a long trend or a well-populated base rate), *Contested* (the record points both ways), *Speculative* (a proponent's forecast with nothing to test it against) — and stands beside the case against it.
+4. **Arithmetic is labelled as arithmetic.** The Oracle's own extrapolations (the thirty-year temperature trend carried forward; one pandemic per 52 years since 1817) are marked as such. Other people's projections (the UN's population figures) are named as theirs.
+
+Data:
+
+| File | What it holds |
+|---|---|
+| `src/data/oracle.js` | The words: grades, the seven sentences, the ten lines, the threads (which Archive records count as polities, pandemics, steps in information technology), the Horizon classes, the method. Hand-written; header documents every field. |
+| `src/data/oracle-series.js` | 38 world series, 1,470 points (seven are each power's share of world output, derived from the Maddison Project's GDP figures). **Generated** by `node tools/build-oracle.js` from `research/data/owid-world-series.json`. |
+| `research/data/owid-world-series.json` | The series as read from Our World in Data on 24 Nov 2026, with each one's underlying source and update date. |
+| (existing) `realms.js`, `coups-record.js`, `conflicts.js`, `events*.js` | The Archive's own record: democracy since 1789, regimes ended by force since 1790, conflicts under way, and the events from which polity lifespans, pandemic intervals and the Horizon are computed. |
+
+`node tools/validate-oracle.js` checks that every token has a value, every record, series and link exists, every Horizon record has an https source, and that the seventeen sentences whose truth depends on the data (for example "three of the four calmest decades are this century's") still hold. It fails loudly if new data makes a sentence false.
+
+To refresh: re-read the series into `research/data/owid-world-series.json` (same shape), run `node tools/build-oracle.js`, `node tools/validate-oracle.js`, then `node tools/build-mobile.js --zip`. To add a line: add an object to `lines` in `src/data/oracle.js` (with its accent colour `c`, a `loom` spec for its row on the loom — `line`, `multi`, `marks`, `spans` or `cols` — and three or four `stats`); a new figure needs one line in `facts()`. The order of `lines` is the order everywhere.
+
+How it is drawn (v14.1): every line of a chart is drawn twice, a blurred copy under a crisp one (`lit()`; the blur is one SVG filter defined in `oracle.html`), with a fading area beneath and a pulsing ember at its latest point. Panels carry two brass corners (`.or-panel`). The colourway engine re-tones all of it, gradients included.
+
+Known limits (also on the Method view): the returns computed from the Archive's own records inherit its lean (Europe is 31% of records; 40% are dated after 1800); "polities" mixes dynasties and empires and under-counts short-lived states; seven pandemics are not a sample; the world averages hide distribution; nothing here measures trust, belief or the living world. The series were thinned when stored (every point before 1800, then every fifth or tenth year).
+
+The Archive's own toolbar already has an **Oracle** button, which summarises whatever period is in view. The two are complementary: that one reads a window, this one reads the whole.
+
+## The whole record (v13.2)
+
+**House rule, now written down: no view is cut to a recent window.** Every series starts at the first year its source covers, and where a source starts late the view says so on its face instead of quietly beginning there.
+
+What that changed in the Realms:
+
+- **World series from 1789, not 1900.** `tools/build-realms.py` sets `Y0` to the first year V-Dem scores any state (1789). Each country's `hl` (liberal democracy, ×100) and `hr` (regime class) run from 1789; a country is blank (`-1` / `-`) before V-Dem scores it.
+- **The map's year slider** runs 1789–2025 on the Liberal democracy lens. The legend counts the states scored in the chosen year. The Regime type lens runs from 1900, because V-Dem's regime classes (`v2x_regime`) begin in 1900; its legend says so and points to the other lens for 1789–1899. `RY0` in `src/realms-app.js` is read from the data, not typed in.
+- **The Drift › The world** has two charts: *The long line, 1789–2025* (new — the unweighted average of every state V-Dem scores that year on both indices, over a faint area showing how many states that is: 51 in 1789, 179 in 2025) and *Regime classes, 1900–2025* (as before, now labelled with its true start). The average comes from `world: { y0, n[], edi[], ldi[] }` in `src/data/realms.js`.
+- **Country cards**: the sparkline runs from 1789 and its caption names the first year that country is scored.
+- **United States › Standing**: the recent "What moved" table is unchanged; under it, *The same components across the whole record* — one row per V-Dem component with its line over every year it is scored (eight from 1789; polarisation and political violence from 1900), its value in 1789, 1850, 1900, 1950, 2000 and 2025, and when it last stood where it stands now ("lowest since 1971", "lowest on record"). `usa.parts` rows are now `[label, column, 2015, 2020, 2023, 2024, 2025, firstYear, series[]]`.
+- **United States › Disputes, Legislation, Five readings**: each dispute, measure and reading now carries *From the long record* — the earlier events on the same question, as chips that open the timeline at that event. The lists live in `pre: { topics, bills, theses }` in `src/data/realms-usa.js` as `"year:title"` keys of events already in `hist`/`arc`. They are the archive's pointers to the record, not a claim that either side cites them.
+- **Twelve events added** so those links are complete: the first tariff (1789), Lincoln assassinated (1865), McKinley assassinated (1901), the Reciprocal Tariff Act (1934), Korea (1950), the steel seizure case (1952), Little Rock (1957), Kennedy assassinated (1963), Medicare and Medicaid (1965), Oklahoma City (1995), welfare reform (1996) and the Affordable Care Act (2010). The timeline now has 129 events (81 for 1607–1999, 12 for 2000–2024, 36 for 2025–26).
+
+What still starts late, and why (each says so in the interface): regime classes, claimed ideology, polarisation and political violence are coded by V-Dem from 1900; Powell & Thyne's coup attempts begin in 1950; Freedom House's score shown is the 2026 edition only. Forced regime endings in the Coups already run from 1790.
+
+## The United States, from 1607 (v13.1)
+
+The United States view of the Realms first shipped with a timeline that began in 2000 and a chart that began in 1900. That was a real gap: a country's direction cannot be read from its last two years. The view now carries the whole story.
+
+- **Standing** — the two democracy indices from **1789**, the first year V-Dem scores the country, to 2025.
+- **The long arc** (new section) — twelve eras from the colonies to the present. Each gives the governing idea, who governed and who could vote, what they fought over, how it ended, the index at its start and end, and its turning points.
+- **Timeline** — **117 events from Jamestown (1607) to this month**: 70 for 1607–1999, the 11 of the run-up since 2000, and the 36 of 2025–26. Ten lanes (two new: *Constitution & union*, *Rights & citizenship*); the eras run across the top; click a lane name to follow one thread through four centuries.
+- Several entries are there because today's disputes turn on them: *Wong Kim Ark* (birthright citizenship), *Humphrey's Executor* (the president's power to dismiss), the Pendleton Act (the civil service), the Twenty-second Amendment, the War Powers Resolution, the Voting Rights Act's pre-clearance rule.
+
+**Sources.** 34 of the 70 historical events cite the primary document at the US National Archives ("Milestone Documents"); the rest cite a Wikipedia article. Every slug and title was checked against the Archives' own list or a live Wikipedia link before it went in — two titles recalled from memory turned out to be wrong and were corrected. Era summaries are syntheses of standard accounts and say so by listing their reading.
+
+**Not covered.** Nothing before English settlement: the Native nations, and Spanish and French America, are in the Archive's own records, not on this tab.
 
 ## The Realms and the Coups: where the numbers come from (v11)
 
@@ -124,7 +218,7 @@ All data lives in `src/data/` as window-global script files (no fetch, so `file:
 
 **To add a doctrine:** append a node to `doctrines.js` with its family, coordinates, origin, `d`, `c`, `u` and `fr`; it appears on the Compass, Lineage, Atlas and Library at once. Placements are editorial conventions — keep the critics' case beside every doctrine. Validate with `node tools/validate-doctrines.js` (`--urls` lists every citation).
 
-**After any change:** `node tools/build-mobile.js --zip` regenerates the search index and rebuilds the eleven single-file `mobile/` builds and `exports/archivus-site.zip`. Sourcing standards and the research trail live in `research/`.
+**After any change:** `node tools/build-mobile.js --zip` regenerates the search index and rebuilds the thirteen single-file `mobile/` builds and `exports/archivus-site.zip`. Sourcing standards and the research trail live in `research/`.
 
 ## Epistemics
 
@@ -145,6 +239,8 @@ archivus/
 ├── doctrines.html        the Doctrines (v9)
 ├── realms.html           the Realms (v11)
 ├── coups.html            the Coups (v11)
+├── conflicts.html        the Conflicts (v13)
+├── oracle.html           the Oracle (v14): what the whole record points to
 ├── lineage.html          the Bloodline
 ├── pantheons.html        the Pantheons
 ├── transmissions.html    the Transmissions codex
@@ -162,13 +258,15 @@ archivus/
 │   ├── doctrines.css     Doctrines theme (builds on wars.css)
 │   ├── realms-app.js     Realms engine (map, compass, ledger, drift, United States)
 │   ├── coups-app.js      Coups engine (roll, record, the two studies, patterns)
-│   ├── realms-kit.js     shared by both: world map, year slider, tooltips, hash state
+│   ├── conflicts-app.js  Conflicts engine (map, ladder, toll, belligerents, method)
+│   ├── oracle-app.js     Oracle engine (facts, broken-axis charts, reading, lines, horizon, method)
+│   ├── realms-kit.js     shared by all three: world map, year slider, tooltips, hash state
 │   ├── realms.css        theme for both (builds on doctrines.css)
 │   ├── *-app.js          one renderer per instrument
 │   ├── styles.css        the observatory theme (shared)
 │   └── data/             all datasets (see schema above)
-├── mobile/               single-file builds of all eleven pages
-├── tools/                build-mobile.js · build-index.js · build-themes.js · build-realms.py · validate-wars.js · validate-doctrines.js · validate-realms.js
+├── mobile/               single-file builds of all thirteen pages
+├── tools/                build-mobile.js · build-index.js · build-themes.js · build-realms.py · build-oracle.js · validate-oracle.js · validate-wars.js · validate-doctrines.js · validate-conflicts.js · validate-realms.js
 ├── exports/              archivus-site.zip (deploy-ready) · archivus-v7.2-backup.zip
 └── research/             sources, notes, provenance, expansion plans · data/ (Freedom House scores as captured)
 ```
@@ -216,4 +314,16 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 - *Tooling* — `tools/build-themes.js` (run it after changing any colour, before `build-mobile.js`).
 - Published to the live site on 2026-11-13 — see `SHARE.md`.
 
-Current state: **v12.0** — eleven instruments, three colourways, all datasets validated, live.
+**v13.0 — the Conflicts (2026-11-14)**
+- *The Conflicts* — a twelfth instrument: 40 conflicts under way on a five-step scale from tension to major war; a world map with a pin per conflict and a diamond per armed group; 89 groups with their US and UK terrorist designations; each side's losses labelled by who gave them; 66 sources.
+- *Header* — twelve instruments fit without scrolling from 768px up; breakpoints moved to make room.
+- *Portal* — a tenth door; "Explore freely" becomes a bar under the 3 × 3.
+- *Search* — conflicts are in the search-everything index (2,021 entries).
+- *Map kit* — `K.worldMap` gained `onView` and passes the clicked element to `onPick`, so overlays can keep screen size and be clicked.
+- *Tooling* — `tools/validate-conflicts.js`.
+- *The United States, from 1607 (v13.1)* — the Realms' United States view gains a Long Arc of twelve eras, 70 events for 1607–1999 on its timeline, and a chart that starts in 1789 instead of 1900.
+- Not yet published: the live site is v12.
+- *The whole record (v13.2)* — nothing is cut to a recent window: the Realms' world series, map slider, drift chart and country cards run from 1789; the United States components are shown across the whole record; every dispute, measure and reading is tied to its earlier history; twelve events added.
+- *The Oracle (v14, redrawn v14.1)* — a thirteenth instrument: what the whole record points to. Eleven lines drawn from their first year (38 world series plus the Archive's own data), led by Power and ending with Climate; the loom; 38 graded deductions each with the case against it, the 40 dated expectations sorted by how knowable they are. Header breakpoints moved again; thirteen instruments fit from 768px up.
+
+Current state: **v14.1** — thirteen instruments, three colourways, all datasets validated. Live: v14.1 (deployed 2026-11-24).

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Oracle</title>
+<meta name="description" content="What the whole record points to: ten lines of history drawn from their first year to now, each with what it shows, what it points to, how far to trust it, and the case against.">
+<meta name="color-scheme" content="dark">
+<script src="src/theme.js"></script><!-- the colourway, set before anything paints -->
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<link rel="stylesheet" href="src/wars.css">
+<link rel="stylesheet" href="src/doctrines.css">
+<link rel="stylesheet" href="src/realms.css">
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
+<style>
+/* ---------- THE ORACLE (v14.1). Page shell, tabs, tables and chips come from the shared sheets; everything that makes
+   this page an instrument of its own is here: the eye, the loom, the tablets, the lit charts. ---------- */
+.or .pane { gap: 18px; padding-top: 18px; padding-bottom: 28px; background: radial-gradient(1100px 420px at 50% -120px, rgba(201,162,39,.11), transparent 70%), radial-gradient(900px 500px at 100% 0, rgba(91,147,184,.06), transparent 70%); }
+.or .pane .mx-wrap { flex: none; max-height: none; overflow-x: auto; overflow-y: visible; }
+/* the masthead of a view */
+.or-top { display: flex; gap: 26px; align-items: center; padding: 4px 4px 0; } .or-top.slim { padding-top: 0; }
+.or-eye { flex: 0 0 auto; width: 104px; height: 104px; } .or-eye svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.or-eye .ring { transform-origin: 46px 46px; animation: or-spin 110s linear infinite; } .or-eye .ring2 { animation-direction: reverse; animation-duration: 170s; }
+.or-eye .iris { transform-origin: 46px 46px; animation: or-breathe 6s ease-in-out infinite; }
+@keyframes or-spin { to { transform: rotate(360deg); } } @keyframes or-breathe { 0%, 100% { transform: scale(.92); } 50% { transform: scale(1.06); } } @keyframes or-pulse { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+.or .pulse { animation: or-pulse 3.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .or-eye .ring, .or-eye .iris, .or .pulse { animation: none; } }
+.or-kicker { font: 600 10px var(--display); letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+.or-title { font: 600 clamp(24px, 3.1vw, 40px)/1.08 var(--engraved); letter-spacing: .11em; text-transform: uppercase; color: var(--paper); margin: 7px 0 9px; text-shadow: 0 0 34px rgba(232,196,85,.22); }
+.or .pane .or-top .lead { font: 15.5px/1.62 Georgia, "Times New Roman", serif; color: #d2ccbb; max-width: 96ch; }
+/* a framed panel: two brass corners */
+.or-panel { position: relative; background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 46%), var(--obsidian-2); border: 1px solid var(--line); border-radius: 7px; padding: 13px 15px 10px; box-shadow: 0 14px 40px rgba(0,0,0,.22); }
+.or-panel::before, .or-panel::after { content: ""; position: absolute; width: 16px; height: 16px; border: 1px solid var(--gold); opacity: .75; pointer-events: none; }
+.or-panel::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; border-top-left-radius: 7px; } .or-panel::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; border-bottom-right-radius: 7px; }
+.or-ph { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 8px; } .or-ph b { font: 600 12.5px var(--engraved); letter-spacing: .26em; text-transform: uppercase; color: var(--gold-bright); } .or-ph small { font: 10.5px/1.5 var(--mono); color: #7d87a1; }
+/* a section heading between two fading rules */
+.or .pane h4.or-h { display: flex; align-items: center; gap: 16px; font: 600 12.5px var(--engraved); letter-spacing: .32em; text-transform: uppercase; color: var(--gold-bright); margin: 10px 0 0; white-space: nowrap; }
+.or-h::before, .or-h::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(201,162,39,0), rgba(201,162,39,.6)); } .or-h::after { background: linear-gradient(270deg, rgba(201,162,39,0), rgba(201,162,39,.6)); }
+.or-h span::before, .or-h span::after { content: "✦"; font-size: 9px; color: var(--gold); margin: 0 12px; vertical-align: 1px; }
+.or .pane p.or-hs { text-align: center; font: 12px/1.5 var(--sans); color: #8d96af; margin: -10px 0 0; }
+/* signs */
+.or-ic { fill: none; stroke: currentColor; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; width: 16px; height: 16px; display: block; } .sg { display: inline-block; }
+/* charts */
+.or-charts { display: grid; gap: 16px 18px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.or-charts.n1 { grid-template-columns: 1fr; } .or-charts.n2, .or-charts.n4, .or-charts.n3.w { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.or-ch { margin: 0; min-width: 0; } .or-ch.wide { grid-column: 1 / -1; }
+.or-ch figcaption b { display: block; font: 600 12px var(--engraved); letter-spacing: .15em; text-transform: uppercase; color: var(--gold-bright); }
+.or-ch figcaption small { display: block; font: 10.5px/1.45 var(--mono); color: #7d87a1; margin: 4px 0 8px; min-height: 2.9em; } .or-charts.n1 figcaption small, .or-ch.wide figcaption small { min-height: 0; }
+.or-host { min-height: 200px; touch-action: pan-y; } .or-ch.tall .or-host { min-height: 0; } .or-host svg { display: block; max-width: 100%; overflow: visible; }
+.or-ch .cleg { margin: 6px 0 0; font-size: 10.5px; gap: 2px 14px; }
+.or-read { font: 10.5px var(--mono); color: #66708c; min-height: 15px; margin-top: 4px; } .or-read.on { color: var(--gold-bright); }
+.or .chart .gl { stroke: rgba(255,255,255,.055); } .or .chart .cut { stroke: rgba(141,150,175,.42); stroke-dasharray: 1 3; } .or .chart .fut { fill: rgba(180,142,240,.07); } .or .chart .futt { font-size: 9px; fill: #7d87a1; }
+.or .chart .band { fill: rgba(224,80,47,.12); } .or .chart .lvl { stroke: rgba(232,196,85,.5); stroke-dasharray: 4 3; } .or .chart .guide { stroke: rgba(232,196,85,.75); }
+.or .chart .gt { font: 9.5px var(--sans); fill: #a8a494; } .or .chart .gt.on { fill: #e6e0cf; } .or .chart .gp { font: 9.5px var(--mono); fill: #8d96af; } .or .chart .thr { stroke-opacity: .35; stroke-width: 1; }
+.or .chart .endl { font: 600 10.5px var(--display); letter-spacing: .03em; } .or .chart .lab { fill: #e6e0cf; }
+.or .chart .rb { font: 8.5px var(--display); letter-spacing: .09em; text-transform: uppercase; fill: #d6d1c2; pointer-events: none; } .or .chart .nowl { stroke: #e8c455; stroke-width: 1.6; } .or .chart .nowt { fill: #e8c455; font: 600 10px var(--display); letter-spacing: .12em; text-transform: uppercase; }
+.or .chart .hz-d { cursor: pointer; stroke: #0a0c12; stroke-width: 1.2; } .or .chart .hz-d:hover, .or .chart .hz-d.on { stroke: #f4efe0; stroke-width: 2; }
+[data-theme="white"] .or .glow { opacity: .45; }
+.or .chart .guide, .or .chart .glow, .or .chart .pulse, .or .chart .nowl, .or .chart .lm-gy, .or .chart .cut, .or .chart .lm-fut, .or .chart .lm-sep { pointer-events: none; }   /* decoration never takes a click meant for a row */
+/* the loom */
+.or-loomwrap { padding: 14px 16px 10px; } #rd-loom { min-height: 420px; } .or-loom { display: block; }
+.or .chart .lm-fut { fill: rgba(180,142,240,.075); } .or .chart .lm-sep { stroke: rgba(255,255,255,.055); }
+.or .chart .lm-row { fill: rgba(232,196,85,0); cursor: pointer; outline: none; transition: fill .15s; } .or .chart .lm-row:hover, .or .chart .lm-row:focus-visible { fill: rgba(232,196,85,.075); }
+.or .chart .lm-n { font: 600 12.5px var(--engraved); letter-spacing: .13em; text-transform: uppercase; fill: #f1ecdc; pointer-events: none; } .or .chart .lm-k { font: 9.5px var(--mono); fill: #7d87a1; pointer-events: none; }
+.or .chart .lm-v { font: 600 14px var(--display); letter-spacing: .02em; pointer-events: none; } .or .chart .lm-gy { font: 600 10px var(--mono); fill: #e8c455; }
+.or-ll { margin: 6px 0 0; font-size: 10.5px; color: #8d96af; gap: 2px 16px; } .or-ll i.nowk { width: 2px; height: 11px; background: #e8c455; border-radius: 0; box-shadow: 0 0 6px #e8c455; } .or-ll i.dsh { width: 16px; height: 0; border-top: 2px dashed #a8a494; background: none; vertical-align: 3px; }
+/* the tablets */
+.or-syn { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px; }
+.or-syn li { display: flex; }
+.or-syn button { flex: 1; position: relative; text-align: left; background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 55%), var(--obsidian-2); border: 1px solid var(--line); border-top: 2px solid; border-radius: 7px; padding: 18px 18px 13px 70px; cursor: pointer; color: var(--paper); display: flex; flex-direction: column; gap: 8px; font: inherit; transition: transform .18s, box-shadow .18s; }
+.or-syn button:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(0,0,0,.4), 0 0 0 1px var(--gold-dim); } .or-syn button:focus-visible { outline: 1px solid var(--gold); outline-offset: 2px; }
+.or-syn .num { position: absolute; left: 0; top: 15px; width: 68px; text-align: center; font: 600 25px/1 var(--engraved); letter-spacing: .04em; } .or-syn .sg { position: absolute; left: 24px; top: 52px; opacity: .85; } .or-syn .sg .or-ic { width: 20px; height: 20px; }
+.or-syn b { font: 18px/1.34 Georgia, "Times New Roman", serif; color: #f4efe0; font-weight: 400; } .or-syn button > span:not(.num):not(.sg) { font: 13px/1.58 var(--sans); color: #b9b4a4; }
+.or-syn em { display: flex; align-items: center; gap: 10px; font: normal 600 10px var(--display); letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-top: auto; padding-top: 4px; }
+/* the ledger */
+.or-tbl tbody tr { cursor: pointer; } .or-tbl tbody tr:hover td { background: rgba(201,162,39,.06); } .or-tbl tr:focus-visible { outline: 1px solid var(--gold); outline-offset: -1px; }
+.or .pane .or-tbl td { vertical-align: middle; font-size: 12.5px; line-height: 1.5; padding: 9px 12px; } .or-tbl td.m { position: relative; padding-left: 40px !important; } .or-tbl td.m .sg { position: absolute; left: 13px; top: 50%; margin-top: -8px; }
+.or-tbl td.m b { font: 600 12.5px var(--engraved); letter-spacing: .12em; text-transform: uppercase; color: var(--paper); display: block; }
+.or-tbl small { display: block; font: 10.5px/1.4 var(--mono); color: #7d87a1; } .or-tbl td.nw b { font: 600 15px var(--display); color: var(--gold-bright); white-space: nowrap; display: block; } .or-tbl td.sp { width: 160px; }
+.or-sp { width: 150px; } .or-sp small { white-space: nowrap; } .or-spark { width: 150px; height: 28px; display: block; } .or-spark path { fill: none; stroke-width: 1.5; } .or-none { font: 10.5px var(--mono); color: #66708c; }
+.or-pips { display: inline-flex; gap: 3px; vertical-align: middle; } .or-pips i { width: 8px; height: 8px; border-radius: 50%; display: block; box-shadow: 0 0 5px rgba(232,196,85,.25); }
+.or-gl { margin: 0; gap: 4px 18px; font: 11.5px/1.5 var(--sans); color: #a8a494; } .or-gl b { color: #d6d1c2; font-weight: 600; }
+/* a line in full */
+.or-list button { position: relative; padding: 9px 62px 9px 38px; } .or-list .or-pips { position: absolute; right: 9px; top: 13px; } .or-list .sg { position: absolute; left: 12px; top: 11px; }
+.or-list button.on { box-shadow: inset 0 0 22px rgba(201,162,39,.1); }
+.or-line { gap: 16px; overflow: visible; } .or .grid2.md { flex: none; align-items: start; } .or .grid2.md > .col:first-child { position: sticky; top: 0; }
+.or-hero { display: flex; gap: 22px; align-items: flex-start; padding-bottom: 4px; }
+.or-emb { flex: 0 0 auto; width: 76px; height: 76px; border-radius: 50%; border: 1px solid; display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.07), rgba(255,255,255,0) 70%); box-shadow: inset 0 0 22px rgba(232,196,85,.12), 0 0 30px rgba(232,196,85,.12); position: relative; }
+.or-emb::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 1px dashed; opacity: .35; } .or-emb .or-ic { width: 34px; height: 34px; stroke-width: 1; }
+.or-kind { font: 600 9.5px var(--display); letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+.or-line h3 { font: 600 clamp(24px, 2.6vw, 34px)/1.1 var(--engraved); letter-spacing: .1em; text-transform: uppercase; color: var(--paper); margin: 5px 0 10px; text-shadow: 0 0 30px rgba(232,196,85,.18); } .or-line h3 small { font: 400 14px var(--sans); letter-spacing: 0; text-transform: none; color: #8d96af; margin-left: 14px; }
+.or-verdict { font: 19px/1.5 Georgia, "Times New Roman", serif; color: #f4efe0; margin: 0; max-width: 88ch; }
+.or-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.or-stats > div { background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 60%), var(--obsidian-2); border: 1px solid var(--line); border-top: 2px solid; border-radius: 6px; padding: 13px 15px 12px; }
+.or-stats b { font: 600 27px/1.1 var(--display); letter-spacing: .01em; color: #f4efe0; display: block; white-space: nowrap; } .or-stats span { font: 11.5px/1.45 var(--sans); color: #a8a494; display: block; margin-top: 6px; }
+.or-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; } .or-cols section { min-width: 0; }
+.or-card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 50%), var(--obsidian-2); border: 1px solid var(--line); border-radius: 7px; padding: 15px 18px 10px; }
+.or .pane .or-card h4 { font: 600 12px var(--engraved); letter-spacing: .22em; margin: 0 0 4px; } .or-card h4 i { font-style: normal; color: var(--gold); margin-right: 9px; font-size: 11px; }
+.or-card.against { border-color: rgba(224,80,47,.38); background: linear-gradient(180deg, rgba(224,80,47,.075), rgba(224,80,47,0) 60%), var(--obsidian-2); } .or .pane .or-card.against h4, .or-card.against h4 i { color: #ff9a80; }
+.or-cols ul, .or-cols ol { margin: 8px 0 0; padding-left: 17px; } .or-cols li { font: 13.5px/1.62 var(--sans); color: #d2ccbb; margin-bottom: 8px; } .or-cols li::marker { color: var(--gold-dim); }
+.or-cols .or-ded { list-style: none; padding: 0; } .or-ded li { border-left: 2px solid; padding: 2px 0 2px 13px; margin-bottom: 13px; } .or-ded p { margin: 5px 0 0; color: #ece6d6; }
+.or-g { font: 600 9px var(--display); letter-spacing: .17em; text-transform: uppercase; border: 1px solid; border-radius: 3px; padding: 2px 7px; } .or-ded .hz { font: 10px var(--mono); color: #7d87a1; margin-left: 9px; }
+.or-q { border-left: 3px solid; padding: 2px 0 2px 11px; margin: 10px 0; } .or-q b { display: block; font: 600 10px var(--display); letter-spacing: .16em; text-transform: uppercase; margin-bottom: 3px; } .or-q span { font: 12.5px/1.55 var(--sans); color: #b9b4a4; }
+.or-rules li b { color: var(--paper); }
+.or .pane p.srcs b { color: var(--gold); font: 9.5px var(--display); letter-spacing: .18em; text-transform: uppercase; margin-right: 8px; align-self: center; } .or .pane p.srcs span { font: 10.5px var(--mono); color: #8d96af; margin-left: 6px; }
+.or a.chipbtn { text-decoration: none; display: inline-block; } .or a.rel { text-decoration: none; box-sizing: border-box; }
+.or-step { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); padding-top: 14px; }
+.or-step button { background: var(--obsidian-2); border: 1px solid var(--line); border-radius: 6px; color: var(--paper); cursor: pointer; padding: 9px 16px; font: 600 12px var(--engraved); letter-spacing: .16em; text-transform: uppercase; text-align: left; } .or-step button:last-child { text-align: right; }
+.or-step button:hover { border-color: var(--gold); } .or-step small { display: block; font: 10px var(--mono); letter-spacing: 0; color: var(--gold); margin-bottom: 3px; }
+/* the horizon */
+.or-defs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.or-defs > div { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 60%), var(--obsidian-2); border: 1px solid var(--line); border-top: 2px solid; border-radius: 6px; padding: 10px 13px; } .or-defs b { font: 600 10.5px var(--display); letter-spacing: .18em; text-transform: uppercase; display: block; margin-bottom: 4px; } .or-defs span { font: 11.5px/1.5 var(--sans); color: #a8a494; }
+.or-hz { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.or-hz button { text-align: left; background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,0) 50%), var(--obsidian-2); border: 1px solid var(--line); border-left: 3px solid; border-radius: 5px; color: var(--paper); cursor: pointer; padding: 9px 12px; font: 13px/1.4 var(--sans); display: grid; grid-template-columns: 56px 1fr; gap: 1px 6px; transition: transform .15s; }
+.or-hz button:hover { transform: translateX(2px); border-top-color: var(--gold-dim); border-right-color: var(--gold-dim); border-bottom-color: var(--gold-dim); } .or-hz button.on { background: rgba(201,162,39,.12); border-top-color: var(--gold); border-right-color: var(--gold); border-bottom-color: var(--gold); }
+.or-hz .y { font: 11px var(--mono); color: #8d96af; grid-row: span 2; padding-top: 2px; } .or-hz b { font-weight: 500; } .or-hz i { font: normal 600 9px var(--display); letter-spacing: .15em; text-transform: uppercase; }
+.or-src td { font-size: 12px; } .or-src td.m a, .or-src td a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); } .or code { font: 11px var(--mono); color: #c4cad8; }
+@media (max-width: 1500px) { .or-charts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .or-charts.n3:not(.w) .or-ch:last-child { grid-column: 1 / -1; } }
+@media (max-width: 1100px) { .or-charts, .or-charts.n2, .or-charts.n4, .or-charts.n3.w { grid-template-columns: 1fr; } .or-defs { grid-template-columns: repeat(2, minmax(0, 1fr)); } .or-ch figcaption small { min-height: 0; } }
+@media (max-width: 860px) {
+  .or-cols { grid-template-columns: 1fr; } .or .grid2.md > .col:first-child { position: static; } .or-top { gap: 14px; } .or-eye { width: 64px; height: 64px; } .or .pane .or-top .lead { font-size: 14px; }
+  .or-list { flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; } .or-list button { flex: 0 0 auto; padding: 8px 12px 8px 34px; } .or-list button small, .or-list .or-pips { display: none; } .or-list .sg { top: 9px; left: 10px; }
+  .or-tbl td.sp, .or-tbl th:nth-child(2) { display: none; } .or-verdict { font-size: 16px; } .or-line h3 small { display: block; margin: 5px 0 0; } .or-emb { width: 54px; height: 54px; } .or-emb .or-ic { width: 24px; height: 24px; } .or-hero { gap: 16px; }
+  .or-stats { grid-template-columns: 1fr 1fr; gap: 8px; } .or-stats b { font-size: 21px; } .or-syn button { padding-left: 60px; } .or-syn .num { width: 58px; font-size: 21px; } .or-syn .sg { left: 19px; }
+  .or .pane h4.or-h { letter-spacing: .2em; white-space: normal; text-align: center; } .or-loomwrap { padding: 10px 8px 8px; } #rd-loom { min-height: 360px; }
+}
+@media (max-width: 560px) { .or-defs { grid-template-columns: 1fr; } .or-tbl td:nth-child(5), .or-tbl th:nth-child(5) { display: none; } .or-ch.or-panel { padding: 10px 9px 7px; } .or-top:not(.slim) { flex-direction: column; align-items: flex-start; } }
+</style>
+<link rel="stylesheet" href="src/themes.css"><!-- generated: the three colourways (tools/build-themes.js) -->
+</head>
+<body class="wr dc rl or">
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
+
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE ORACLE</h1>
+      <p class="tagline">what the whole record points to — every deduction with its evidence, its grade, and the case against it</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+
+  <nav id="wr-bar" aria-label="Views">
+    <div id="wr-tabs" role="tablist">
+      <button role="tab" data-v="reading" title="Where the record points: the loom of every line, the deductions, the ledger (1)">The Reading</button>
+      <button role="tab" data-v="lines" title="Each line in full: the charts, what they show, what they point to, the case against (2)">The Lines</button>
+      <button role="tab" data-v="horizon" title="Every dated expectation in the Archive, sorted by how knowable it is (3)">The Horizon</button>
+      <button role="tab" data-v="method" title="The rules, the limits, the Archive's own lean, and every source (4)">Method &amp; sources</button>
+    </div>
+    <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a line or an expectation…  ( / )" autocomplete="off" aria-label="Find a line or a dated expectation"></div>
+  </nav>
+
+  <main id="dc-main">
+    <div id="dc-stage">
+      <section id="v-reading" class="wr-view dc-view"><div class="pane" id="rd-pane"></div></section>
+      <section id="v-lines" class="wr-view dc-view" hidden><div class="pane" id="ln-pane"></div></section>
+      <section id="v-horizon" class="wr-view dc-view" hidden><div class="pane" id="hz-pane"></div></section>
+      <section id="v-method" class="wr-view dc-view" hidden><div class="pane" id="mt-pane"></div></section>
+    </div>
+    <aside id="dc-side" aria-live="polite"></aside>
+  </main>
+
+  <!-- the light under every line: a blurred copy drawn beneath the stroke (see lit() in src/oracle-app.js) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+    <filter id="or-glow" x="-30%" y="-80%" width="160%" height="260%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="3.4"/></filter>
+    <filter id="or-glow2" x="-100%" y="-100%" width="300%" height="300%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs></svg>
+
+  <noscript><p style="padding:24px">The Oracle needs JavaScript. Its words are readable in <code>src/data/oracle.js</code> and its numbers in <code>src/data/oracle-series.js</code>.</p></noscript>
+
+  <script src="src/data/eras.js"></script>
+  <script src="src/data/themes.js"></script>
+  <script src="src/data/events.js"></script>
+  <script src="src/data/events2.js"></script>
+  <script src="src/data/geo.js"></script>
+  <script src="src/data/uncertainty.js"></script>
+  <script src="src/data/events3.js"></script>
+  <script src="src/data/events4.js"></script>
+  <script src="src/data/events5.js"></script>
+  <script src="src/data/events6.js"></script>
+  <script src="src/data/events7.js"></script>
+  <script src="src/data/events8.js"></script>
+  <script src="src/data/realms.js"></script>
+  <script src="src/data/coups-record.js"></script>
+  <script src="src/data/conflicts.js"></script>
+  <script src="src/data/oracle-series.js"></script>
+  <script src="src/data/oracle.js"></script>
+  <script src="src/realms-kit.js"></script>
+  <script src="src/oracle-app.js"></script>
+</body>
+</html>
