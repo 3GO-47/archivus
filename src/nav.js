@@ -1,10 +1,10 @@
 /* ============================================================
-   ARCHIVUS — the frame (v10; eleven instruments since v11)
+   ARCHIVUS — the frame (v10; thirteen instruments since v14)
    ------------------------------------------------------------
-   Eleven pages that should feel like one instrument. This script
+   Twelve pages that should feel like one instrument. This script
    is the first thing in every <body> and gives every page
 
-     · ONE HEADER, identical everywhere: brand, the eleven
+     · ONE HEADER, identical everywhere: brand, the thirteen
        instruments, and a search-everything button. It is in
        place before the page paints, so nothing shifts. The
        per-page mastheads stay in the markup as a no-script
@@ -47,6 +47,8 @@
       icon: I('<circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c2.4 2 2.4 10.4 0 12.4M8 1.8c-2.4 2-2.4 10.4 0 12.4"/>') },
     { id: "coups", href: "coups.html", label: "Coups", tip: "Every seizure of power on record — by creed, by declared aim, and what came before",
       icon: I('<path d="M2.6 11.4L2 5.2l3.4 2.6L8 3.4l2.6 4.4L14 5.2l-.6 6.2zM3.2 13.6h9.6"/>') },
+    { id: "conflicts", href: "conflicts.html", label: "Conflicts", tip: "Every conflict under way, from tension to major war — who fights, who is designated, what each side has lost",
+      icon: I('<circle cx="8" cy="8" r="5.2"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><path d="M8 1.2v3M8 11.8v3M1.2 8h3M11.8 8h3"/>') },
     { id: "lineage", href: "lineage.html", label: "Bloodline", tip: "The family tree — pantheon of Sumer to the lines of the Messiah",
       icon: I('<path d="M8 2v4M8 6H4v3M8 6h4v3M4 9v2M12 9v2"/><circle cx="8" cy="2.4" r="1" fill="currentColor"/><circle cx="4" cy="12.4" r="1.3"/><circle cx="12" cy="12.4" r="1.3"/>') },
     { id: "pantheons", href: "pantheons.html", label: "Pantheons", tip: "Seven divine family trees and the roads between religions",
@@ -54,7 +56,9 @@
     { id: "transmissions", href: "transmissions.html", label: "Transmissions", tip: "Claims of taught knowledge, against the documented record",
       icon: I('<path d="M8 1.8l1.5 4.7 4.7 1.5-4.7 1.5L8 14.2 6.5 9.5 1.8 8l4.7-1.5z"/>') },
     { id: "trial", href: "trial.html", label: "Trial", tip: "Ten questions drawn fresh from the archive",
-      icon: I('<path d="M8 2.2v11.3M5 13.5h6M3 4.2h10M3 4.2L1.5 8.4h3zM13 4.2l-1.5 4.2h3z"/>') }
+      icon: I('<path d="M8 2.2v11.3M5 13.5h6M3 4.2h10M3 4.2L1.5 8.4h3zM13 4.2l-1.5 4.2h3z"/>') },
+    { id: "oracle", href: "oracle.html", label: "Oracle", tip: "What the whole record points to — ten lines of history, each with its evidence, its grade and the case against",
+      icon: I('<path d="M1.6 8c1.8-3 4-4.4 6.4-4.4S12.6 5 14.4 8c-1.8 3-4 4.4-6.4 4.4S3.4 11 1.6 8z"/><circle cx="8" cy="8" r="2.1"/><circle cx="8" cy="8" r=".7" fill="currentColor"/>') }
   ];
   const FILES = ITEMS.map(it => it.href);
   const fileOf = p => (p.split("/").pop() || "index.html").toLowerCase();
@@ -200,8 +204,8 @@
 
   /* ───────────── search everything ───────────── */
   const KINDS = { go: ["Instrument", "#e8c455"], ev: ["Record", "#c9a227"], "do": ["Doctrine", "#e5484d"], th: ["Forerunner", "#d8c690"], ba: ["Battle", "#ff7a66"],
-    le: ["Leader", "#5b9be0"], bl: ["Bloodline", "#b48ef0"], gd: ["God", "#5bc8dd"], tx: ["Transmission", "#62c073"], cn: ["Country", "#49c9b8"], cu: ["Seizure", "#e08a3c"] };
-  const WHERE = { ev: "The Archive", "do": "Doctrines", th: "Doctrines", ba: "War Room", le: "War Room", bl: "Bloodline", gd: "Pantheons", tx: "Transmissions", cn: "Realms", cu: "Coups" };
+    le: ["Leader", "#5b9be0"], bl: ["Bloodline", "#b48ef0"], gd: ["God", "#5bc8dd"], tx: ["Transmission", "#62c073"], cn: ["Country", "#49c9b8"], cu: ["Seizure", "#e08a3c"], cf: ["Conflict", "#e0502f"], or: ["Reading", "#e8c455"] };
+  const WHERE = { ev: "The Archive", "do": "Doctrines", th: "Doctrines", ba: "War Room", le: "War Room", bl: "Bloodline", gd: "Pantheons", tx: "Transmissions", cn: "Realms", cu: "Coups", cf: "Conflicts", or: "Oracle" };
   const norm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const rec = r => ({ l: r[0], k: r[1], h: r[2], s: r[3] || "", w: r[4] || 0, nl: norm(r[0]), ns: norm(r[3] || "") });
   const GO = ITEMS.map(it => rec([it.label.replace(/<[^>]+>/g, ""), "go", it.href, it.tip, 9]));
@@ -259,7 +263,7 @@
     if (om.state === "missing") h += '<div class="om-none">The full index is not available in this copy — instruments only.</div>';
     list.innerHTML = h;
     const on = list.querySelector(".om-row.on"); if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest" });
-    $("omni-count").textContent = om.state === "ready" ? om.idx.length.toLocaleString() + " entries across eleven instruments" : om.state === "loading" ? "opening the index…" : "";
+    $("omni-count").textContent = om.state === "ready" ? om.idx.length.toLocaleString() + " entries across " + (["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen"][ITEMS.length] || ITEMS.length) + " instruments" : om.state === "loading" ? "opening the index…" : "";
   }
   function openOmni(seed) {
     if (!om.el) {

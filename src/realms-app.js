@@ -2,7 +2,7 @@
    ARCHIVUS — THE REALMS (v11)
    Every country today, from two independent measurements:
      · Freedom House, Freedom in the World 2026 (0–100)
-     · V-Dem v16 (expert-coded indices, 1900–2025)
+     · V-Dem v16 (expert-coded indices, 1789–2025; regime classes from 1900)
    plus the archive's own notes on form of government and doctrine.
    Views: map · compass · ledger · drift · usa.   Deep link:
      realms.html#v=map&m=fh&y=2025&c=USA
@@ -15,6 +15,10 @@
   const R = window.ARCHIVUS_REALMS, NT = window.ARCHIVUS_REALMS_NOTES, U = window.ARCHIVUS_REALMS_USA;
   const C = R.countries, BY = {}; C.forEach(c => { BY[c.id] = c; });
   const LAST = R.meta.last, Y0 = R.meta.y0;
+  /* Nothing here is cut to a recent window. Y0 is the first year V-Dem scores any state (1789); a country is
+     simply blank before V-Dem scores it. V-Dem sorts countries into regime classes only from RY0 (1900). */
+  const RY0 = Y0 + Math.min.apply(null, C.filter(c => c.hr).map(c => { const i = c.hr.search(/[0-3]/); return i < 0 ? 1e6 : i; }));
+  const firstYear = c => { const i = c.hl ? c.hl.findIndex(v => v >= 0) : -1; return i < 0 ? null : Y0 + i; };
 
   /* V-Dem "Regimes of the World" classes */
   const ROW = [["Closed autocracy", "#8a2f2a", "No multiparty elections for the chief executive or the legislature."],
@@ -37,7 +41,7 @@
   const HEAT = K.ramp(["#232a3c", "#6b5326", "#b06a2a", "#e0672f", "#ff3d3d"]);
 
   const st = { v: "map", c: null, m: "fh", y: LAST, cc: "row", cy: "ldi", rg: null, fs: null, sort: "fh", dir: -1, mv: 5, tk: null,
-               ds: "world", us: "now", te: 0, ud: 0, ur: 0 };   /* ds/us: the open section of the Drift and the United States */
+               ds: "world", us: "now", te: 0, ud: 0, ur: 0, ue: 0 };   /* ds/us: the open section of the Drift and the United States */
   const built = {};
   let map = null, mapTip = null, yc = null, tabs = null;
 
@@ -51,7 +55,7 @@
   const rowAt = (c, y) => !c.hr ? null : y >= LAST ? c.row : (c.hr[y - Y0] === "-" ? null : +c.hr[y - Y0]);
   const delta = (c, k) => k === 1 ? c.d1 : k === 10 ? c.d10 : c.d5;
   const ranked = C.filter(c => c.ldi != null).sort((a, b) => b.ldi - a.ldi);
-  const src = k => { const s = U.src[k]; return s ? s[1] : k.indexOf("w:") === 0 ? "https://en.wikipedia.org/wiki/" + k.slice(2) : k; };
+  const src = k => { const s = U.src[k]; return s ? s[1] : k.indexOf("w:") === 0 ? "https://en.wikipedia.org/wiki/" + k.slice(2) : k.indexOf("a:") === 0 ? "https://www.archives.gov/milestone-documents/" + k.slice(2) : k; };
   const srcLinks = keys => keys.map(k => K.link(src(k), U.src[k] ? U.src[k][0].split(" — ")[0].replace(/^Wikipedia$/, "Wikipedia: " + U.src[k][0].split(" — ")[1]) : K.host(src(k)))).join("");
 
   /* ---------------- state ---------------- */
@@ -76,8 +80,8 @@
   /* ---------------- the map ---------------- */
   const MODES = {
     fh: ["Freedom score", "Freedom House, Freedom in the World 2026: political rights and civil liberties, 0–100"],
-    ldi: ["Liberal democracy", "V-Dem liberal democracy index, 0–1 — drag the year back to 1900"],
-    row: ["Regime type", "V-Dem's four regime classes — drag the year back to 1900"],
+    ldi: ["Liberal democracy", "V-Dem liberal democracy index, 0–1 — drag the year back to " + Y0],
+    row: ["Regime type", "V-Dem's four regime classes — drag the year back to " + RY0 + ", the first year V-Dem classifies"],
     form: ["Form of government", "The constitutional form: how the offices are arranged"],
     ideo: ["Claimed ideology", "V-Dem: the ideology a government promotes to justify its rule (latest coding, 2023)"],
     d5: ["Drift", "Change in the liberal democracy index over the last five years"],
@@ -110,8 +114,8 @@
     const grad = (fn, a, b, mid) => '<div class="rl-grad" style="background:linear-gradient(90deg,' + [0, .2, .4, .6, .8, 1].map(fn).join(",") + ')"></div><div class="rl-gradk"><span>' + a + "</span>" + (mid ? "<span>" + mid + "</span>" : "") + "<span>" + b + "</span></div>";
     let h = "<b>" + esc(MODES[m][0]) + (m === "ldi" || m === "row" ? " · " + st.y : "") + "</b>";
     if (m === "fh") h += grad(FREE, "0 · not free", "100 · free") + "<small>Freedom in the World 2026 (describes 2025). " + C.filter(c => c.fh && c.fh[1] === "F").length + " countries Free, " + C.filter(c => c.fh && c.fh[1] === "PF").length + " Partly Free, " + C.filter(c => c.fh && c.fh[1] === "NF").length + " Not Free.</small>";
-    else if (m === "ldi") h += grad(FREE, "0", "1") + "<small>V-Dem's liberal democracy index: clean elections plus limits on the executive and protected rights. Expert-coded.</small>";
-    else if (m === "row") { const n = [0, 0, 0, 0]; C.forEach(c => { const r = rowAt(c, st.y); if (r != null) n[r]++; }); h += ROW.map((r, i) => sw(r[1], r[0] + " " + n[i])).join(""); }
+    else if (m === "ldi") h += grad(FREE, "0", "1") + "<small>V-Dem's liberal democracy index: clean elections plus limits on the executive and protected rights. Expert-coded. " + C.filter(c => ldiAt(c, st.y) != null).length + " states scored in " + st.y + "; the series runs from " + Y0 + ", on today's borders.</small>";
+    else if (m === "row") { const n = [0, 0, 0, 0]; C.forEach(c => { const r = rowAt(c, st.y); if (r != null) n[r]++; }); h += ROW.map((r, i) => sw(r[1], r[0] + " " + n[i])).join("") + "<small>V-Dem sorts countries into these classes from " + RY0 + ". For " + Y0 + "–" + (RY0 - 1) + " use the Liberal democracy lens.</small>"; }
     else if (m === "form") { const n = {}; C.forEach(c => { const f = formOf(c); n[f] = (n[f] || 0) + 1; }); h += Object.keys(NT.forms).filter(k => n[k]).map(k => sw(FORMC[k], NT.forms[k][0] + " " + n[k])).join("") + "<small>How the offices are arranged — not how free the country is. Compiled by the archive.</small>"; }
     else if (m === "ideo") h += "SRCN".split("").concat("w").map(k => sw(IDEO[k][1], IDEO[k][0])).join("") + "<small>What the government itself invokes, as judged by V-Dem's country experts (2023). Where they chose several, the map shows the more specific over \"nationalist\".</small>";
     else if (m === "d5") h += grad(t => DRIFT(t), "−0.25 sliding", "+0.25 rising", "0") + "<small>Liberal democracy index, " + (LAST - 5) + " → " + LAST + ".</small>";
@@ -125,13 +129,13 @@
       map = K.worldMap($("mp"), { map: R.map, tip: mapTip, tipFor, onPick: iso => pick(iso, true) });
       $("mp-modes").innerHTML = Object.keys(MODES).map(k => '<button class="chipbtn" data-m="' + k + '" title="' + esc(MODES[k][1]) + '">' + MODES[k][0] + "</button>").join("");
       $("mp-modes").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; st.m = b.dataset.m; yc.stop(); sync(); });
-      yc = K.yearCtl($("mp-year"), { min: Y0, max: LAST, from: Y0, ms: 60, get: () => st.y, set: y => { st.y = y; paintMap(); K.hash.write({ v: st.v, c: st.c, m: st.m, y: st.y !== LAST ? st.y : null }); } });
+      yc = K.yearCtl($("mp-year"), { get min() { return st.m === "row" ? RY0 : Y0; }, max: LAST, get from() { return st.m === "row" ? RY0 : Y0; }, ms: 45, get: () => st.y, set: y => { st.y = y; paintMap(); K.hash.write({ v: st.v, c: st.c, m: st.m, y: st.y !== LAST ? st.y : null }); } });
       $("mp-rank").addEventListener("click", e => { const b = e.target.closest("[data-iso]"); if (b) pick(b.dataset.iso); });
       $("mp-zi").onclick = () => map.zoomBy(1 / 1.6); $("mp-zo").onclick = () => map.zoomBy(1.6); $("mp-zr").onclick = () => map.reset();
     }
     $("mp-modes").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.m === st.m));
     const timed = st.m === "ldi" || st.m === "row";
-    if (!timed) st.y = LAST;
+    if (!timed) st.y = LAST; else if (st.m === "row" && st.y < RY0) st.y = RY0;
     yc.off(!timed); yc.show();
     paintMap(); map.select(st.c);
   }
@@ -257,7 +261,7 @@
   function chartIn(id, draw) { const el = $(id); if (!el) return; const r = el.getBoundingClientRect(); el.innerHTML = draw(Math.max(280, Math.floor(r.width)), Math.max(140, Math.floor(r.height))); }
 
   /* ---------------- the drift ---------------- */
-  const DRS = [["world", "The world", "How many countries sit in each regime class, 1900 to now"], ["movers", "Movers", "Who is sliding and who is rising fastest"],
+  const DRS = [["world", "The world", "The world's democracy from 1789 to now, and how many countries sit in each regime class"], ["movers", "Movers", "Who is sliding and who is rising fastest"],
                ["signals", "Pressure signals", "Countries showing three or more observed strain conditions"], ["fallen", "Fallen by force", "Every government ended by force since 2020"]];
   function movers(k, n) {
     const xs = C.filter(c => delta(c, k) != null).sort((a, b) => delta(a, k) - delta(b, k));
@@ -266,9 +270,9 @@
     return '<div class="grid2 even"><div class="col"><h4 style="color:var(--down)">Sliding fastest</h4>' + col(xs.slice(0, n), "dn") + '</div><div class="col"><h4 style="color:var(--up)">Rising fastest</h4>' + col(xs.slice(-n).reverse(), "up") + "</div></div>";
   }
   function regimeChart(W, H) {
-    /* stacked area: how many countries sat in each regime class, every year since 1900 */
-    const L = 36, Rm = 10, T = 10, B = 22, n = LAST - Y0 + 1, pw = W - L - Rm, ph = H - T - B;
-    const cnt = []; for (let i = 0; i < n; i++) { const a = [0, 0, 0, 0]; C.forEach(c => { if (c.hr && c.hr[i] !== "-") a[+c.hr[i]]++; }); cnt.push(a); }
+    /* stacked area: how many countries sat in each regime class, every year V-Dem classifies (from RY0) */
+    const L = 36, Rm = 10, T = 10, B = 22, n = LAST - RY0 + 1, o = RY0 - Y0, pw = W - L - Rm, ph = H - T - B;
+    const cnt = []; for (let i = 0; i < n; i++) { const a = [0, 0, 0, 0]; C.forEach(c => { if (c.hr && c.hr[i + o] !== "-") a[+c.hr[i + o]]++; }); cnt.push(a); }
     const max = Math.max.apply(null, cnt.map(a => a[0] + a[1] + a[2] + a[3])), x = i => L + i / (n - 1) * pw, y = v => T + ph - v / max * ph;
     let h = "";
     for (let v = 0; v <= max; v += 50) h += '<line class="gl" x1="' + L + '" x2="' + (W - Rm) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (L - 6) + '" y="' + (y(v) + 3) + '" text-anchor="end">' + v + "</text>";
@@ -278,9 +282,26 @@
       h += '<path fill="' + ROW[k][1] + '" fill-opacity=".88" d="' + K.path(top.map((v, i) => [x(i), y(v)])) + K.path(base.map((v, i) => [x(i), y(v)]).reverse()).replace("M", "L") + 'Z"/>';
       base = top;
     });
-    for (let yr = 1900; yr <= LAST; yr += (W < 520 ? 40 : 20)) h += '<text x="' + x(yr - Y0) + '" y="' + (H - 6) + '" text-anchor="middle">' + yr + "</text>";
-    [[1918, "1918"], [1945, "1945"], [1960, "decolonisation"], [1991, "1991"]].forEach(m => { h += '<line class="mk" x1="' + x(m[0] - Y0) + '" x2="' + x(m[0] - Y0) + '" y1="' + T + '" y2="' + (T + ph) + '"/><text class="mkt" x="' + (x(m[0] - Y0) + 4) + '" y="' + (T + 10) + '">' + m[1] + "</text>"; });
-    return '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Countries by regime type, 1900 to ' + LAST + '">' + h + "</svg>";
+    for (let yr = Math.ceil(RY0 / 20) * 20; yr <= LAST; yr += (W < 520 ? 40 : 20)) h += '<text x="' + x(yr - RY0) + '" y="' + (H - 6) + '" text-anchor="middle">' + yr + "</text>";
+    [[1918, "1918"], [1945, "1945"], [1960, "decolonisation"], [1991, "1991"]].forEach(m => { h += '<line class="mk" x1="' + x(m[0] - RY0) + '" x2="' + x(m[0] - RY0) + '" y1="' + T + '" y2="' + (T + ph) + '"/><text class="mkt" x="' + (x(m[0] - RY0) + 4) + '" y="' + (T + 10) + '">' + m[1] + "</text>"; });
+    return '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Countries by regime type, ' + RY0 + " to " + LAST + '">' + h + "</svg>";
+  }
+  function worldChart(W, H) {
+    /* the whole record: the average of every state V-Dem scores in a year on the two indices (left scale),
+       over a faint area showing how many states that is (right scale) — the average of 51 states is not the average of 179 */
+    const L = 34, Rm = 34, T = 10, B = 20, w = R.world, n = w.edi.length, pw = W - L - Rm, ph = H - T - B, hi = 0.6, nmax = 200;
+    const x = i => L + i / (n - 1) * pw, y = v => T + ph - v / hi * ph, yn = v => T + ph - v / nmax * ph;
+    let h = '<path fill="#8d96af" fill-opacity=".13" d="' + K.path(w.n.map((v, i) => [x(i), yn(v)])) + "L" + x(n - 1).toFixed(1) + " " + (T + ph) + "L" + x(0).toFixed(1) + " " + (T + ph) + 'Z"/>';
+    for (let v = 0; v <= hi + 0.001; v += 0.2) h += '<line class="gl" x1="' + L + '" x2="' + (W - Rm) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (L - 6) + '" y="' + (y(v) + 3) + '" text-anchor="end">' + v.toFixed(1) + "</text>";
+    [0, 100, 200].forEach(v => { h += '<text x="' + (W - Rm + 5) + '" y="' + (yn(v) + 3) + '">' + v + "</text>"; });
+    for (let yr = 1800; yr <= LAST; yr += (W < 520 ? 100 : 50)) h += '<text x="' + x(yr - w.y0) + '" y="' + (H - 5) + '" text-anchor="middle">' + yr + "</text>";
+    [[1848, "1848"], [1918, "1918"], [1945, "1945"], [1991, "1991"]].forEach(m => { h += '<line class="mk" x1="' + x(m[0] - w.y0) + '" x2="' + x(m[0] - w.y0) + '" y1="' + T + '" y2="' + (T + ph) + '"/><text class="mkt" x="' + (x(m[0] - w.y0) - 4) + '" y="' + (T + 10) + '" text-anchor="end">' + m[1] + "</text>"; });
+    const line = (arr, col, wd) => '<path fill="none" stroke="' + col + '" stroke-width="' + wd + '" d="' + K.path(arr.map((v, i) => [x(i), y(v)])) + '"/>';
+    h += line(w.edi, "#5b93b8", 1.6) + line(w.ldi, "#e8c455", 2.2);
+    const e = n - 1, pk = w.ldi.indexOf(Math.max.apply(null, w.ldi));
+    h += '<circle cx="' + x(pk) + '" cy="' + y(w.ldi[pk]) + '" r="3" fill="#e8c455"/><text class="lab" x="' + (x(pk) - 6) + '" y="' + (y(w.ldi[pk]) - 7) + '" text-anchor="end">peak ' + (w.y0 + pk) + ": " + w.ldi[pk].toFixed(2) + "</text>";
+    h += '<circle cx="' + x(e) + '" cy="' + y(w.ldi[e]) + '" r="4" fill="#e8c455"/><text class="lab" x="' + (x(e) - 8) + '" y="' + (y(w.ldi[e]) + 15) + '" text-anchor="end">' + LAST + ": " + w.ldi[e].toFixed(2) + "</text>";
+    return '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="World average democracy indices, ' + w.y0 + " to " + LAST + '">' + h + "</svg>";
   }
   function drawDrift() {
     const pane = $("dr-pane");
@@ -300,8 +321,10 @@
       C.forEach(c => { if (c.row != null) { n[c.row]++; pop[c.row] += c.pop || 0; tot += c.pop || 0; } });
       const down = C.filter(c => c.d5 != null && c.d5 <= -0.05).length, up = C.filter(c => c.d5 != null && c.d5 >= 0.05).length;
       h = '<div class="tiles2">' + ROW.map((r, i) => '<div style="border-top-color:' + r[1] + '"><span>' + r[0] + "</span><b>" + n[i] + ' <small style="font:400 12px var(--mono);color:#8d96af">· ' + (pop[i] / tot * 100).toFixed(0) + "% of people</small></b><em>" + r[2] + "</em></div>").join("") + "</div>"
-        + '<p class="lead">' + (n[0] + n[1]) + " autocracies to " + (n[2] + n[3]) + " democracies; about " + ((pop[0] + pop[1]) / tot * 100).toFixed(0) + "% of the world's people live under the former. Over five years <b class=\"dn\">" + down + '</b> countries fell by 0.05 or more on the liberal democracy index and <b class="up">' + up + "</b> rose by as much. Below: every year since " + Y0 + " — three waves of democracy (after 1918, after 1945, from the mid-1970s) and the ebb after each.</p>"
-        + '<div class="chart-host" id="dr-chart"></div><div class="cleg" style="margin:0">' + ROW.map(r => '<span><i style="background:' + r[1] + '"></i>' + r[0] + "</span>").join("") + "</div>";
+        + '<p class="lead">' + (n[0] + n[1]) + " autocracies to " + (n[2] + n[3]) + " democracies; about " + ((pop[0] + pop[1]) / tot * 100).toFixed(0) + "% of the world's people live under the former. Over five years <b class=\"dn\">" + down + '</b> countries fell by 0.05 or more on the liberal democracy index and <b class="up">' + up + "</b> rose by as much. Below: the whole record. On the left, the average score of every state V-Dem rates, each year since " + Y0 + "; on the right, the count in each regime class since " + RY0 + ", the first year V-Dem sorts countries into classes — three waves of democracy (after 1918, after 1945, from the mid-1970s) and the ebb after each.</p>"
+        + '<div class="grid2 even" style="flex:1"><div class="col"><h4>The long line, ' + Y0 + "–" + LAST + "<small>average of the states scored: " + R.world.n[0] + " in " + Y0 + ", " + R.world.n[RY0 - Y0] + " in " + RY0 + ", " + R.world.n[R.world.n.length - 1] + " in " + LAST + '</small></h4><div class="chart-host" id="dr-long" style="min-height:230px"></div>'
+        + '<div class="cleg" style="margin:0"><span><i style="background:#e8c455"></i>Liberal democracy index</span><span><i style="background:#5b93b8"></i>Electoral democracy index</span><span><i style="background:#8d96af;opacity:.45"></i>States scored (right scale)</span></div></div>'
+        + '<div class="col"><h4>Regime classes, ' + RY0 + "–" + LAST + '<small>how many countries sit in each</small></h4><div class="chart-host" id="dr-chart" style="min-height:230px"></div><div class="cleg" style="margin:0">' + ROW.map(r => '<span><i style="background:' + r[1] + '"></i>' + r[0] + "</span>").join("") + "</div></div></div>";
     } else if (st.ds === "movers") {
       h = '<p class="lead">Change in the liberal democracy index (0–1) over the last <span class="chips" style="display:inline-flex;vertical-align:middle">' + [1, 5, 10].map(k => '<button class="chipbtn' + (st.mv === k ? " on" : "") + '" data-mv="' + k + '">' + (k === 1 ? "year" : k + " years") + "</button>").join("") + "</span> Click a country to open it.</p>" + movers(st.mv, K.clamp(Math.floor((room - 70) / 21), 8, 24));
     } else if (st.ds === "signals") {
@@ -320,49 +343,76 @@
         + '</tbody></table></div><p class="wr-note" style="max-width:none">' + esc(NT.afterNote || "") + ' <a href="coups.html">Open the Coups ⟶</a></p>';
     }
     pane.innerHTML = h; pane.scrollTop = 0;
-    if (st.ds === "world") chartIn("dr-chart", regimeChart);
+    if (st.ds === "world") { chartIn("dr-long", worldChart); chartIn("dr-chart", regimeChart); }
   }
 
   /* ---------------- the United States ---------------- */
-  const USS = [["now", "Standing", "The two indices, the long line since 1900, and what moved"], ["time", "Timeline", "A generation of run-up, then 2025–26 event by event"],
+  const USS = [["now", "Standing", "The two indices, the long line since 1789, and what moved"], ["arc", "The long arc", "Four centuries in twelve eras: who governed, who could vote, what they fought over"],
+               ["time", "Timeline", "From Jamestown in 1607 to this month: the whole story, the run-up since 2000, then 2025–26 event by event"],
                ["disputes", "Disputes", "Eight live disputes, each side in its own terms"], ["bills", "Legislation", "The measures that matter and where they stand"],
                ["read", "Five readings", "Rival readings of where the country is heading"], ["ahead", "Common ground & signposts", "What all readings accept, and the dated tests ahead"]];
-  /* one list for the timeline: the run-up (year only) and the dated events */
-  const EV = U.arc.map(a => ({ t: a[0] + 0.5, lab: String(a[0]), k: a[1], n: a[2], x: a[3], u: a[4] }))
-    .concat(U.tl.map(a => { const p = a[0].split("-").map(Number); return { t: p[0] + (p[1] - 1) / 12 + (p[2] - 1) / 365, lab: p[2] + " " + K.MON[p[1] - 1] + " " + p[0], k: a[1], n: a[2], x: a[3], u: a[4] }; }));
+  /* one list for the timeline: the long history and the run-up (year only), then the dated events.
+     Several events in one year are spread across it so their dots do not sit on top of each other. */
+  const yearly = rows => { const seen = {}; return rows.map(a => { const k = seen[a[0]] = (seen[a[0]] || 0) + 1; return { t: a[0] + 0.2 + 0.3 * (k - 1), yr: a[0], lab: String(a[0]), k: a[1], n: a[2], x: a[3], u: a[4] }; }); };
+  const EV = yearly(U.hist).concat(yearly(U.arc))
+    .concat(U.tl.map(a => { const p = a[0].split("-").map(Number); return { t: p[0] + (p[1] - 1) / 12 + (p[2] - 1) / 365, yr: p[0], lab: p[2] + " " + K.MON[p[1] - 1] + " " + p[0], k: a[1], n: a[2], x: a[3], u: a[4] }; }));
+  /* "year:title" → its place on the timeline; used to tie every dispute, measure and reading to the earlier record */
+  const evIx = k => { const i = k.indexOf(":"), y = +k.slice(0, i), n = k.slice(i + 1); return EV.findIndex(e => e.yr === y && e.n === n); };
+  const record = (keys, note) => { const ix = (keys || []).map(evIx).filter(i => i >= 0); return !ix.length ? "" : "<h4>From the long record<small>" + EV[ix[0]].yr + "–" + EV[ix[ix.length - 1]].yr + " · " + note + '</small></h4><div class="chips tp">' + ix.map(i => '<button class="chipbtn" data-jump="' + i + '" title="' + esc(EV[i].x) + '"><span class="fdot" style="background:' + U.kinds[EV[i].k][1] + '"></span>' + EV[i].yr + " · " + esc(EV[i].n) + "</button>").join("") + "</div>"; };
+  const recordYears = keys => (keys || []).map(evIx).filter(i => i >= 0).map(i => '<button class="chipbtn" data-jump="' + i + '" title="' + esc(EV[i].yr + " · " + EV[i].n + " — " + EV[i].x) + '">' + EV[i].yr + "</button>").join("");
+  /* one V-Dem component over every year it is scored: p = [label, column, five recent readings…, first year, series] */
+  function partRow(p, i) {
+    const a = p[8], y0 = p[7], n = a.length, v = a[n - 1], top = p[2] > 1.5 ? 4 : 1, dp = top > 1 ? 1 : 2, at = yr => yr >= y0 && yr <= LAST ? a[yr - y0] : null;
+    /* the line is drawn to its own range so its shape can be read at this size; the columns beside it carry the values */
+    const lo = Math.min.apply(null, a), span = Math.max(Math.max.apply(null, a) - lo, 0.12 * top);
+    const W = 150, H = 26, x = k => (y0 + k - Y0) / (LAST - Y0) * (W - 2) + 1, y = q => H - 3 - (q - lo) / span * (H - 6);
+    const d = v - a[n - 4], eps = top > 1 ? 0.15 : 0.03; let stand = "little changed in three years";
+    if (Math.abs(d) >= eps) { let k = n - 2; while (k >= 0 && (d < 0 ? a[k] > v : a[k] < v)) k--; stand = (d < 0 ? "lowest" : "highest") + (k < 0 ? " on record (" + y0 + "–)" : " since " + (y0 + k)); }
+    const bad = Math.abs(d) < eps ? "" : (i >= 7 ? d > 0 : d < 0) ? "dn" : "up";
+    return "<tr><td>" + esc(p[0]) + '</td><td class="sp"><svg class="pspark" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(p[0]) + ", " + y0 + " to " + LAST + '"><path d="' + K.path(a.map((q, k) => [x(k), y(q)])) + '"/></svg></td>'
+      + [Y0, 1850, 1900, 1950, 2000, LAST].map(yr => "<td>" + (at(yr) == null ? "—" : K.fmt(at(yr), dp)) + "</td>").join("") + '<td class="st chg ' + bad + '">' + stand + "</td></tr>";
+  }
   function usChart(W, H) {
     const L = 34, Rm = 12, T = 10, B = 20, s = R.usa, n = s.ldi.length, pw = W - L - Rm, ph = H - T - B, lo = 0.2;
     const x = i => L + i / (n - 1) * pw, y = v => T + ph - (v - lo) / (1 - lo) * ph;
     let h = "";
     for (let v = lo; v <= 1.001; v += 0.2) h += '<line class="gl" x1="' + L + '" x2="' + (W - Rm) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (L - 6) + '" y="' + (y(v) + 3) + '" text-anchor="end">' + v.toFixed(1) + "</text>";
-    for (let yr = 1900; yr <= LAST; yr += (W < 520 ? 40 : 20)) h += '<text x="' + x(yr - s.y0) + '" y="' + (H - 5) + '" text-anchor="middle">' + yr + "</text>";
-    [[1920, "women's suffrage"], [1965, "Voting Rights Act"], [2001, "9/11"], [2017, "2017"]].forEach(m => { h += '<line class="mk" x1="' + x(m[0] - s.y0) + '" x2="' + x(m[0] - s.y0) + '" y1="' + T + '" y2="' + (T + ph) + '"/><text class="mkt" x="' + (x(m[0] - s.y0) - 4) + '" y="' + (T + ph - 6) + '" text-anchor="end">' + m[1] + "</text>"; });
+    for (let yr = 1800; yr <= LAST; yr += (W < 520 ? 100 : 50)) h += '<text x="' + x(yr - s.y0) + '" y="' + (H - 5) + '" text-anchor="middle">' + yr + "</text>";
+    [[1870, "15th Amendment"], [1920, "women's suffrage"], [1965, "Voting Rights Act"], [2001, "9/11"], [2017, "2017"]].forEach(m => { h += '<line class="mk" x1="' + x(m[0] - s.y0) + '" x2="' + x(m[0] - s.y0) + '" y1="' + T + '" y2="' + (T + ph) + '"/><text class="mkt" x="' + (x(m[0] - s.y0) - 4) + '" y="' + (T + ph - 6) + '" text-anchor="end">' + m[1] + "</text>"; });
     const line = (arr, col, wd) => '<path fill="none" stroke="' + col + '" stroke-width="' + wd + '" d="' + K.path(arr.map((v, i) => [x(i), y(v)])) + '"/>';
     h += line(s.edi, "#5b93b8", 1.6) + line(s.ldi, "#e8c455", 2.2);
     const e = n - 1;
     h += '<circle cx="' + x(e) + '" cy="' + y(s.ldi[e]) + '" r="4" fill="#e8c455"/><text class="lab" x="' + (x(e) - 8) + '" y="' + (y(s.ldi[e]) + 15) + '" text-anchor="end">' + LAST + ": " + s.ldi[e].toFixed(2) + "</text>";
-    return '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="United States democracy indices, 1900 to ' + LAST + '">' + h + "</svg>";
+    return '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="United States democracy indices, ' + R.usa.y0 + " to " + LAST + '">' + h + "</svg>";
   }
-  /* the timeline strip: one lane per kind of event; the axis is broken so that 2000–2024 takes a
-     quarter of the width and the two crowded years take the rest */
+  /* the timeline strip: one lane per kind of event. The axis is in three panels, each with its own scale, because the
+     events are not evenly spread: four centuries of history take half the width (the thin colonial record before 1760 is
+     squeezed into a tenth of that), the run-up since 2000 a narrow band, and the two crowded years the rest.
+     Across the top of the history panel run the eras of the long arc; click one to read it. */
   function usStrip(W, H) {
-    const small = W < 640, L = small ? 10 : 150, Rm = 14, T = 8, B = 24, pw = W - L - Rm, ph = H - T - B, kinds = Object.keys(U.kinds), lh = ph / kinds.length;
-    const split = 0.24, gap = 0.035, x = t => t < 2025 ? L + (t - 2000) / 25 * split * pw : L + (split + gap) * pw + (t - 2025) / 1.95 * (1 - split - gap) * pw;
-    let h = '<rect x="' + L + '" y="' + T + '" width="' + (split * pw) + '" height="' + ph + '" fill="rgba(255,255,255,.02)"/><rect x="' + x(2025) + '" y="' + T + '" width="' + ((1 - split - gap) * pw) + '" height="' + ph + '" fill="rgba(255,255,255,.035)"/>';
+    const L = 150, Rm = 14, T = 24, B = 24, pw = W - L - Rm, ph = H - T - B, kinds = Object.keys(U.kinds), lh = ph / kinds.length;
+    const g = 0.018 * pw, hw = 0.5 * pw, mw = 0.12 * pw, x1 = L + hw + g, x2 = x1 + mw + g, rw = pw - hw - mw - 2 * g;
+    const x = t => t < 1760 ? L + (t - 1600) / 160 * 0.1 * hw : t < 2000 ? L + 0.1 * hw + (t - 1760) / 240 * 0.9 * hw : t < 2025 ? x1 + (t - 2000) / 25 * mw : x2 + (t - 2025) / 1.95 * rw;
+    let h = '<rect x="' + L + '" y="' + T + '" width="' + hw + '" height="' + ph + '" fill="rgba(255,255,255,.015)"/><rect x="' + x1 + '" y="' + T + '" width="' + mw + '" height="' + ph + '" fill="rgba(255,255,255,.028)"/><rect x="' + x2 + '" y="' + T + '" width="' + rw + '" height="' + ph + '" fill="rgba(255,255,255,.04)"/>';
+    U.eras.forEach((e, i) => { if (e.y0 >= 2000) return; const a = x(e.y0), b = x(e.y1), on = st.us === "arc" && st.ue === i;
+      h += '<rect class="era-b' + (i % 2 ? " alt" : "") + '" x="' + a.toFixed(1) + '" y="' + T + '" width="' + (b - a).toFixed(1) + '" height="' + ph + '"/><line class="era-l" x1="' + a.toFixed(1) + '" x2="' + a.toFixed(1) + '" y1="' + (T - 14) + '" y2="' + (T + ph) + '"/>'
+        + (b - a > e.s.length * 5.9 + 8 ? '<text class="era-t' + (on ? " on" : "") + '" data-era="' + i + '" x="' + (a + 4).toFixed(1) + '" y="' + (T - 6) + '">' + esc(e.s) + "<title>" + esc(e.n + ", " + e.y0 + "–" + e.y1) + "</title></text>" : ""); });
+    h += '<text class="era-t" data-era="10" x="' + (x1 + 3) + '" y="' + (T - 6) + '">' + esc(U.eras[10].s) + '</text><text class="era-t" data-era="11" x="' + (x2 + 3) + '" y="' + (T - 6) + '">2025–26, month by month</text>';
     kinds.forEach((k, i) => {
       const yy = T + lh * i;
       h += '<line class="gl" x1="' + L + '" x2="' + (W - Rm) + '" y1="' + (yy + lh / 2) + '" y2="' + (yy + lh / 2) + '" style="stroke:' + U.kinds[k][1] + ';opacity:.16"/>';
-      if (!small) h += '<text class="lane-t' + (st.tk === k ? " on" : "") + '" data-tk="' + k + '" x="' + (L - 12) + '" y="' + (yy + lh / 2 + 4) + '" text-anchor="end">' + U.kinds[k][0] + "</text>";
+      h += '<text class="lane-t' + (st.tk === k ? " on" : "") + '" data-tk="' + k + '" x="' + (L - 12) + '" y="' + (yy + lh / 2 + 4) + '" text-anchor="end">' + U.kinds[k][0] + "</text>";
     });
-    for (let yr = 2000; yr < 2025; yr += 5) h += '<text x="' + x(yr) + '" y="' + (H - 7) + '" text-anchor="middle">' + yr + "</text>";
-    for (let m = 0; m < 24; m++) { const t = 2025 + m / 12; h += '<line class="gl" x1="' + x(t) + '" x2="' + x(t) + '" y1="' + T + '" y2="' + (T + ph) + '"' + (m === 12 ? ' style="stroke:rgba(232,196,85,.4)"' : "") + "/>"; if (m % (small ? 6 : 2) === 0) h += '<text x="' + (x(t) + 3) + '" y="' + (H - 7) + '">' + K.MON[m % 12] + (m % 12 === 0 ? " " + (2025 + m / 12) : "") + "</text>"; }
+    [1607, 1776, 1800, 1850, 1900, 1950].forEach(yr => { h += '<text x="' + x(yr) + '" y="' + (H - 7) + '" text-anchor="' + (yr === 1607 ? "start" : "middle") + '">' + yr + "</text>"; });
+    [2000, 2015].forEach(yr => { h += '<text x="' + (x(yr) + 2) + '" y="' + (H - 7) + '">' + yr + "</text>"; });
+    for (let m = 0; m < 24; m++) { const t = 2025 + m / 12; h += '<line class="gl" x1="' + x(t) + '" x2="' + x(t) + '" y1="' + T + '" y2="' + (T + ph) + '"' + (m === 12 ? ' style="stroke:rgba(232,196,85,.4)"' : "") + "/>"; if (m % (rw < 620 ? 3 : 2) === 0) h += '<text x="' + (x(t) + 3) + '" y="' + (H - 7) + '">' + K.MON[m % 12] + (m % 12 === 0 ? " " + (2025 + m / 12) : "") + "</text>"; }
     const lastX = {};
     EV.forEach((e, i) => {
       const li = kinds.indexOf(e.k), px = x(e.t); let py = T + lh * li + lh / 2;
-      if (lastX[e.k] != null && px - lastX[e.k].x < 13) { py += lastX[e.k].up ? -6 : 6; lastX[e.k] = { x: px, up: !lastX[e.k].up }; } else lastX[e.k] = { x: px, up: true };
-      h += '<circle class="ev-d' + (i === st.te ? " sel" : "") + (st.tk && st.tk !== e.k ? " dim" : "") + '" data-te="' + i + '" cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="' + (i === st.te ? 7.5 : 5.5) + '" fill="' + U.kinds[e.k][1] + '"><title>' + esc(e.lab + " — " + e.n) + "</title></circle>";
+      if (lastX[e.k] != null && px - lastX[e.k].x < 12) { py += lastX[e.k].up ? -5 : 5; lastX[e.k] = { x: px, up: !lastX[e.k].up }; } else lastX[e.k] = { x: px, up: true };
+      h += '<circle class="ev-d' + (i === st.te ? " sel" : "") + (st.tk && st.tk !== e.k ? " dim" : "") + '" data-te="' + i + '" cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="' + (i === st.te ? 7 : 5) + '" fill="' + U.kinds[e.k][1] + '"><title>' + esc(e.lab + " — " + e.n) + "</title></circle>";
     });
-    return '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Timeline of United States events by kind">' + h + "</svg>";
+    return '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Timeline of United States events by kind, 1607 to the present">' + h + "</svg>";
   }
   function usStep(d) {
     const ok = i => !st.tk || EV[i].k === st.tk; let i = st.te;
@@ -378,6 +428,9 @@
         const tk = e.target.closest("[data-tk]"); if (tk) { st.tk = st.tk === tk.dataset.tk ? null : tk.dataset.tk; if (st.tk && EV[st.te].k !== st.tk) { const j = EV.map((x, i) => x.k === st.tk ? i : -1).filter(i => i >= 0).pop(); if (j != null) st.te = j; } return drawUSA(); }
         const te = e.target.closest("[data-te]"); if (te) { st.te = +te.dataset.te; return drawUSA(); }
         const sp = e.target.closest("[data-step]"); if (sp) return usStep(+sp.dataset.step);
+        const er = e.target.closest("[data-era]"); if (er) { st.ue = +er.dataset.era; st.us = "arc"; return sync(); }
+        const ue = e.target.closest("[data-ue]"); if (ue) { st.ue = +ue.dataset.ue; return drawUSA(); }
+        const jp = e.target.closest("[data-jump]"); if (jp) { st.te = +jp.dataset.jump; st.tk = null; st.us = "time"; return sync(); }
         const d = e.target.closest("[data-ud]"); if (d) { st.ud = +d.dataset.ud; return drawUSA(); }
         const r = e.target.closest("[data-ur]"); if (r) { st.ur = +r.dataset.ur; return drawUSA(); }
       });
@@ -393,27 +446,40 @@
         + '<div><span>V-Dem regime class</span><b style="font-size:19px">' + ROW[us.row][0] + "</b><em>Re-classed from liberal democracy for " + LAST + ", a status held for some fifty years.</em></div>"
         + "<div><span>Polarisation</span><b>" + K.fmt(us.pol, 1) + sm + " /4</small></b><em>Society split into hostile camps — among the highest scores in the world.</em></div></div>"
         + '<div class="callout"><b style="color:var(--gold-bright)">How to read these numbers — and the case against them.</b> Both indices are built from the judgments of country experts, not counts of events. Defenders note that the two organisations work independently and agree, that the scores fell under presidents of both parties, and that one method is applied to every country. Critics answer that academics and NGO staff lean one way politically, that a one-year fall this steep reflects alarm as much as measurement, and that what can be counted — elections held on time, incumbents losing, courts obeyed — moved far less in 2025–26 than the scores did. The archive reports the numbers and the objection, and takes neither as settled.</div>'
-        + '</div><div class="col"><h4>The long line, 1900–' + LAST + '<small>the climb is the widening of the vote: women in 1920, Black southerners in fact only after 1965</small></h4><div class="chart-host" id="us-chart"></div>'
+        + '</div><div class="col"><h4>The long line, ' + R.usa.y0 + "–" + LAST + '<small>flat for a century, while most adults could not vote; the climb is the widening of the vote — women in 1920, Black southerners in fact only after 1965</small></h4><div class="chart-host" id="us-chart"></div>'
         + '<div class="cleg" style="margin:0"><span><i style="background:#e8c455"></i>Liberal democracy index</span><span><i style="background:#5b93b8"></i>Electoral democracy index</span></div>'
         + '<h4>What moved<small>V-Dem components; the largest change is the legislature\'s hold on the executive</small></h4><div class="mx-wrap" style="padding:0"><table class="parts"><thead><tr><th>Component</th><th>2015</th><th>2020</th><th>2023</th><th>2024</th><th>' + LAST + "</th><th>2023 → " + LAST + "</th></tr></thead><tbody>"
         + R.usa.parts.map((p, i) => { const d = p[6] - p[4], bad = i >= 7 ? d > 0 : d < 0, dp = p[2] > 1.5 ? 1 : 2; return "<tr><td>" + esc(p[0]) + "</td>" + [2, 3, 4, 5, 6].map(k => "<td>" + K.fmt(p[k], dp) + "</td>").join("") + '<td class="chg ' + (Math.abs(d) < 0.02 ? "" : bad ? "dn" : "up") + '">' + K.signed(d, dp) + "</td></tr>"; }).join("")
-        + "</tbody></table></div></div></div>";
+        + "</tbody></table></div></div></div>"
+        + "<h4>The same components across the whole record<small>every year V-Dem scores: eight from " + Y0 + ", polarisation and political violence from " + RY0 + " · each line is drawn to its own range · the last column says when each last stood where it stands now</small></h4>"
+        + '<div class="mx-wrap" style="padding:0"><table class="parts long"><thead><tr><th>Component</th><th>' + Y0 + "–" + LAST + "</th>" + [Y0, 1850, 1900, 1950, 2000, LAST].map(yr => "<th>" + yr + "</th>").join("") + "<th>" + LAST + " in the record</th></tr></thead><tbody>" + R.usa.parts.map(partRow).join("") + "</tbody></table></div>";
     } else if (st.us === "time") {
       const e = EV[st.te], shown = EV.filter(x => !st.tk || x.k === st.tk), pos = shown.indexOf(e) + 1;
-      h = '<p class="lead">Each dot is an event; each row a kind of event. The left quarter is the run-up since 2000 — the quarrels over presidential power, the courts and the rules of elections were a generation in the making, under both parties — and the rest is 2025–26 month by month. Click a dot, or step with ← →. Click a row name to follow one thread.</p>'
-        + '<div class="chart-host" id="us-strip" style="min-height:230px"></div>'
+      h = '<p class="lead">Each dot is an event; each row a kind of event. The left half is the whole story, from Jamestown in 1607 to the end of the twentieth century, with its eras named across the top. The narrow band is the run-up since 2000, and the rest is 2025–26 month by month. Click a dot, or step with ← →. Click a row name to follow one thread through four centuries; click an era to read it.</p>'
+        + '<div class="strip-scroll"><div class="chart-host" id="us-strip" style="min-height:300px"></div></div>'
         + '<div class="tl-card"><button class="step" data-step="-1" title="Earlier (←)" aria-label="Earlier">◂</button><div><div class="sd-d" style="margin-bottom:4px">' + esc(e.lab) + ' · <span class="fdot" style="background:' + U.kinds[e.k][1] + '"></span>' + U.kinds[e.k][0] + " · " + pos + " of " + shown.length + (st.tk ? ' <button class="chipbtn" data-tk="' + st.tk + '" style="margin-left:8px">show all kinds</button>' : "") + '</div><div class="sd-t">' + esc(e.n) + '</div><p class="sd-p">' + esc(e.x) + '</p><div class="sd-links" style="margin-top:8px">' + K.link(src(e.u), "Source: " + K.host(src(e.u))) + '</div></div><button class="step" data-step="1" title="Later (→)" aria-label="Later">▸</button></div>';
+    } else if (st.us === "arc") {
+      const e = U.eras[st.ue], s0 = R.usa, at = y => y >= s0.y0 && y <= LAST ? s0.ldi[y - s0.y0] : null, v0 = at(Math.max(e.y0, s0.y0)), v1 = at(Math.min(e.y1, LAST));
+      const pts = EV.map((x, i) => [x, i]).filter(p => p[0].yr >= e.y0 && p[0].yr < e.y1);
+      h = '<div class="grid2 md"><div class="mlist">' + U.eras.map((x, i) => '<button data-ue="' + i + '"' + (i === st.ue ? ' class="on"' : "") + ">" + esc(x.n) + "<small>" + x.y0 + "–" + (x.y1 > LAST ? "" : x.y1) + "</small></button>").join("") + "</div>"
+        + '<div class="col"><p class="lead">The direction of a country is read over generations. Each era is a settlement — who governs, who may vote, what government is for — and a quarrel that ends it.</p>'
+        + '<article class="rec"><header><b>' + esc(e.n) + '</b><span class="who">' + e.y0 + "–" + (e.y1 > LAST ? "" : e.y1) + (e.y1 <= s0.y0 ? " · before the index begins (" + s0.y0 + ")" : v0 != null && v1 != null ? " · liberal democracy index " + K.fmt(v0) + " → " + K.fmt(v1) : "") + "</span></header>"
+        + '<div class="claim">' + esc(e.idea) + '</div><div class="cols"><div class="pro"><div class="mf-k" style="color:var(--gold)">Who governed, and who could vote</div>' + esc(e.who) + '</div><div class="con"><div class="mf-k" style="color:#9fb4d8">What they fought over</div>' + esc(e.fight) + "</div></div>"
+        + '<footer class="w"><b>How it ended</b>' + esc(e.end) + "</footer></article>"
+        + (pts.length ? "<h4>Turning points<small>" + pts.length + ' on the timeline — click one to open it there</small></h4><div class="chips tp">' + pts.map(p => '<button class="chipbtn" data-jump="' + p[1] + '"><span class="fdot" style="background:' + U.kinds[p[0].k][1] + '"></span>' + p[0].yr + " · " + esc(p[0].n) + "</button>").join("") + "</div>"
+          : '<h4>Turning points</h4><p class="wr-note" style="max-width:none">' + U.tl.length + ' events of 2025–26 are on the timeline. <button class="chipbtn" data-sec="time">Open the timeline</button></p>')
+        + '<p class="srcs" style="margin-top:6px">' + e.src.map(k => K.link(src(k), K.host(src(k)) + (k.indexOf("a:") === 0 ? " · " + k.slice(2).replace(/-/g, " ") : k.indexOf("w:") === 0 ? " · " + decodeURIComponent(k.slice(2)).replace(/_/g, " ") : ""))).join("") + "</p></div></div>";
     } else if (st.us === "disputes") {
       const t = U.topics[st.ud], ab = t.ab || ["The administration and its supporters", "Its critics"];
       h = '<div class="grid2 md"><div class="mlist">' + U.topics.map((x, i) => '<button data-ud="' + i + '"' + (i === st.ud ? ' class="on"' : "") + ">" + esc(x.n) + "</button>").join("") + "</div>"
-        + '<div class="col"><p class="lead">Where it stands, then the strongest form of each side\'s case in its own terms.</p><article class="rec"><header><b>' + esc(t.n) + '</b></header><div class="st">' + esc(t.st) + '</div><div class="cols"><div class="pro"><div class="mf-k" style="color:var(--gold)">' + ab[0] + "</div>" + esc(t.a) + '</div><div class="con"><div class="mf-k" style="color:#9fb4d8">' + ab[1] + "</div>" + esc(t.b) + "</div></div><footer>" + srcLinks(t.u) + "</footer></article></div></div>";
+        + '<div class="col"><p class="lead">Where it stands, then the strongest form of each side\'s case in its own terms — and under it, the earlier turns on the same question. None of these quarrels began in 2025.</p><article class="rec"><header><b>' + esc(t.n) + '</b></header><div class="st">' + esc(t.st) + '</div><div class="cols"><div class="pro"><div class="mf-k" style="color:var(--gold)">' + ab[0] + "</div>" + esc(t.a) + '</div><div class="con"><div class="mf-k" style="color:#9fb4d8">' + ab[1] + "</div>" + esc(t.b) + "</div></div><footer>" + srcLinks(t.u) + "</footer></article>" + record(U.pre.topics[st.ud], "earlier turns on the same question — click one to open it on the timeline") + "</div></div>";
     } else if (st.us === "bills") {
-      h = '<p class="lead">The measures behind the disputes and where each stood when read. From January 2027 a Democratic Congress faces a Republican president: expect vetoes, and few new laws.</p><table class="tbl"><thead><tr><th>Measure</th><th>Status</th><th>What it does</th></tr></thead><tbody>' + U.bills.map(b => '<tr><td class="m" style="width:24%"><b style="font-family:var(--display)">' + esc(b[0]) + '</b></td><td class="yr" style="white-space:normal;width:26%">' + esc(b[1]) + "</td><td>" + esc(b[2]) + ' <span class="srcs">' + K.link(src(b[3]), "source") + "</span></td></tr>").join("") + "</tbody></table>";
+      h = '<p class="lead">The measures behind the disputes and where each stood when read. From January 2027 a Democratic Congress faces a Republican president: expect vetoes, and few new laws. The last column is each measure\'s lineage: the earlier acts and rulings it builds on or answers — click a year to open it on the timeline.</p><table class="tbl bills"><thead><tr><th>Measure</th><th>Status</th><th>What it does</th><th>From the long record</th></tr></thead><tbody>' + U.bills.map((b, bi) => '<tr><td class="m" style="width:20%"><b style="font-family:var(--display)">' + esc(b[0]) + '</b></td><td class="yr" style="white-space:normal;width:22%">' + esc(b[1]) + "</td><td>" + esc(b[2]) + ' <span class="srcs">' + K.link(src(b[3]), "source") + '</span></td><td style="width:24%"><div class="chips tp yrs">' + recordYears(U.pre.bills[bi]) + "</div></td></tr>").join("") + "</tbody></table>";
     } else if (st.us === "read") {
       const t = U.theses[st.ur];
       h = '<p class="lead">Serious observers disagree about the direction of the country, and that disagreement is itself the most important fact. Each reading is given with the evidence its holders cite, the evidence against it, and what would tell you it is right. None is the archive\'s own.</p>'
         + '<div class="picks">' + U.theses.map((x, i) => '<button data-ur="' + i + '"' + (i === st.ur ? ' class="on"' : "") + "><b>" + (i + 1) + ". " + esc(x.n) + "</b><small>" + esc(x.who) + "</small>" + esc(x.claim) + "</button>").join("") + "</div>"
-        + '<article class="rec"><div class="cols c3"><div class="pro"><div class="mf-k">Evidence cited for</div><ul>' + t.pro.map(x => "<li>" + esc(x) + "</li>").join("") + '</ul></div><div class="con"><div class="mf-k">Evidence cited against</div><ul>' + t.con.map(x => "<li>" + esc(x) + "</li>").join("") + '</ul></div><div><div class="mf-k" style="color:var(--gold)">Watch for</div><ul>' + t.watch.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul></div></div><footer>" + srcLinks(t.u) + "</footer></article>";
+        + '<article class="rec"><div class="cols c3"><div class="pro"><div class="mf-k">Evidence cited for</div><ul>' + t.pro.map(x => "<li>" + esc(x) + "</li>").join("") + '</ul></div><div class="con"><div class="mf-k">Evidence cited against</div><ul>' + t.con.map(x => "<li>" + esc(x) + "</li>").join("") + '</ul></div><div><div class="mf-k" style="color:var(--gold)">Watch for</div><ul>' + t.watch.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul></div></div><footer>" + srcLinks(t.u) + "</footer></article>" + record(U.pre.theses[st.ur], "the same question earlier in the record — the archive's pointers, not evidence the reading's holders necessarily cite");
     } else {
       h = '<div class="grid2 even"><div class="col"><h4>What the readings share<small>the nearest thing to settled ground</small></h4><ol class="olist">' + U.shared.map(x => "<li>" + esc(x) + "</li>").join("") + "</ol></div>"
         + '<div class="col"><h4>Signposts<small>dated tests that will favour one reading over another</small></h4><dl class="sp">' + U.signposts.map(x => "<dt>" + esc(x[0]) + "</dt><dd>" + esc(x[1]) + "</dd>").join("") + "</dl></div></div>"
@@ -432,8 +498,8 @@
     segs.forEach(s => { h += '<path class="ar" d="' + K.path(s) + "L" + s[s.length - 1][0].toFixed(1) + " 52L" + s[0][0].toFixed(1) + ' 52Z"/><path class="ln" d="' + K.path(s) + '"/>'; });
     /* the regime class of each year as a strip under the line */
     const w = (W - 4) / n; for (let i = 0; i < n; i++) if (c.hr[i] !== "-") h += '<rect x="' + (2 + i * w).toFixed(1) + '" y="55" width="' + (w + .4).toFixed(1) + '" height="5" fill="' + ROW[+c.hr[i]][1] + '"/>';
-    [1900, 1950, 2000].forEach(yr => { h += '<text x="' + x(yr - Y0) + '" y="71">' + yr + "</text>"; }); h += '<text x="' + (W - 2) + '" y="71" text-anchor="end">' + LAST + "</text>";
-    return '<svg class="spark" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img" aria-label="Liberal democracy index since 1900">' + h + "</svg>";
+    h += '<text x="2" y="71">' + Y0 + "</text>"; [1850, 1900, 1950].forEach(yr => { h += '<text x="' + x(yr - Y0) + '" y="71" text-anchor="middle">' + yr + "</text>"; }); h += '<text x="' + (W - 2) + '" y="71" text-anchor="end">' + LAST + "</text>";
+    return '<svg class="spark" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img" aria-label="Liberal democracy index, ' + Y0 + " to " + LAST + '">' + h + "</svg>";
   }
   const meter = (label, v, max, col) => "<span>" + label + '</span><div class="tr"><i style="width:' + (v == null ? 0 : K.clamp(v / max * 100, 0, 100)).toFixed(0) + "%" + (col ? ";background:" + col : "") + '"></i></div><span class="v">' + (v == null ? "—" : K.fmt(v, max > 1 ? 1 : 2)) + "</span>";
   function card(c) {
@@ -444,7 +510,7 @@
     if (f) h += '<p class="hint" style="margin-top:6px">' + esc(f[0]) + ": " + esc(f[1].charAt(0).toLowerCase() + f[1].slice(1)) + "</p>";
     if (note) h += '<div class="sd-k">In brief</div><p class="sd-p">' + esc(note.t) + "</p>" + (note.d ? '<div class="sd-links"><a href="doctrines.html#v=compass&i=' + note.d + '">The doctrine, in the Doctrines ⟶</a></div>' : "") + (c.id === "USA" ? '<div class="sd-links"><a href="#v=usa" data-go="usa">The United States in detail ⟶</a></div>' : "");
     if (c.fhOnly) return h + '<p class="hint">V-Dem does not cover this state, so only the Freedom House score is shown.</p>';
-    h += '<div class="sd-k">Liberal democracy since 1900</div>' + spark(c) + '<dl class="kv" style="margin-top:6px"><dt>1 year</dt><dd class="mono ' + (c.d1 < -0.02 ? "dn" : c.d1 > 0.02 ? "up" : "") + '">' + K.signed(c.d1) + '</dd><dt>5 years</dt><dd class="mono ' + (c.d5 < -0.02 ? "dn" : c.d5 > 0.02 ? "up" : "") + '">' + K.signed(c.d5) + '</dd><dt>10 years</dt><dd class="mono ' + (c.d10 < -0.02 ? "dn" : c.d10 > 0.02 ? "up" : "") + '">' + K.signed(c.d10) + "</dd></dl>";
+    h += '<div class="sd-k">Liberal democracy since ' + (firstYear(c) || Y0) + ((firstYear(c) || Y0) < RY0 ? " · regime class from " + RY0 : "") + "</div>" + spark(c) + '<dl class="kv" style="margin-top:6px"><dt>1 year</dt><dd class="mono ' + (c.d1 < -0.02 ? "dn" : c.d1 > 0.02 ? "up" : "") + '">' + K.signed(c.d1) + '</dd><dt>5 years</dt><dd class="mono ' + (c.d5 < -0.02 ? "dn" : c.d5 > 0.02 ? "up" : "") + '">' + K.signed(c.d5) + '</dd><dt>10 years</dt><dd class="mono ' + (c.d10 < -0.02 ? "dn" : c.d10 > 0.02 ? "up" : "") + '">' + K.signed(c.d10) + "</dd></dl>";
     h += '<div class="sd-k">What the score is made of</div><div class="meter">' + meter("Clean elections", c.edi, 1) + meter("Civil liberties", c.civ, 1) + meter("Free expression", c.fx, 1) + meter("Rule of law", c.rule, 1) + meter("Courts constrain the executive", c.jud, 1) + meter("Legislature constrains it", c.leg, 1) + meter("Civil society", c.cs, 1) + meter("Corruption", c.corr, 1, "#ff7a66") + "</div>";
     if (c.ideo) {
       h += '<div class="sd-k">In whose name it rules</div><p class="sd-p" style="font-size:12.5px">' + (c.ideo[0] < 2 ? "The government makes no strong ideological claim" : "The government promotes an ideology that experts class as <b style=\"color:var(--paper)\">" + esc(c.ideo[1].split("").map(k => IDEO[k][0].toLowerCase()).join(", ") || "of no listed type") + "</b>") + ".</p>"

@@ -14,12 +14,12 @@
 #tone button.on { box-shadow: 0 0 0 2px var(--obsidian-3), 0 0 0 3.5px var(--gold); }
 #tone button:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
 /* a narrow header shows only the current swatch; pressing it steps to the next colourway */
-@media (max-width: 1560px) {
+@media (max-width: 1700px) {
   #tone { gap: 0; padding: 0 7px; margin: 0 8px 0 6px; } #tone button:not(.on) { display: none; }
   /* alone, a black disc on black or a white one on white says nothing: the lone button shows all three, and a gold rim */
   #tone button.on { background: conic-gradient(from -60deg, #1d2f57 0 33.4%, #fff 0 66.7%, #000 0); border-color: var(--gold); box-shadow: none; width: 15px; height: 15px; }
 }
-@media (max-width: 840px) { #tone { border: 0; background: none; padding: 0 4px; margin: 0 4px 0 0; } }
+@media (max-width: 935px) { #tone { border: 0; background: none; padding: 0 4px; margin: 0 4px 0 0; } }
 
 /* ---------- exceptions: where the general rule is not enough ---------- */
 /* on white an accent is already deepened to hold 4.5:1; fading it again would undo that */

@@ -113,7 +113,7 @@
   /* ------------------------------------------------------------
      the world map: one <path> per country, coloured by a callback.
      Pan by dragging, zoom with the wheel, pinch or the buttons.
-     o: { map: name→iso, tipEl, wrap, onPick(iso), tipFor(iso, name) }
+     o: { map: name→iso, tipEl, wrap, onPick(iso, element), tipFor(iso, name), onView() — called whenever the view moves }
      ------------------------------------------------------------ */
   K.worldMap = (svg, o) => {
     /* The shapes are plate carrée (1° = 1 unit both ways), which squashes the mid-latitudes where most
@@ -131,7 +131,7 @@
       const iso = o.map[c.n]; if (iso) { p.dataset.iso = iso; (paths[iso] = paths[iso] || []).push(p); }
       p.dataset.n = c.n; g.appendChild(p);
     });
-    const apply = () => svg.setAttribute("viewBox", [view.x, view.y, view.w, view.h].map(v => v.toFixed(3)).join(" "));
+    const apply = () => { svg.setAttribute("viewBox", [view.x, view.y, view.w, view.h].map(v => v.toFixed(3)).join(" ")); if (o.onView) o.onView(); };
     const clampView = v => {
       const ar = HOME.w / HOME.h; v.w = K.clamp(v.w, 14, HOME.w); v.h = v.w / ar;
       v.x = K.clamp(v.x, HOME.x - 4, HOME.x + HOME.w + 4 - v.w); v.y = K.clamp(v.y, HOME.y - 4, HOME.y + HOME.h + 4 - v.h); return v;
@@ -173,7 +173,7 @@
     const up = e => {
       if (!ptr.has(e.pointerId)) return;
       ptr.delete(e.pointerId); svg.classList.remove("drag");
-      if (moved <= 4 && e.type === "pointerup") { const t = document.elementFromPoint(e.clientX, e.clientY); const iso = t && t.dataset && t.dataset.iso; if (o.onPick) o.onPick(iso || null); }
+      if (moved <= 4 && e.type === "pointerup") { const t = document.elementFromPoint(e.clientX, e.clientY); const iso = t && t.dataset && t.dataset.iso; if (o.onPick) o.onPick(iso || null, t); }
     };
     svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
     svg.addEventListener("pointerleave", () => { if (o.tip) o.tip.hide(); });

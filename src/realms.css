@@ -247,3 +247,22 @@ body.rl { --free: #49c9b8; --part: #c9a227; --not: #a23b33; --up: #49c9b8; --dow
 .cases .f { width: 27px; font: 8.5px var(--mono); letter-spacing: 0; }
 .cases .nm { text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--paper); font-family: var(--display); }
 .cases th.nm { color: var(--gold); }
+
+
+/* ---- the United States: the long arc (v13.1) ---- */
+.era-b { fill: transparent; } .era-b.alt { fill: rgba(255,255,255,.022); } .era-l { stroke: #3a4258; stroke-width: 1; }
+.chart text.era-t { font: 9px var(--display); letter-spacing: .03em; text-transform: uppercase; fill: #a8a494; cursor: pointer; } .chart text.era-t:hover, .chart text.era-t.on { fill: var(--gold-bright); }
+.strip-scroll { min-width: 0; } .chips.tp { gap: 5px; } .chips.tp .chipbtn { font-size: 11.5px; text-transform: none; letter-spacing: 0; }
+.rec header .who { font-size: 11px; }
+@media (max-width: 1100px) { .strip-scroll { overflow-x: auto; } .strip-scroll .chart-host { min-width: 980px; } }
+.pane p.srcs { display: flex; flex-wrap: wrap; gap: 4px 2px; } .pane p.srcs a { white-space: normal; }
+
+/* v13.2 — the whole record: a component's line across every year it is scored, and year chips in a table cell */
+.parts.long { max-width: none; } .parts.long td.sp { padding: 3px 9px; width: 150px; }
+.pspark { width: 150px; height: 26px; display: block; margin-left: auto; } .pspark path { fill: none; stroke: var(--gold-bright); stroke-width: 1.3; }
+.parts td.st { font: 12px var(--sans); white-space: nowrap; }
+.chips.tp.yrs { gap: 4px; flex-wrap: wrap; } .chips.tp.yrs .chipbtn { font: 11px var(--mono); padding: 2px 6px; }
+@media (max-width: 700px) {   /* the legislation table reads as a list of cards on a phone */
+  .tbl.bills, .tbl.bills tbody, .tbl.bills tr, .tbl.bills td { display: block; width: auto !important; } .tbl.bills thead { display: none; }
+  .tbl.bills td { border: 0; padding: 2px 4px; } .tbl.bills tr { border-bottom: 1px solid var(--line-faint); padding: 9px 0; }
+}

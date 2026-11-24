@@ -1062,12 +1062,15 @@ html.hdr-on #bar > .sigil.mini, html.hdr-on #bar-title { display: none; }
 /* all eleven instruments must fit without scrolling, so their places never move from page to page */
 #hdr #rail a i { font-style: normal; }
 @media (max-width: 1900px) { #omni-btn span { display: none; } }
-@media (max-width: 1700px) { #hdr #rail a { padding: 0 9px; letter-spacing: 0.11em; gap: 6px; } .hdr-brand { padding-right: 12px; margin-right: 2px; } #hdr #rail a i { display: none; } }
-@media (max-width: 1500px) { #omni-btn kbd { display: none; } #omni-btn { padding: 0 9px; margin-left: 2px; } #hdr #rail a { padding: 0 7px; letter-spacing: 0.08em; gap: 5px; } }
-@media (max-width: 1400px) { .hdr-brand b { display: none; } .hdr-brand { padding-right: 9px; } #hdr #rail a { letter-spacing: 0.06em; } }
-@media (max-width: 1300px) { #hdr #rail a { padding: 0 6px; letter-spacing: 0.04em; font-size: 10px; } #hdr #rail a svg { display: none; } }
+/* breakpoints moved up for a thirteenth instrument (v14): each step now starts wider */
+@media (max-width: 1970px) { #hdr #rail a { padding: 0 9px; letter-spacing: 0.11em; gap: 6px; } .hdr-brand { padding-right: 12px; margin-right: 2px; } #hdr #rail a i { display: none; } }
+@media (max-width: 1630px) { #omni-btn kbd { display: none; } #omni-btn { padding: 0 9px; margin-left: 2px; } #hdr #rail a { padding: 0 7px; letter-spacing: 0.08em; gap: 5px; } }
+@media (max-width: 1470px) { .hdr-brand b { display: none; } .hdr-brand { padding-right: 9px; } #hdr #rail a { letter-spacing: 0.06em; } }
+@media (max-width: 1330px) { #hdr #rail a { padding: 0 6px; letter-spacing: 0.04em; font-size: 10px; } #hdr #rail a svg { display: none; } }
 @media (max-width: 1080px) { #hdr #rail a { padding: 0 5px; letter-spacing: 0.02em; font-size: 9.5px; } }
-@media (max-width: 840px) { #hdr #rail a { padding: 0 3.5px; letter-spacing: 0; } }   /* room for the colourway switch (v12) */
+@media (max-width: 935px) { #hdr #rail a { padding: 0 3.5px; letter-spacing: 0; } }   /* room for the colourway switch (v12) and a twelfth instrument (v13) */
+@media (max-width: 860px) { #hdr #rail a { padding: 0 2.5px; font-size: 9px; } .hdr-brand { padding-right: 6px; margin-right: 0; } #omni-btn { padding: 0 7px; margin-left: 0; } }
+@media (max-width: 790px) { #hdr #rail a { padding: 0 2px; font-size: 8.5px; } }
 @media (max-width: 700px) { #hdr { height: 42px; padding: 0 8px 0 10px; } #hdr #rail { height: auto; padding: 0; } }
 
 /* ---- page to page ---- */
@@ -1158,7 +1161,8 @@ html.vtf.leaving body > :not(#hdr):not(#omni) { opacity: 0; transition: opacity 
 /* the portal: nine doors on a three-by-three board */
 #welcome-card { width: min(900px, 96vw); padding: 24px 26px 18px; }
 .w-grid { grid-template-columns: repeat(3, 1fr); }
-@media (max-width: 760px) { .w-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px) { .w-grid { grid-template-columns: 1fr 1fr; } .w-door.wide-sm { grid-column: 1 / -1; } }
+.w-door.wide { flex-direction: row; align-items: baseline; gap: 10px; text-align: left; padding-top: 10px; padding-bottom: 10px; }   /* the tenth door (v13): a full-width bar under the 3 × 3 */
 @media (max-width: 480px) { .w-grid { grid-template-columns: 1fr; } }
 /* section chips for long views */
 .pg-off { display: none !important; }
