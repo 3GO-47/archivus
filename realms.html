@@ -38,11 +38,11 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 
   <nav id="wr-bar" aria-label="Views">
     <div id="wr-tabs" role="tablist">
-      <button role="tab" data-v="map" title="The world coloured by freedom, regime, ideology or drift (1)">The Map</button>
-      <button role="tab" data-v="compass" title="Every country placed by who owns the economy and how free its politics are (2)">The Compass</button>
-      <button role="tab" data-v="ledger" title="Every country in one sortable table (3)">The Ledger</button>
-      <button role="tab" data-v="drift" title="Who is rising, who is sliding, and where governments have fallen by force (4)">The Drift</button>
-      <button role="tab" data-v="usa" title="The United States: indices, timeline, disputes and five readings of what comes next (5)">United States</button>
+      <button role="tab" data-v="map" title="The world coloured by freedom, regime, ideology or drift">The Map</button>
+      <button role="tab" data-v="ledger" title="Every country in one sortable table">The Ledger</button>
+      <button role="tab" data-v="compass" data-kin="ledger" title="Every country placed by who owns the economy and how free its politics are">The Compass</button>
+      <button role="tab" data-v="drift" title="Who is rising, who is sliding, and where governments have fallen by force">The Drift</button>
+      <button role="tab" data-v="usa" title="The United States: indices, timeline, disputes and five readings of what comes next">United States</button>
     </div>
     <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a country…  ( / )" autocomplete="off" aria-label="Find a country"></div>
   </nav>

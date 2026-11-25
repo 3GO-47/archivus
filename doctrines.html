@@ -37,12 +37,12 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 
   <nav id="wr-bar" aria-label="Views">
     <div id="wr-tabs" role="tablist">
-      <button role="tab" data-v="compass" title="Every ideology in its quadrant (1)">The Compass</button>
-      <button role="tab" data-v="lineage" title="Who descends from whom (2)">The Lineage</button>
-      <button role="tab" data-v="manifesto" title="The Communist Manifesto, thesis by thesis (3)">The Manifesto</button>
-      <button role="tab" data-v="red" title="Marx's heirs: what they share, where they part (4)">The Red Family</button>
-      <button role="tab" data-v="atlas" title="Where each doctrine was born; the party-states by year (5)">The Atlas</button>
-      <button role="tab" data-v="library" title="The founding texts in order (6)">The Library</button>
+      <button role="tab" data-v="compass" title="Every ideology in its quadrant">The Compass</button>
+      <button role="tab" data-v="lineage" title="Who descends from whom">The Lineage</button>
+      <button role="tab" data-v="atlas" data-kin="lineage" title="Where each doctrine was born; the party-states by year">The Atlas</button>
+      <button role="tab" data-v="library" title="The founding texts in order">The Library</button>
+      <button role="tab" data-v="manifesto" data-kin="library" title="The Communist Manifesto, thesis by thesis">The Manifesto</button>
+      <button role="tab" data-v="red" data-kin="library" title="Marx's heirs: what they share, where they part">The Red Family</button>
     </div>
     <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a doctrine, thinker or text…  ( / )" autocomplete="off" aria-label="Find a doctrine, thinker or text"></div>
   </nav>

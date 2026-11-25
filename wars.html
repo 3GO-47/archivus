@@ -37,12 +37,12 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
   <nav id="wr-bar" aria-label="War and view">
     <div id="war-switch" role="group" aria-label="Which war"></div>
     <div id="wr-tabs" role="tablist">
-      <button role="tab" data-v="map" title="The animated map (1)">The Map</button>
-      <button role="tab" data-v="powers" title="Who fought on which side, and when (2)">The Powers</button>
-      <button role="tab" data-v="leaders" title="Monarchs, leaders and the ties between them (3)">The Leaders</button>
-      <button role="tab" data-v="campaigns" title="Phase by phase, battle by battle (4)">The Campaigns</button>
-      <button role="tab" data-v="cost" title="The human cost (5)">The Cost</button>
-      <button role="tab" data-v="why" title="Causes, aftermath, technology, sources (6)">Causes &amp; Aftermath</button>
+      <button role="tab" data-v="map" title="The animated map">The Map</button>
+      <button role="tab" data-v="campaigns" data-kin="map" title="Phase by phase, battle by battle">The Campaigns</button>
+      <button role="tab" data-v="powers" title="Who fought on which side, and when">The Powers</button>
+      <button role="tab" data-v="leaders" data-kin="powers" title="Monarchs, leaders and the ties between them">The Leaders</button>
+      <button role="tab" data-v="cost" title="The human cost">The Cost</button>
+      <button role="tab" data-v="why" title="Causes, aftermath, technology, sources">Causes &amp; Aftermath</button>
     </div>
     <div id="wr-blurb"></div>
   </nav>

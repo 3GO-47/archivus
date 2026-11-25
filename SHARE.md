@@ -6,9 +6,11 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v16.0** — deployed 2026-11-25. The trim: five doors in the header (Oracle, Record, Power, War, Myth) instead of thirteen links; tabs folded so 40 views are reached from 28 places; the right-hand guide panels shut until asked for. Nothing was deleted and every old link still works. No data file changed.
+**Live version: v16.2** — deployed 2026-11-25. Everything v16.0 took out of plain sight is back, reorganised: the Wheel is in the Archive's switch again; every tab is in its strip again, with related views grouped beside their parent; the War Room's blurb is back; the guide panels fold to a labelled strip instead of disappearing. Header menus wait a moment before opening on hover. No data file changed.
 
-**Before that: v15.0** — deployed 2026-11-24 in three commits (styles and header, pocket builds, docs). The illumination: every instrument drawn to the Oracle's standard by one shared layer. No data file and no engine changed.
+**Before that: v16.0** — deployed 2026-11-25 (UTC). The trim: five doors in the header (Oracle, Record, Power, War, Myth) instead of thirteen links; tabs folded so 40 views are reached from 30 places; the right-hand guide panels shut until asked for. Nothing was deleted and every old link still works. No data file changed.
+
+**Earlier: v15.0** — deployed 2026-11-24 in three commits (styles and header, pocket builds, docs). The illumination: every instrument drawn to the Oracle's standard by one shared layer. No data file and no engine changed.
 
 **Earlier: v14.1** — deployed 2026-11-24 in four commits (data, engines and styles, pocket builds, pages). New since v12: the Oracle, a thirteenth instrument (`oracle.html`) — what the whole record points to; the Conflicts, a twelfth (`conflicts.html`); the United States view extended back to 1607; and every Realms view extended to the first year of the record (1789).
 

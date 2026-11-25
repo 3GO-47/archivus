@@ -104,11 +104,11 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 
   <nav id="wr-bar" aria-label="Views">
     <div id="wr-tabs" role="tablist">
-      <button role="tab" data-v="map" title="Where the fighting is, how severe, and who is fighting (1)">The Map</button>
-      <button role="tab" data-v="ladder" title="Every conflict on one scale, from tension to major war (2)">The Ladder</button>
-      <button role="tab" data-v="toll" title="What each side has lost, and who says so (3)">The Toll</button>
-      <button role="tab" data-v="actors" title="The armed groups, and which governments list them as terrorist organisations (4)">The Belligerents</button>
-      <button role="tab" data-v="method" title="How the scale is set, what is counted, and every source (5)">Method &amp; sources</button>
+      <button role="tab" data-v="map" title="Where the fighting is, how severe, and who is fighting">The Map</button>
+      <button role="tab" data-v="ladder" title="Every conflict on one scale, from tension to major war">The Ladder</button>
+      <button role="tab" data-v="toll" data-kin="ladder" title="What each side has lost, and who says so">The Toll</button>
+      <button role="tab" data-v="actors" title="The armed groups, and which governments list them as terrorist organisations">The Belligerents</button>
+      <button role="tab" class="minor" data-v="method" title="How the scale is set, what is counted, and every source">Method &amp; sources</button>
     </div>
     <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a conflict, a country or a group…  ( / )" autocomplete="off" aria-label="Find a conflict, a country or an armed group"></div>
   </nav>

@@ -113,11 +113,13 @@ The rule reaches the page three ways. `tools/build-themes.js` reads the four sha
 
 **To update it:** edit `src/data/conflicts.js` (the header explains every field), set `meta.asOf`, then `node tools/validate-conflicts.js` and `node tools/build-mobile.js --zip`. The validator refuses a figure without a source, a map name that is not on the map, or a designation without the list in the card's sources.
 
-## The trim (v16)
+## The trim (v16, reworked in v16.2)
 
-The owner asked for the whole of Archivus to be reviewed, then for it to be made less cluttered. Nothing was deleted. Three things changed, each written once in `src/nav.js` and the last block of `src/styles.css` ("THE TRIM").
+The owner asked for the whole of Archivus to be made less cluttered — **reorganised, not cut**. v16.0 got that wrong in three places (it took the Wheel out of the Archive's switch, hid seven tabs behind a small switch under new names, and hid the War Room's blurb); v16.2 put all of it back in a reorganised place. **Nothing is hidden or removed.** The rule for any later change: a thing may be grouped, made smaller, or folded behind a control that names it — never taken out of reach.
 
-**1 · Five doors in the header, not thirteen.** `GROUPS` in `src/nav.js`:
+All of it is written once, in `src/nav.js` and the last block of `src/styles.css` ("THE TRIM").
+
+**1 · Five doors in the header, not thirteen links.** `GROUPS` in `src/nav.js`:
 
 | Door | Holds |
 |---|---|
@@ -127,32 +129,29 @@ The owner asked for the whole of Archivus to be reviewed, then for it to be made
 | War | War Room, Conflicts |
 | Myth | Bloodline, Pantheons, Transmissions |
 
-A door opens a menu of its instruments, each with one line saying what it is. A mouse opens it by resting on the door, a finger or the keyboard by pressing it; arrow keys walk the menu, Escape closes it. The page you are on is named in its own slot at the right of the doors, so the five never move from page to page. The Archive stays at the root address (`index.html`), so no existing link breaks.
+A door opens a menu of its instruments, each with one line saying what it is. A mouse opens it by resting on the door for a moment, a finger or the keyboard by pressing it; arrow keys walk the menu, Escape closes it. The page you are on is named in its own slot at the right of the doors, so the five never move from page to page. The Archive stays at the root address (`index.html`).
 
-**2 · Folded tabs: 40 views are now reached from 28 places.** Views that show the same subject arranged another way sit under one tab, with a small switch beside the tab strip. `FOLD` in `src/nav.js`:
+**2 · Grouped tabs: every view keeps its own tab and its own name.** A view that is the same subject arranged another way stands beside the tab it belongs with, smaller and after a dot, and that tab stays lit while it is open:
 
-| Page | Tabs now | Folded under them |
-|---|---|---|
-| War Room | Map, Powers, Cost, Causes & Aftermath | Campaigns under Map; Leaders under Powers |
-| Doctrines | Compass, Lineage, Library | Atlas under Lineage; Manifesto and Red Family under Library |
-| Realms | Map, Ledger, Drift, United States | Compass under Ledger |
-| Coups | Roll, Record, Patterns | Red and Green Seizures under Roll |
-| Conflicts | Map, The Wars, Belligerents (+ Method, small) | Ladder and Toll are the two arrangements of The Wars |
-| Oracle | Reading, Lines, Horizon (+ Method, small) | — |
-| Archive | Chronicle, Atlas, Astrolabe | the Wheel left the switch |
+| Page | The strip |
+|---|---|
+| War Room | Map · *Campaigns* — Powers · *Leaders* — Cost — Causes & Aftermath |
+| Doctrines | Compass — Lineage · *Atlas* — Library · *Manifesto* · *Red Family* |
+| Realms | Map — Ledger · *Compass* — Drift — United States |
+| Coups | Roll · *Red Seizures* · *Green Seizures* — Record — Patterns |
+| Conflicts | Map — Ladder · *Toll* — Belligerents — Method & sources (small) |
+| Oracle | Reading — Lines — Horizon — Method & sources (small) |
+| Archive | Chronicle, Atlas, Wheel, Astrolabe — as before |
 
-The folded tab buttons are still in each page, only hidden: every engine still owns its own views and hashes, the switch simply presses them, and every old deep link (`#v=red`, `#v=toll`, `#v=leaders`…) still opens its view. Number keys follow the tabs you can see. The Wheel's code is kept, so `index.html#v=wheel` still opens it.
-
-To fold another view: add it to `FOLD` (`kin: { child: "parent" }`, and a `names` label for the switch). To make a tab small and last, list it under `minor`.
+The grouping is written in each page itself: `<button role="tab" data-v="red" data-kin="roll">`. A tab of secondary weight carries `class="minor"`. The order of the buttons in the page is the order of the strip and of the number keys. `foldTabs()` in `src/nav.js` only lights the parent and writes the key hints; the engines are as they were.
 
 **3 · A quieter first screen.**
 
-- **The guide is shut.** The right-hand panel used to open with a "how to read this" card on every view. It is now closed until the **Guide** button is pressed (the choice is remembered) and opens by itself when something is selected. The stage takes the full width; engines are told to redraw (a `resize` event) when the panel opens or closes. The rule: `body.guide-shut:not(.side-card) #dc-side { display: none }`; an engine marks its guide card with the class `intro`.
-- **Chip rows are tucked.** The Bloodline's 22 houses and the Pantheons' 20 domains open from one button.
+- **The guide is folded, not gone.** The right-hand panel used to open with a "how to read this" card on every view. It now stands folded as a strip at the right edge, labelled *Guide*. A click on the strip or on the **Guide** button opens it (the choice is remembered), and it opens by itself when something is selected. Engines are told to redraw (a `resize` event) when the panel changes width. An engine marks its guide card with the class `intro`.
+- **Chip rows are tucked.** The Bloodline's 22 houses and the Pantheons' 20 domains open from one button that names and counts them.
 - **Less ornament.** The brass corners and deep shadows of v15 are kept for chart panels only; the ✦ is gone from small headings.
-- The War Room's two-line blurb beside its tabs is hidden to make room for the switch.
 
-What was considered and not done: making the Oracle the root page (it would break every link to the Archive); deleting the Doctrines' Atlas (review showed it holds birthplaces and the Red Century, which no other view has, so it was folded instead); closing the Archive's "In view" panel by default (it is what answers "where am I in history" on arrival).
+What it costs: when the panel opens for a selection (or closes), the drawing redraws to the narrower stage, so what you clicked moves — about 150px on the Doctrines' compass at 1600px wide. Zoom and scroll positions are kept.
 
 ## The illumination (v15)
 
@@ -390,6 +389,6 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 - *The whole record (v13.2)* — nothing is cut to a recent window: the Realms' world series, map slider, drift chart and country cards run from 1789; the United States components are shown across the whole record; every dispute, measure and reading is tied to its earlier history; twelve events added.
 - *The Oracle (v14, redrawn v14.1)* — a thirteenth instrument: what the whole record points to. Eleven lines drawn from their first year (38 world series plus the Archive's own data), led by Power and ending with Climate; the loom; 38 graded deductions each with the case against it, the 40 dated expectations sorted by how knowable they are. Header breakpoints moved again; thirteen instruments fit from 768px up.
 - *The illumination (v15)* — every instrument drawn to the Oracle's standard by one shared layer: a masthead on every view, light under every chart, framed panels, engraved headings.
-- *The trim (v16)* — five doors in the header instead of thirteen, 40 views reached from 28 places, the guide panels shut until asked for. Nothing deleted.
+- *The trim (v16, reworked v16.2)* — five doors in the header instead of thirteen links; tabs grouped (every view keeps its tab); the guide panels folded to a labelled strip. Reorganised, nothing removed: v16.0's removal of the Wheel from the Archive's switch and its hidden tabs were undone in v16.2.
 
-Current state: **v16.0** — thirteen instruments behind five doors, three colourways, all datasets validated. Live: v16.0 (deployed 2026-11-25).
+Current state: **v16.2** — thirteen instruments behind five doors, three colourways, all datasets validated. Live: v16.2 (deployed 2026-11-25).
