@@ -6,9 +6,11 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v15.0** — deployed 2026-11-24 in three commits (styles and header, pocket builds, docs). The illumination: every instrument drawn to the Oracle's standard by one shared layer. No data file and no engine changed.
+**Live version: v16.0** — deployed 2026-11-25. The trim: five doors in the header (Oracle, Record, Power, War, Myth) instead of thirteen links; tabs folded so 40 views are reached from 28 places; the right-hand guide panels shut until asked for. Nothing was deleted and every old link still works. No data file changed.
 
-**Before that: v14.1** — deployed 2026-11-24 in four commits (data, engines and styles, pocket builds, pages). New since v12: the Oracle, a thirteenth instrument (`oracle.html`) — what the whole record points to; the Conflicts, a twelfth (`conflicts.html`); the United States view extended back to 1607; and every Realms view extended to the first year of the record (1789).
+**Before that: v15.0** — deployed 2026-11-24 in three commits (styles and header, pocket builds, docs). The illumination: every instrument drawn to the Oracle's standard by one shared layer. No data file and no engine changed.
+
+**Earlier: v14.1** — deployed 2026-11-24 in four commits (data, engines and styles, pocket builds, pages). New since v12: the Oracle, a thirteenth instrument (`oracle.html`) — what the whole record points to; the Conflicts, a twelfth (`conflicts.html`); the United States view extended back to 1607; and every Realms view extended to the first year of the record (1789).
 
 **Earlier: v12.0** — deployed 2026-11-13 in three commits (engines and styles, pocket builds, pages): three colourways (Blue, Black, White) with a switch in the header, and a contrast pass over every page. No data file changed. The live repository matches this folder byte for byte except `tools/`, `research/` and `exports/`, which are not published.
 
