@@ -82,7 +82,7 @@
     box.addEventListener("click", e => { const b = e.target.closest("button[data-v]"); if (b) set(b.dataset.v); });
     document.addEventListener("keydown", e => {
       if (e.target.closest("input, textarea, select") || e.ctrlKey || e.metaKey || e.altKey) return;
-      const i = "123456789".indexOf(e.key); if (i >= 0 && btns[i]) set(btns[i].dataset.v);
+      const seen = btns.filter(b => !b.dataset.kin), i = "123456789".indexOf(e.key); if (i >= 0 && seen[i]) set(seen[i].dataset.v);   /* folded tabs (nav.js, v16) have no number */
     });
     return { paint, ids: btns.map(b => b.dataset.v) };
   };

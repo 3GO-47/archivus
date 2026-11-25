@@ -1,11 +1,12 @@
 /* ============================================================
-   ARCHIVUS — the frame (v10; thirteen instruments since v14)
+   ARCHIVUS — the frame (v10; thirteen instruments since v14; five header groups since v16)
    ------------------------------------------------------------
    Twelve pages that should feel like one instrument. This script
    is the first thing in every <body> and gives every page
 
-     · ONE HEADER, identical everywhere: brand, the thirteen
-       instruments, and a search-everything button. It is in
+     · ONE HEADER, identical everywhere: brand, five groups that
+       hold the thirteen instruments (GROUPS, below), and a
+       search-everything button. It is in
        place before the page paints, so nothing shifts. The
        per-page mastheads stay in the markup as a no-script
        fallback and are hidden (styles.css, "v10").
@@ -26,39 +27,48 @@
      · A title card the first time you enter an instrument, and
        gliding markers for in-page tab strips.
 
-   To add an instrument: add one row to ITEMS.
+   To add an instrument: add one row to ITEMS and name it in a group in GROUPS.
    ============================================================ */
 (function () {
   "use strict";
   const root = document.documentElement;
   const I = d => '<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">' + d + "</svg>";
   const ITEMS = [
-    { id: "archive", href: "index.html", label: "<i>The </i>Archive", tip: "Chronicle · Atlas · Wheel — all recorded history on one instrument",
+    { id: "archive", href: "index.html", label: "<i>The </i>Archive", tip: "All recorded history on one timeline and one map",
       icon: I('<circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/>') },
-    { id: "astrolabe", href: "astrolabe.html", label: "Astrolabe", tip: "The transit instrument — history in Keplerian rotation",
+    { id: "astrolabe", href: "astrolabe.html", label: "Astrolabe", tip: "The same records as a turning sky",
       icon: I('<circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="3.2"/><path d="M8 1.8v12.4M1.8 8h12.4"/>') },
-    { id: "codex", href: "codex.html", label: "Codex", tip: "Read the whole archive as a book",
+    { id: "codex", href: "codex.html", label: "Codex", tip: "The same records as a book you can read",
       icon: I('<path d="M8 3.6C6.4 2.6 4 2.4 2 3v9.6c2-.6 4.4-.4 6 .6 1.6-1 4-1.2 6-.6V3c-2-.6-4.4-.4-6 .6zM8 3.6v9.6"/>') },
-    { id: "wars", href: "wars.html", label: "War Room", tip: "The two World Wars, day by day: fronts, powers, leaders, cost",
+    { id: "wars", href: "wars.html", label: "War Room", tip: "The two World Wars, day by day",
       icon: I('<path d="M2.5 2.5l8.2 8.2M13.5 2.5l-8.2 8.2M9.2 12.2l3-3M6.8 12.2l-3-3M11.6 11.6l1.9 1.9M4.4 11.6l-1.9 1.9"/>') },
-    { id: "doctrines", href: "doctrines.html", label: "Doctrines", tip: "Every ideology on one compass — and Marxism dissected, from its ancestors to its heirs",
+    { id: "doctrines", href: "doctrines.html", label: "Doctrines", tip: "Every ideology: where it began, what it holds, what it begat",
       icon: I('<rect x="2.2" y="2.2" width="11.6" height="11.6" rx="1"/><path d="M8 2.2v11.6M2.2 8h11.6"/><circle cx="5" cy="5.2" r="1" fill="currentColor"/><circle cx="10.6" cy="10.4" r="1" fill="currentColor"/>') },
-    { id: "realms", href: "realms.html", label: "Realms", tip: "Every country weighed — how free, how governed, in whose name — and the United States in detail",
+    { id: "realms", href: "realms.html", label: "Realms", tip: "Every country weighed: how free, how governed, which way it is moving",
       icon: I('<circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c2.4 2 2.4 10.4 0 12.4M8 1.8c-2.4 2-2.4 10.4 0 12.4"/>') },
-    { id: "coups", href: "coups.html", label: "Coups", tip: "Every seizure of power on record — by creed, by declared aim, and what came before",
+    { id: "coups", href: "coups.html", label: "Coups", tip: "Every seizure of power on record",
       icon: I('<path d="M2.6 11.4L2 5.2l3.4 2.6L8 3.4l2.6 4.4L14 5.2l-.6 6.2zM3.2 13.6h9.6"/>') },
-    { id: "conflicts", href: "conflicts.html", label: "Conflicts", tip: "Every conflict under way, from tension to major war — who fights, who is designated, what each side has lost",
+    { id: "conflicts", href: "conflicts.html", label: "Conflicts", tip: "Every conflict under way now, from tension to major war",
       icon: I('<circle cx="8" cy="8" r="5.2"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><path d="M8 1.2v3M8 11.8v3M1.2 8h3M11.8 8h3"/>') },
-    { id: "lineage", href: "lineage.html", label: "Bloodline", tip: "The family tree — pantheon of Sumer to the lines of the Messiah",
+    { id: "lineage", href: "lineage.html", label: "Bloodline", tip: "The family tree, from the gods of Sumer to the lines of the Messiah",
       icon: I('<path d="M8 2v4M8 6H4v3M8 6h4v3M4 9v2M12 9v2"/><circle cx="8" cy="2.4" r="1" fill="currentColor"/><circle cx="4" cy="12.4" r="1.3"/><circle cx="12" cy="12.4" r="1.3"/>') },
-    { id: "pantheons", href: "pantheons.html", label: "Pantheons", tip: "Seven divine family trees and the roads between religions",
+    { id: "pantheons", href: "pantheons.html", label: "Pantheons", tip: "Seven divine family trees and the roads between them",
       icon: I('<path d="M2 5.6L8 2l6 3.6M3 6.5h10M4.3 6.8v5.4M8 6.8v5.4M11.7 6.8v5.4M2.5 13h11"/>') },
     { id: "transmissions", href: "transmissions.html", label: "Transmissions", tip: "Claims of taught knowledge, against the documented record",
       icon: I('<path d="M8 1.8l1.5 4.7 4.7 1.5-4.7 1.5L8 14.2 6.5 9.5 1.8 8l4.7-1.5z"/>') },
-    { id: "trial", href: "trial.html", label: "Trial", tip: "Ten questions drawn fresh from the archive",
+    { id: "trial", href: "trial.html", label: "Trial", tip: "Test yourself: ten questions drawn from the archive",
       icon: I('<path d="M8 2.2v11.3M5 13.5h6M3 4.2h10M3 4.2L1.5 8.4h3zM13 4.2l-1.5 4.2h3z"/>') },
-    { id: "oracle", href: "oracle.html", label: "Oracle", tip: "What the whole record points to — ten lines of history, each with its evidence, its grade and the case against",
+    { id: "oracle", href: "oracle.html", label: "Oracle", tip: "What the whole record points to, and where it is heading",
       icon: I('<path d="M1.6 8c1.8-3 4-4.4 6.4-4.4S12.6 5 14.4 8c-1.8 3-4 4.4-6.4 4.4S3.4 11 1.6 8z"/><circle cx="8" cy="8" r="2.1"/><circle cx="8" cy="8" r=".7" fill="currentColor"/>') }
+  ];
+  /* The header shows five things, not thirteen (v16). A group opens a menu of its instruments, each with one line saying
+     what it is; the Oracle, the purpose of the whole, stands alone and first. `more` is listed under a rule, smaller. */
+  const GROUPS = [
+    { solo: "oracle" },
+    { id: "record", label: "Record", tip: "All recorded history, three ways", items: ["archive", "astrolabe", "codex"], more: ["trial"] },
+    { id: "power", label: "Power", tip: "Who rules, how, and how it changes hands", items: ["realms", "coups", "doctrines"] },
+    { id: "war", label: "War", tip: "The world wars, and the wars under way now", items: ["wars", "conflicts"] },
+    { id: "myth", label: "Myth", tip: "Gods, bloodlines and the knowledge they are said to have taught", items: ["lineage", "pantheons", "transmissions"] }
   ];
   const FILES = ITEMS.map(it => it.href);
   const fileOf = p => (p.split("/").pop() || "index.html").toLowerCase();
@@ -87,6 +97,41 @@
 
   /* ───────────── the header ───────────── */
   const hrefFor = it => it.href + (it.id !== here ? (mem.get("hash:" + it.id) || "") : "");
+  const item = id => ITEMS.find(it => it.id === id);
+  const plain = it => it.label.replace(/<[^>]+>/g, "");
+  const curAttr = it => it.id === here ? ' aria-current="page"' : "";
+  function railHTML() {
+    const link = (it, cls) => '<a href="' + hrefFor(it) + '" data-id="' + it.id + '" role="menuitem" class="' + (cls || "") + (it.id === here ? " here" : "") + '"' + curAttr(it) + ">" + it.icon + "<b>" + plain(it) + "</b><span>" + it.tip + "</span></a>";
+    return GROUPS.map(g => {
+      if (g.solo) { const it = item(g.solo); return '<a class="rt' + (it.id === here ? " here" : "") + '" href="' + hrefFor(it) + '" data-id="' + it.id + '" title="' + it.tip + '"' + curAttr(it) + ">" + it.icon + "<span>" + it.label + "</span></a>"; }
+      const mine = g.items.concat(g.more || []).indexOf(here) >= 0;
+      return '<div class="grp' + (mine ? " here" : "") + '" data-g="' + g.id + '"><button type="button" class="rt" aria-haspopup="true" aria-expanded="false" title="' + g.tip + '"><span>' + g.label + "</span>" +
+        '<svg class="car" viewBox="0 0 10 6" width="8" height="5" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg></button>' +
+        '<div class="mn" role="menu" aria-label="' + g.label + '">' + g.items.map(id => link(item(id))).join("") + (g.more || []).map(id => link(item(id), "minor")).join("") + "</div></div>";
+    }).join("") + (GROUPS.some(g => g.solo === here) ? "" : '<span id="rail-now" aria-hidden="true">' + item(here).icon + "<b>" + plain(item(here)) + "</b></span>");   /* where you are — in its own slot, so the five never move from page to page */
+  }
+  /* the menus: open on hover with a mouse, on tap or Enter otherwise; Escape, a click elsewhere or leaving closes */
+  function menus(rail) {
+    const grps = Array.from(rail.querySelectorAll(".grp"));
+    const close = g => { if (g.classList.contains("open")) { g.classList.remove("open"); g.firstChild.setAttribute("aria-expanded", "false"); } };
+    const shut = () => grps.forEach(close);
+    const open = (g, by) => { if (!g.classList.contains("open")) { shut(); g.classList.add("open"); g.firstChild.setAttribute("aria-expanded", "true"); } g._by = by; };
+    grps.forEach(g => {
+      const btn = g.firstChild; let t = 0;
+      btn.addEventListener("click", () => { if (g.classList.contains("open") && g._by === "click") shut(); else open(g, "click"); });
+      /* a mouse opens by resting on the door; a finger never fires these as "mouse", so a tap is always the click above */
+      g.addEventListener("pointerenter", e => { if (e.pointerType !== "mouse") return; clearTimeout(t); if (!g.classList.contains("open")) open(g, "hover"); });
+      g.addEventListener("pointerleave", e => { if (e.pointerType !== "mouse") return; clearTimeout(t); t = setTimeout(() => { if (g._by === "hover" || !g.contains(document.activeElement)) close(g); }, 200); });
+      g.addEventListener("keydown", e => {
+        const links = Array.from(g.querySelectorAll(".mn a")), i = links.indexOf(e.target);
+        if (e.key === "Escape" && g.classList.contains("open")) { e.stopPropagation(); shut(); btn.focus(); }
+        else if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); e.stopPropagation(); open(g, "click"); links[i < 0 ? 0 : (i + (e.key === "ArrowDown" ? 1 : links.length - 1)) % links.length].focus(); }
+      });
+      g.addEventListener("focusout", e => { if (e.relatedTarget && !g.contains(e.relatedTarget)) close(g); });
+    });
+    document.addEventListener("pointerdown", e => { if (!(e.target.closest && e.target.closest("#rail .grp"))) shut(); });
+    window.addEventListener("pageshow", shut);
+  }
   const TH = window.ARCHIVUS_THEME;                      /* absent only if src/theme.js failed to load */
   function buildHeader() {
     if ($("hdr") || !document.body) return;
@@ -95,7 +140,7 @@
     h.innerHTML =
       '<a class="hdr-brand" href="index.html" title="Archivus — begin again at the Archive"><span class="sigil mini" aria-hidden="true"></span><b>ARCHIVUS</b></a>' +
       '<nav id="rail" aria-label="Archivus instruments">' +
-      ITEMS.map(it => '<a href="' + hrefFor(it) + '" data-id="' + it.id + '" title="' + it.tip + '"' + (it.id === here ? ' class="here" aria-current="page"' : "") + ">" + it.icon + "<span>" + it.label + "</span></a>").join("") +
+      railHTML() +
       '<i id="rail-pill" aria-hidden="true"></i></nav>' +
       '<button id="omni-btn" type="button" title="Search every instrument at once (' + (MAC ? "⌘" : "Ctrl ") + 'K)" aria-label="Search every instrument">' +
       I('<circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3l3.4 3.4"/>') + "<span>Search everything</span><kbd>" + (MAC ? "⌘K" : "Ctrl K") + "</kbd></button>" +
@@ -108,9 +153,9 @@
       const t = b.dataset.tone; saveState();
       TH.set(t === TH.current ? TH.ORDER[(TH.ORDER.indexOf(t) + 1) % TH.ORDER.length] : t);
     });
-    const cur = h.querySelector("#rail .here"), rail = $("rail");
-    if (cur && rail.scrollWidth > rail.clientWidth) rail.scrollLeft = cur.offsetLeft - (rail.clientWidth - cur.offsetWidth) / 2;
+    menus($("rail"));
     placePill(!document.prerendering);
+    window.addEventListener("resize", () => placePill(false));      /* the labels change width with the window (v16) */
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => placePill(false));
   }
   /* the marker under the current instrument: starts where it stood on the previous page, then glides */
@@ -189,7 +234,8 @@
     box.appendChild(pill); box.classList.add("glides");
     let first = true;
     const place = () => {
-      const cur = box.querySelector(sel);
+      let cur = box.querySelector(sel);
+      if (cur && cur.dataset.kin) cur = box.querySelector('[data-v="' + cur.dataset.kin + '"]') || cur;      /* a folded view marks its parent tab (v16) */
       if (!cur) { pill.style.opacity = 0; return; }
       if (first) pill.style.transition = "none";
       pill.style.width = cur.offsetWidth + "px"; pill.style.transform = "translateX(" + cur.offsetLeft + "px)"; pill.style.opacity = 1;
@@ -361,13 +407,13 @@
 
   /* ---------- THE ILLUMINATION (v15): every instrument drawn to the Oracle's standard ----------
      Three things no page has to do for itself (the styles are at the foot of src/styles.css):
-       · a masthead at the head of every view — the page's sign, "The Realms · II of V", the view's name, what it is for;
+       · a masthead at the head of every view — the page's sign, the page's name, the view's name, what it is for;
        · light under everything drawn: one bloom filter, defined once here, given to each chart by the class .lux;
        · the same on the two reading pages that have no tabs (the Transmissions, the Trial).
      The Oracle draws its own and is left alone. */
   function illuminate() {
     const body = document.body; if (body.classList.contains("or")) return;
-    const RO = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"], me = ITEMS.find(it => it.id === here) || ITEMS[0];
+    const me = ITEMS.find(it => it.id === here) || ITEMS[0];
     const mh = $("masthead"), h1 = mh && mh.querySelector("h1"), tag = mh && mh.querySelector(".tagline");
     const page = (h1 ? h1.textContent.split("·").pop().trim() : me.label.replace(/<[^>]+>/g, "")).toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
     const hero = (k, t2, l) => '<header class="vw-top"><div class="vw-emb">' + me.icon + '</div><div><div class="vw-k">' + esc(k) + '</div><h2 class="vw-t">' + esc(t2) + "</h2>" + (l ? '<p class="vw-l">' + esc(l) + "</p>" : "") + "</div></header>";
@@ -381,8 +427,9 @@
       document.querySelectorAll(LIT).forEach(s => s.classList.add("lux"));
       document.querySelectorAll(".wr-view:not([hidden])").forEach(sec => { const pane = sec.querySelector(".pane"), at = pane || sec;
         if (at.querySelector(":scope > .vw-top") || (!pane && (!rl || sec.querySelector(".rl-map, #mp")))) return;     /* a map keeps the whole stage; a view with no pane is dressed at its own head */
-        const i = tabs.findIndex(b => "v-" + b.dataset.v === sec.id); if (i < 0) return;
-        at.insertAdjacentHTML("afterbegin", hero(page + " · " + RO[i + 1] + " of " + RO[tabs.length], tabs[i].textContent.trim(), (tabs[i].title || "").replace(/\s*\(\d\)\s*$/, "")).replace('class="vw-top"', pane ? 'class="vw-top"' : 'class="vw-top sec"')); });
+        const tb = tabs.find(b => "v-" + b.dataset.v === sec.id); if (!tb) return;
+        const up = tb.dataset.kin && tabs.find(b => b.dataset.v === tb.dataset.kin);            /* a folded view names the tab it sits under */
+        at.insertAdjacentHTML("afterbegin", hero(page + (up ? " · " + up.textContent.trim() : ""), tb.dataset.label || tb.textContent.trim(), (tb.title || "").replace(/\s*\(\d\)\s*$/, "")).replace('class="vw-top"', pane ? 'class="vw-top"' : 'class="vw-top sec"')); });
     };
     dress();
     if (rl) new MutationObserver(dress).observe($("dc-stage") || body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
@@ -390,6 +437,81 @@
     if (at && !at.querySelector(".vw-top")) at.insertAdjacentHTML("afterbegin", hero("Archivus", page, tag ? tag.textContent.trim().replace(/^./, c => c.toUpperCase()) + "." : ""));
   }
 
+  /* ---------- THE TRIM (v16): fewer doors, fewer tabs, a quieter first screen ----------
+     Three things, again done once here and not page by page (styles at the foot of src/styles.css):
+       · FOLDED TABS. Views that are the same subject arranged another way sit under one tab, with a small switch
+         beside the tabs to move between them. The folded buttons stay in the page — each engine still owns its
+         views, hashes and deep links — they are only hidden, and the switch presses them.
+       · THE GUIDE. The "how to read this" card that used to fill the right-hand panel is shut until asked for
+         (the Guide button; remembered). The panel opens by itself when something is selected.
+       · TUCKED CHIP ROWS. The Bloodline's houses and the Pantheons' domains open from one button. */
+  const FOLD = {
+    wars:      { kin: { campaigns: "map", leaders: "powers" }, names: { map: "The fronts", campaigns: "The campaigns", powers: "The coalitions", leaders: "The leaders" } },
+    doctrines: { kin: { atlas: "lineage", manifesto: "library", red: "library" }, names: { lineage: "The tree", atlas: "On the map", library: "The shelves", manifesto: "The Manifesto", red: "The Red Family" } },
+    realms:    { kin: { compass: "ledger" }, names: { ledger: "The table", compass: "The compass" } },
+    coups:     { kin: { red: "roll", green: "roll" }, names: { roll: "Every seizure", red: "The red seizures", green: "The green seizures" } },
+    conflicts: { kin: { toll: "ladder" }, label: { ladder: "The Wars" }, names: { ladder: "By level", toll: "By toll" }, minor: ["method"] },
+    oracle:    { minor: ["method"] }
+  };
+  const fold = FOLD[here] || {};
+  /* hidden before the first paint, so the strip never shows the longer row */
+  if (fold.kin && document.head) document.head.appendChild(document.createElement("style")).textContent = Object.keys(fold.kin).map(v => '#wr-tabs button[data-v="' + v + '"]').join(",") + "{display:none}";
+  function foldTabs() {
+    const box = $("wr-tabs"); if (!box) return;
+    const btns = Array.from(box.querySelectorAll("button[data-v]")), by = {}, kin = fold.kin || {}, noKey = t => (t || "").replace(/\s*\(\d\)\s*$/, "");
+    btns.forEach(b => { by[b.dataset.v] = b; b.dataset.label = b.textContent.trim(); b.title = noKey(b.title); });
+    Object.keys(kin).forEach(v => { if (by[v] && by[kin[v]]) by[v].dataset.kin = kin[v]; });
+    Object.keys(fold.label || {}).forEach(v => { if (by[v]) by[v].textContent = fold.label[v]; });
+    (fold.minor || []).forEach(v => { if (by[v]) { by[v].classList.add("minor"); by[v].textContent = "Method"; } });
+    btns.filter(b => !b.dataset.kin).forEach((b, i) => { b.title += " (" + (i + 1) + ")"; });        /* the number keys follow the tabs you can see */
+    if (!Object.keys(kin).length) return;
+    const sub = document.createElement("div"); sub.id = "wr-sub"; sub.setAttribute("role", "tablist"); sub.setAttribute("aria-label", "Arrangement"); sub.hidden = true;
+    box.insertAdjacentElement("afterend", sub);
+    sub.addEventListener("click", e => { const b = e.target.closest("button[data-go]"); if (b && by[b.dataset.go]) by[b.dataset.go].click(); });
+    let last = null;
+    const sync = () => {
+      const on = box.querySelector("button.on"), v = on ? on.dataset.v : "", top = kin[v] || v, fam = top ? [top].concat(Object.keys(kin).filter(k => kin[k] === top)) : [];
+      btns.forEach(b => b.classList.toggle("kin", v !== top && b.dataset.v === top));
+      const key = v + "|" + fam.join(","); if (key === last) return; last = key;
+      sub.hidden = fam.length < 2;
+      sub.innerHTML = sub.hidden ? "" : fam.map(k => '<button type="button" role="tab" data-go="' + k + '" aria-selected="' + (k === v) + '"' + (k === v ? ' class="on"' : "") + ' title="' + esc(noKey(by[k].title)) + '">' + esc((fold.names || {})[k] || by[k].dataset.label) + "</button>").join("");
+    };
+    new MutationObserver(sync).observe(box, { attributes: true, subtree: true, attributeFilter: ["class"] });
+    sync(); box.classList.add("folded");
+  }
+  let guideOpen = false; try { guideOpen = localStorage.getItem("archivus-guide") === "open"; } catch (_) {}
+  if (document.body && !guideOpen) document.body.classList.add("guide-shut");
+  function guide() {
+    const side = $("dc-side"), bar = $("wr-bar"), body = document.body; if (!side || !bar) return;
+    const btn = document.createElement("button"); btn.type = "button"; btn.id = "guide-btn"; btn.title = "How to read this view";
+    btn.innerHTML = I('<circle cx="8" cy="8" r="6.2"/><path d="M6.2 6.3a1.9 1.9 0 1 1 2.7 1.7c-.6.4-.9.8-.9 1.4M8 11.7v.1"/>') + "<span>Guide</span>";
+    const find = $("dc-find"); if (find) bar.insertBefore(btn, find); else bar.appendChild(btn);
+    let was = getComputedStyle(side).display !== "none";       /* what the instrument saw when it drew itself */
+    const sync = () => {
+      const card = !!side.querySelector(".dc-card:not(.intro)"), intro = !side.hidden && !!side.querySelector(".dc-card.intro");
+      body.classList.toggle("side-card", card);
+      btn.hidden = !intro; btn.classList.toggle("on", guideOpen); btn.setAttribute("aria-pressed", guideOpen);
+      const now = getComputedStyle(side).display !== "none";
+      if (now !== was && innerWidth > 860) requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));   /* the stage changed width: let the instrument redraw to fit */
+      was = now;
+    };
+    btn.addEventListener("click", () => {
+      guideOpen = !guideOpen; try { if (guideOpen) localStorage.setItem("archivus-guide", "open"); else localStorage.removeItem("archivus-guide"); } catch (_) {}
+      body.classList.toggle("guide-shut", !guideOpen); sync();
+    });
+    new MutationObserver(sync).observe(side, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
+    sync();
+  }
+  function tuck() {
+    [["bl-houses", "Houses", "bl-toolbar"], ["pn-dombar", "Domains", "pn-toolbar"]].forEach(r => {
+      const el = $(r[0]), bar = $(r[2]); if (!el || !bar) return;
+      const n = (el.querySelector(":scope > div") || el).children.length, btn = document.createElement("button");
+      btn.type = "button"; btn.className = "tool-btn tuck-btn"; btn.setAttribute("aria-expanded", "false"); btn.textContent = r[1] + (n ? " · " + n : "");
+      btn.title = "Show or hide the " + r[1].toLowerCase() + " (filters and colour key)";
+      el.classList.add("tucked"); bar.appendChild(btn);
+      btn.addEventListener("click", () => { const open = !el.classList.toggle("tucked"); btn.setAttribute("aria-expanded", open); btn.classList.toggle("active", open); window.dispatchEvent(new Event("resize")); });
+    });
+  }
   function ready() {
     buildHeader();
     /* the older per-page link buttons are redundant now — hidden, not deleted (no-script fallback) */
@@ -402,7 +524,9 @@
     const setH = () => root.style.setProperty("--chrome-h", ((hdr ? hdr.offsetHeight : 0) + (bar ? bar.offsetHeight : 0)) + "px");
     setH(); window.addEventListener("resize", setH);
     if (window.ResizeObserver && bar) new ResizeObserver(setH).observe(bar);
+    foldTabs();
     glide($("wr-tabs"), "button.on");
+    guide(); tuck();
     paginate();
     speculate();
     if (document.prerendering) document.addEventListener("prerenderingchange", () => { placePill(true); titleCard(); }, { once: true });

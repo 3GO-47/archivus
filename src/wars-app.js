@@ -1043,12 +1043,12 @@
 
     window.addEventListener("keydown", e => {
       if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName) || e.metaKey || e.ctrlKey || e.altKey) return;
-      const tabs = ["map", "powers", "leaders", "campaigns", "cost", "why"];
+      const tabs = Array.from(document.querySelectorAll("#wr-tabs button[data-v]")).filter(b => !b.dataset.kin).map(b => b.dataset.v);   /* the tabs you can see (v16) */
       if (e.key === " ") { e.preventDefault(); setPlaying(!state.playing); }
       else if (e.key === "ArrowLeft") stepMonth(-1); else if (e.key === "ArrowRight") stepMonth(1);
       else if (e.key === "Home") { setPlaying(false); setT(state.P.ws - 3); } else if (e.key === "End") { setPlaying(false); setT(state.P.we); }
       else if (e.key === "+" || e.key === "=") zoomBy(.7); else if (e.key === "-") zoomBy(1 / .7);
-      else if (e.key >= "1" && e.key <= "6") setView(tabs[+e.key - 1]);
+      else if (e.key >= "1" && e.key <= "6") { if (tabs[+e.key - 1]) setView(tabs[+e.key - 1]); }
       else if (e.key === "w" || e.key === "W") setWar(state.W.id === "ww1" ? "ww2" : "ww1", { view: state.view });
       else if (e.key === "Escape") { if (state.view === "leaders") pickLeader(null); else select(null); }
     });

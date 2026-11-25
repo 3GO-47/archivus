@@ -722,7 +722,7 @@
     const side = $("dc-side"), n = state.sel ? BY[state.sel] : null;
     side.hidden = !n && (TEXTVIEWS[state.view] || mobile());
     if (side.hidden) { sideKey = ""; return; }
-    side.innerHTML = '<div class="dc-card">' + (n ? nodeCard(n) : introCard()) + "</div>";
+    side.innerHTML = '<div class="dc-card' + (n ? "" : " intro") + '">' + (n ? nodeCard(n) : introCard()) + "</div>";
     if (n) side.scrollTop = 0;
     /* ease the card in when its subject changes — not on the re-renders that follow the year sliders */
     const key = n ? n.id : "intro:" + state.view + (state.view === "atlas" ? state.atMode : "");
@@ -829,7 +829,7 @@
     });
     document.addEventListener("keydown", e => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key >= "1" && e.key <= "6") setView(VIEWS[+e.key - 1]);
+      if (e.key >= "1" && e.key <= "6") { const seen = Array.from(document.querySelectorAll("#wr-tabs button[data-v]")).filter(b => !b.dataset.kin)[+e.key - 1]; if (seen) setView(seen.dataset.v); }   /* the tabs you can see (v16) */
       else if (e.key === "Escape") select(null);
       else if (e.key === "/") { e.preventDefault(); $("dc-q").focus(); }
       else if (state.view === "compass" && (e.key === "+" || e.key === "=")) cpZoom(1.5, null, null, true);

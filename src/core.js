@@ -1930,7 +1930,7 @@
         case "ArrowUp": if (tour) { e.preventDefault(); tourStep(-1); } break;
         case "1": setView("chronicle"); break;
         case "2": setView("atlas"); break;
-        case "3": setView("wheel"); break;
+        case "3": hop("astrolabe.html"); break;        /* the Wheel left the switch in v16; its place is the Astrolabe's */
         /* v10: leave through the frame, so the stage fades and this view is remembered */
         case "4": hop("astrolabe.html"); break;
         case "5": hop("codex.html"); break;

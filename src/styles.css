@@ -1058,19 +1058,8 @@ html.hdr-on #bar > .sigil.mini, html.hdr-on #bar-title { display: none; }
 }
 #omni-btn:hover { border-color: var(--gold-dim); color: var(--gold-bright); box-shadow: 0 0 14px rgba(201,162,39,0.14); }
 #omni-btn kbd, #omni kbd { font: 9.5px var(--mono); color: #7d87a1; border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; background: rgba(255,255,255,0.03); }
-#hdr #rail a { letter-spacing: 0.15em; }
-/* all eleven instruments must fit without scrolling, so their places never move from page to page */
-#hdr #rail a i { font-style: normal; }
-@media (max-width: 1900px) { #omni-btn span { display: none; } }
-/* breakpoints moved up for a thirteenth instrument (v14): each step now starts wider */
-@media (max-width: 1970px) { #hdr #rail a { padding: 0 9px; letter-spacing: 0.11em; gap: 6px; } .hdr-brand { padding-right: 12px; margin-right: 2px; } #hdr #rail a i { display: none; } }
-@media (max-width: 1630px) { #omni-btn kbd { display: none; } #omni-btn { padding: 0 9px; margin-left: 2px; } #hdr #rail a { padding: 0 7px; letter-spacing: 0.08em; gap: 5px; } }
-@media (max-width: 1470px) { .hdr-brand b { display: none; } .hdr-brand { padding-right: 9px; } #hdr #rail a { letter-spacing: 0.06em; } }
-@media (max-width: 1330px) { #hdr #rail a { padding: 0 6px; letter-spacing: 0.04em; font-size: 10px; } #hdr #rail a svg { display: none; } }
-@media (max-width: 1080px) { #hdr #rail a { padding: 0 5px; letter-spacing: 0.02em; font-size: 9.5px; } }
-@media (max-width: 935px) { #hdr #rail a { padding: 0 3.5px; letter-spacing: 0; } }   /* room for the colourway switch (v12) and a twelfth instrument (v13) */
-@media (max-width: 860px) { #hdr #rail a { padding: 0 2.5px; font-size: 9px; } .hdr-brand { padding-right: 6px; margin-right: 0; } #omni-btn { padding: 0 7px; margin-left: 0; } }
-@media (max-width: 790px) { #hdr #rail a { padding: 0 2px; font-size: 8.5px; } }
+/* v16: the header carries five things, not thirteen — the rules for them are in "THE TRIM" at the foot of this file */
+@media (max-width: 1500px) { #omni-btn span, #omni-btn kbd { display: none; } #omni-btn { padding: 0 9px; } }
 @media (max-width: 700px) { #hdr { height: 42px; padding: 0 8px 0 10px; } #hdr #rail { height: auto; padding: 0; } }
 
 /* ---- page to page ---- */
@@ -1202,20 +1191,17 @@ body.has-rail .dc-doc .wr-h { font-size: 15px; letter-spacing: .22em; color: var
 body.has-rail .pane > .grid2, body.has-rail .pane > .dash { flex: 1 0 auto; } body.has-rail .pane .chart-host { min-height: 230px; }
 /* 2 · framed panels: a lit surface, a deep shadow, two brass corners */
 body.has-rail .tiles2 > div, body.has-rail .tile, body.has-rail .pw-card, body.has-rail .ld-col, body.has-rail .dash > div, body.has-rail .tl-card, body.has-rail .tx-card, body.has-rail #tr-card, body.has-rail .rec, body.has-rail .callout, body.has-rail .mx-wrap, body.has-rail .cu-list {
-  background-image: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 46%); box-shadow: 0 14px 38px rgba(0,0,0,.24); }
-body.has-rail .tiles2 > div, body.has-rail .tile, body.has-rail .pw-card, body.has-rail .ld-col, body.has-rail .dash > div, body.has-rail .tl-card, body.has-rail .tx-card, body.has-rail #tr-card { position: relative; border-radius: 7px; }
-body.has-rail .tiles2 > div::before, body.has-rail .tile::before, body.has-rail .pw-card::before, body.has-rail .ld-col::before, body.has-rail .dash > div::before, body.has-rail .tl-card::before, body.has-rail .tx-card::before, body.has-rail #tr-card::before,
-body.has-rail .tiles2 > div::after, body.has-rail .tile::after, body.has-rail .pw-card::after, body.has-rail .ld-col::after, body.has-rail .dash > div::after, body.has-rail .tl-card::after, body.has-rail .tx-card::after, body.has-rail #tr-card::after {
-  content: ""; position: absolute; width: 15px; height: 15px; border: 1px solid var(--gold); opacity: .7; pointer-events: none; }
-body.has-rail .tiles2 > div::before, body.has-rail .tile::before, body.has-rail .pw-card::before, body.has-rail .ld-col::before, body.has-rail .dash > div::before, body.has-rail .tl-card::before, body.has-rail .tx-card::before, body.has-rail #tr-card::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; border-top-left-radius: 7px; }
-body.has-rail .tiles2 > div::after, body.has-rail .tile::after, body.has-rail .pw-card::after, body.has-rail .ld-col::after, body.has-rail .dash > div::after, body.has-rail .tl-card::after, body.has-rail .tx-card::after, body.has-rail #tr-card::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; border-bottom-right-radius: 7px; }
-body.has-rail .tx-card::before { top: 0; left: 0; } body.has-rail .tx-card::after { bottom: 0; right: 0; }      /* this card clips its overflow: the corners sit inside */
+  background-image: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 46%); }
+/* v16: the brass corners and the deep shadow are kept for the main drawings only — on every card they made nothing stand out */
+body.has-rail .dash > div, body.has-rail #tr-card { position: relative; border-radius: 7px; box-shadow: 0 14px 38px rgba(0,0,0,.24); }
+body.has-rail .dash > div::before, body.has-rail #tr-card::before, body.has-rail .dash > div::after, body.has-rail #tr-card::after { content: ""; position: absolute; width: 15px; height: 15px; border: 1px solid var(--gold); opacity: .7; pointer-events: none; }
+body.has-rail .dash > div::before, body.has-rail #tr-card::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; border-radius: 7px 0 0 0; }
+body.has-rail .dash > div::after, body.has-rail #tr-card::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; border-radius: 0 0 7px 0; }
 body.has-rail .tiles2 b, body.has-rail .tile b { text-shadow: 0 0 26px rgba(232,196,85,.22); }
 /* the side panels: light falling from the top */
 body.has-rail #dc-side, body.has-rail #side, body.has-rail #panel, body.has-rail #as-panel, body.has-rail #bl-panel, body.has-rail #pn-panel { background-image: linear-gradient(180deg, rgba(201,162,39,.075), rgba(201,162,39,0) 220px); }
 body.has-rail .sd-t { text-shadow: 0 0 28px rgba(232,196,85,.2); }
 /* 4 · engraved headings */
-body.has-rail:not(.or) .pane h4::before { content: "✦"; color: var(--gold); font-size: 9px; margin-right: 10px; vertical-align: 1.5px; }
 body.has-rail .pane h4 { font-size: 12.5px; letter-spacing: .24em; }
 body.has-rail .wr-h { font-size: clamp(20px, 2.3vw, 30px); letter-spacing: .12em; color: var(--paper); text-shadow: 0 0 34px rgba(232,196,85,.24); margin-bottom: 8px; }
 body.has-rail .wr-h::before { content: "✦"; color: var(--gold); font-size: .42em; margin-right: .9em; vertical-align: .35em; }
@@ -1224,7 +1210,7 @@ body.has-rail .tbl thead th, body.has-rail .mx thead th, body.has-rail .parts th
 body.has-rail .tbl tbody tr, body.has-rail .parts tbody tr { transition: background-color .14s; } body.has-rail .tbl tbody tr:hover td, body.has-rail .parts tbody tr:hover td { background-color: rgba(201,162,39,.055); }
 /* 5 · quiet motion: what can be pressed lifts toward the hand */
 body.has-rail .chipbtn { transition: border-color .15s, box-shadow .15s, color .15s, background-color .15s; }
-body.has-rail .chipbtn.on { box-shadow: 0 0 16px rgba(232,196,85,.2), inset 0 0 12px rgba(232,196,85,.08); }
+body.has-rail .chipbtn.on { box-shadow: inset 0 0 12px rgba(232,196,85,.08); }
 body.has-rail .ld-card, body.has-rail .pw-card, body.has-rail .tile, body.has-rail .mlist button, body.has-rail .tr-opt, body.has-rail .cu-row { transition: transform .16s, box-shadow .16s, border-color .16s, background-color .16s; }
 body.has-rail .ld-card:hover, body.has-rail .pw-card:hover, body.has-rail .mlist button:hover, body.has-rail .tr-opt:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(0,0,0,.36), 0 0 0 1px var(--gold-dim); }
 body.has-rail .mlist button.on { box-shadow: inset 0 0 22px rgba(201,162,39,.1); }
@@ -1233,3 +1219,86 @@ body.has-rail .mlist button.on { box-shadow: inset 0 0 22px rgba(201,162,39,.1);
 @media (prefers-reduced-motion: reduce) { .vw-emb::after { animation: none; } body.has-rail .ld-card, body.has-rail .pw-card, body.has-rail .tile, body.has-rail .mlist button, body.has-rail .tr-opt { transition: none; transform: none !important; } }
 @media (max-width: 860px) { .vw-top { gap: 14px; } .vw-emb { width: 48px; height: 48px; } .vw-emb svg { width: 21px; height: 21px; } .vw-l { font-size: 14px; } .vw-t { letter-spacing: .08em; } }
 @media (max-width: 480px) { .vw-emb { display: none; } }
+
+/* ============================================================
+   THE TRIM (v16) — fewer doors, fewer tabs, a quieter first screen
+   ------------------------------------------------------------
+   The behaviour is in src/nav.js (GROUPS, foldTabs, guide, tuck).
+     1 · the header: five groups, each a menu of its instruments
+     2 · folded tabs: a small switch beside the tab strip
+     3 · the guide: the right-hand "how to read this" card is shut
+         until asked for; the panel opens when something is chosen
+     4 · tucked chip rows, and the Archive's switch without the Wheel
+   ============================================================ */
+/* 1 · the header */
+#hdr #rail { overflow: visible; gap: 2px; align-items: stretch; }
+#hdr #rail .grp { position: relative; display: flex; }
+#hdr #rail .rt {
+  display: inline-flex; align-items: center; gap: 9px; height: 100%; padding: 0 17px; margin: 0; position: relative; z-index: 1;
+  background: none; border: 0; cursor: pointer; text-decoration: none; white-space: nowrap;
+  font-family: var(--display); font-weight: 500; font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase; color: #8792ad;
+  transition: color .16s;
+}
+#hdr #rail .rt:hover, #hdr #rail .grp.open > .rt, #hdr #rail .here > .rt, #hdr #rail a.rt.here { color: var(--gold-bright); }
+#hdr #rail .rt:focus-visible { outline: 1px solid var(--gold); outline-offset: -4px; }
+#rail-now { display: inline-flex; align-items: center; gap: 8px; flex: 0 1 auto; min-width: 0; overflow: hidden; margin-left: auto; padding: 0 14px 0 10px; white-space: nowrap; color: var(--gold); pointer-events: none; }
+#rail-now svg { opacity: .85; flex: 0 0 auto; }
+#rail-now b { font-family: var(--engraved); font-weight: 600; font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; }
+#hdr #rail .rt .car { opacity: .55; transition: transform .2s; flex: 0 0 auto; }
+#hdr #rail .grp.open .car { transform: rotate(180deg); opacity: 1; }
+#hdr #rail .mn {
+  display: none; position: absolute; top: 100%; left: 0; z-index: 60; flex-direction: column; gap: 2px;
+  min-width: 340px; padding: 8px; margin-top: 1px;
+  background: linear-gradient(180deg, #10141f, #0b0d14); border: 1px solid var(--line); border-top-color: var(--gold-dim); border-radius: 0 0 9px 9px;
+  box-shadow: 0 22px 50px rgba(0,0,0,.55);
+}
+#hdr #rail .grp.open .mn { display: flex; animation: mn-in .16s ease-out; }
+@keyframes mn-in { from { opacity: 0; transform: translateY(-5px); } }
+#hdr #rail .mn a {
+  display: grid; grid-template-columns: 22px 1fr; column-gap: 13px; row-gap: 2px; align-items: center;
+  padding: 10px 12px; border: 0; border-radius: 6px; white-space: normal; text-transform: none; letter-spacing: 0; color: #8792ad;
+}
+#hdr #rail .mn a svg { display: block; grid-row: 1 / span 2; width: 18px; height: 18px; opacity: .8; color: var(--gold); }
+#hdr #rail .mn a b { font-family: var(--engraved); font-weight: 600; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--paper); }
+#hdr #rail .mn a span { font: 12px/1.4 var(--display); letter-spacing: 0; color: #8f99b2; }
+#hdr #rail .mn a:hover, #hdr #rail .mn a:focus-visible { background: rgba(201,162,39,.09); outline: 0; }
+#hdr #rail .mn a:hover b, #hdr #rail .mn a.here b { color: var(--gold-bright); }
+#hdr #rail .mn a.here { background: rgba(201,162,39,.06); }
+#hdr #rail .mn a.minor { margin-top: 5px; padding-top: 11px; border-top: 1px solid var(--line-faint); border-radius: 0 0 6px 6px; }
+#hdr #rail .mn a.minor b { font-size: 11px; color: #b9b3a1; }
+@media (max-width: 1040px) { #hdr #rail .rt { padding: 0 13px; letter-spacing: .16em; } #rail-now b { letter-spacing: .14em; } }
+@media (max-width: 900px) { #rail-now { display: none; } }
+@media (max-width: 760px) {
+  .hdr-brand b { display: none; } .hdr-brand { padding-right: 8px; margin-right: 0; } #rail-now { display: none; }
+  #hdr #rail .rt { padding: 0 9px; font-size: 10.5px; letter-spacing: .11em; gap: 5px; } #hdr #rail a.rt svg { display: none; }
+  #hdr #rail .grp { position: static; }
+  #hdr #rail .mn { position: fixed; left: 8px; right: 8px; top: 43px; min-width: 0; border-radius: 0 0 12px 12px; }
+  #hdr #rail .mn a { padding: 12px; }
+}
+@media (max-width: 460px) { #hdr #rail .rt { padding: 0 6px; font-size: 9.5px; letter-spacing: .07em; } #hdr #rail .rt .car { display: none; } #omni-btn { padding: 0 7px; margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) { #hdr #rail .grp.open .mn { animation: none; } #hdr #rail .rt .car { transition: none; } }
+
+/* 2 · folded tabs: the tab a folded view sits under is lit, and a switch beside the strip moves between its arrangements */
+#wr-tabs button.kin { color: var(--gold-bright); text-shadow: 0 0 18px rgba(232,196,85,.55); }
+#wr-tabs button.minor { font-size: 10.5px; letter-spacing: .1em; margin-left: 12px; }
+#wr-tabs button.minor::before { content: "i"; display: inline-block; width: 13px; height: 13px; margin-right: 6px; border: 1px solid currentColor; border-radius: 50%; font: italic 9px/12px Georgia, serif; text-align: center; text-transform: none; letter-spacing: 0; vertical-align: 1px; }
+#wr-sub { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; padding-left: 14px; border-left: 1px solid var(--line); }
+#wr-sub[hidden] { display: none; }
+#wr-sub button { background: none; border: 1px solid var(--line); border-radius: 13px; color: #9aa3b8; cursor: pointer; padding: 4px 12px; font: 500 11.5px var(--display); letter-spacing: .03em; white-space: nowrap; transition: color .15s, border-color .15s, background-color .15s; }
+#wr-sub button:hover { color: var(--paper); border-color: var(--gold-dim); }
+#wr-sub button.on { color: var(--gold-bright); border-color: var(--gold); background: rgba(201,162,39,.09); }
+body.has-rail #wr-blurb { display: none; }                 /* the War Room's two-line blurb gave way to the switch; the same words open Causes & Aftermath */
+
+/* 3 · the guide */
+body.guide-shut:not(.side-card) #dc-side { display: none !important; }
+#guide-btn { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; margin-left: auto; height: 28px; padding: 0 11px; cursor: pointer; background: none; border: 1px solid var(--line); border-radius: 14px; color: #8792ad; font: 500 11.5px var(--display); letter-spacing: .03em; transition: color .15s, border-color .15s; }
+#guide-btn[hidden] { display: none; }
+#guide-btn:hover, #guide-btn.on { color: var(--gold-bright); border-color: var(--gold-dim); }
+#guide-btn:not([hidden]) + #dc-find { margin-left: 0; }
+@media (max-width: 860px) { #guide-btn { display: none; } }
+
+/* 4 · tucked chip rows; the Archive's switch */
+.tucked { display: none !important; }
+.tuck-btn { margin-left: auto; }
+body.has-rail #bl-houses:not(.tucked) { flex: 1 1 100%; margin-left: 0; order: 9; }
+#view-switch [data-view="wheel"] { display: none; }        /* the Wheel is out of the switch (v16); the Astrolabe is the radial view. Old links to it still open it. */
