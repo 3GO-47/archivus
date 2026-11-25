@@ -829,7 +829,7 @@
     });
     document.addEventListener("keydown", e => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key >= "1" && e.key <= "6") { const seen = Array.from(document.querySelectorAll("#wr-tabs button[data-v]")).filter(b => !b.dataset.kin)[+e.key - 1]; if (seen) setView(seen.dataset.v); }   /* the tabs you can see (v16) */
+      if (e.key >= "1" && e.key <= "6") { const seen = document.querySelectorAll("#wr-tabs button[data-v]")[+e.key - 1]; if (seen) setView(seen.dataset.v); }   /* the strip, left to right (v16.2) */
       else if (e.key === "Escape") select(null);
       else if (e.key === "/") { e.preventDefault(); $("dc-q").focus(); }
       else if (state.view === "compass" && (e.key === "+" || e.key === "=")) cpZoom(1.5, null, null, true);

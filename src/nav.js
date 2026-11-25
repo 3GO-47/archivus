@@ -34,7 +34,7 @@
   const root = document.documentElement;
   const I = d => '<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">' + d + "</svg>";
   const ITEMS = [
-    { id: "archive", href: "index.html", label: "<i>The </i>Archive", tip: "All recorded history on one timeline and one map",
+    { id: "archive", href: "index.html", label: "<i>The </i>Archive", tip: "All recorded history: the Chronicle, the Atlas and the Wheel",
       icon: I('<circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/>') },
     { id: "astrolabe", href: "astrolabe.html", label: "Astrolabe", tip: "The same records as a turning sky",
       icon: I('<circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="3.2"/><path d="M8 1.8v12.4M1.8 8h12.4"/>') },
@@ -120,7 +120,9 @@
       const btn = g.firstChild; let t = 0;
       btn.addEventListener("click", () => { if (g.classList.contains("open") && g._by === "click") shut(); else open(g, "click"); });
       /* a mouse opens by resting on the door; a finger never fires these as "mouse", so a tap is always the click above */
-      g.addEventListener("pointerenter", e => { if (e.pointerType !== "mouse") return; clearTimeout(t); if (!g.classList.contains("open")) open(g, "hover"); });
+      /* …after a short rest (110ms), so a pointer only crossing the header on its way elsewhere opens nothing; moving from one open menu to the next is immediate */
+      g.addEventListener("pointerenter", e => { if (e.pointerType !== "mouse") return; clearTimeout(t); if (g.classList.contains("open")) return;
+        t = setTimeout(() => { if (!g.classList.contains("open")) open(g, "hover"); }, grps.some(x => x.classList.contains("open")) ? 0 : 110); });
       g.addEventListener("pointerleave", e => { if (e.pointerType !== "mouse") return; clearTimeout(t); t = setTimeout(() => { if (g._by === "hover" || !g.contains(document.activeElement)) close(g); }, 200); });
       g.addEventListener("keydown", e => {
         const links = Array.from(g.querySelectorAll(".mn a")), i = links.indexOf(e.target);
@@ -234,8 +236,7 @@
     box.appendChild(pill); box.classList.add("glides");
     let first = true;
     const place = () => {
-      let cur = box.querySelector(sel);
-      if (cur && cur.dataset.kin) cur = box.querySelector('[data-v="' + cur.dataset.kin + '"]') || cur;      /* a folded view marks its parent tab (v16) */
+      const cur = box.querySelector(sel);
       if (!cur) { pill.style.opacity = 0; return; }
       if (first) pill.style.transition = "none";
       pill.style.width = cur.offsetWidth + "px"; pill.style.transform = "translateX(" + cur.offsetLeft + "px)"; pill.style.opacity = 1;
@@ -428,7 +429,7 @@
       document.querySelectorAll(".wr-view:not([hidden])").forEach(sec => { const pane = sec.querySelector(".pane"), at = pane || sec;
         if (at.querySelector(":scope > .vw-top") || (!pane && (!rl || sec.querySelector(".rl-map, #mp")))) return;     /* a map keeps the whole stage; a view with no pane is dressed at its own head */
         const tb = tabs.find(b => "v-" + b.dataset.v === sec.id); if (!tb) return;
-        const up = tb.dataset.kin && tabs.find(b => b.dataset.v === tb.dataset.kin);            /* a folded view names the tab it sits under */
+        const up = tb.dataset.kin && tabs.find(b => b.dataset.v === tb.dataset.kin);            /* a grouped view names the tab it stands beside */
         at.insertAdjacentHTML("afterbegin", hero(page + (up ? " · " + up.textContent.trim() : ""), tb.dataset.label || tb.textContent.trim(), (tb.title || "").replace(/\s*\(\d\)\s*$/, "")).replace('class="vw-top"', pane ? 'class="vw-top"' : 'class="vw-top sec"')); });
     };
     dress();
@@ -437,70 +438,54 @@
     if (at && !at.querySelector(".vw-top")) at.insertAdjacentHTML("afterbegin", hero("Archivus", page, tag ? tag.textContent.trim().replace(/^./, c => c.toUpperCase()) + "." : ""));
   }
 
-  /* ---------- THE TRIM (v16): fewer doors, fewer tabs, a quieter first screen ----------
-     Three things, again done once here and not page by page (styles at the foot of src/styles.css):
-       · FOLDED TABS. Views that are the same subject arranged another way sit under one tab, with a small switch
-         beside the tabs to move between them. The folded buttons stay in the page — each engine still owns its
-         views, hashes and deep links — they are only hidden, and the switch presses them.
-       · THE GUIDE. The "how to read this" card that used to fill the right-hand panel is shut until asked for
-         (the Guide button; remembered). The panel opens by itself when something is selected.
-       · TUCKED CHIP ROWS. The Bloodline's houses and the Pantheons' domains open from one button. */
-  const FOLD = {
-    wars:      { kin: { campaigns: "map", leaders: "powers" }, names: { map: "The fronts", campaigns: "The campaigns", powers: "The coalitions", leaders: "The leaders" } },
-    doctrines: { kin: { atlas: "lineage", manifesto: "library", red: "library" }, names: { lineage: "The tree", atlas: "On the map", library: "The shelves", manifesto: "The Manifesto", red: "The Red Family" } },
-    realms:    { kin: { compass: "ledger" }, names: { ledger: "The table", compass: "The compass" } },
-    coups:     { kin: { red: "roll", green: "roll" }, names: { roll: "Every seizure", red: "The red seizures", green: "The green seizures" } },
-    conflicts: { kin: { toll: "ladder" }, label: { ladder: "The Wars" }, names: { ladder: "By level", toll: "By toll" }, minor: ["method"] },
-    oracle:    { minor: ["method"] }
-  };
-  const fold = FOLD[here] || {};
-  /* hidden before the first paint, so the strip never shows the longer row */
-  if (fold.kin && document.head) document.head.appendChild(document.createElement("style")).textContent = Object.keys(fold.kin).map(v => '#wr-tabs button[data-v="' + v + '"]').join(",") + "{display:none}";
+  /* ---------- THE TRIM (v16, reworked in v16.2): fewer doors, grouped tabs, a quieter first screen ----------
+     NOTHING IS HIDDEN OR REMOVED — the owner asked for the site to be reorganised, not cut. Done once here
+     (styles at the foot of src/styles.css):
+       · GROUPED TABS. Every view keeps its tab and its name. A view that is the same subject arranged another
+         way stands beside the tab it belongs with, smaller, and is marked in the page itself:
+             <button role="tab" data-v="red" data-kin="roll">The Red Seizures</button>
+         A tab of secondary weight (method and sources) carries class="minor". This function only lights the
+         parent while one of its kin is open, and writes the number-key hints from the strip's order.
+       · THE GUIDE. The "how to read this" card in the right-hand panel is folded to a labelled strip at the
+         right edge until opened (click the strip or the Guide button; remembered). The panel opens by itself
+         when something is selected.
+       · TUCKED CHIP ROWS. The Bloodline's houses and the Pantheons' domains open from one labelled button. */
   function foldTabs() {
     const box = $("wr-tabs"); if (!box) return;
-    const btns = Array.from(box.querySelectorAll("button[data-v]")), by = {}, kin = fold.kin || {}, noKey = t => (t || "").replace(/\s*\(\d\)\s*$/, "");
-    btns.forEach(b => { by[b.dataset.v] = b; b.dataset.label = b.textContent.trim(); b.title = noKey(b.title); });
-    Object.keys(kin).forEach(v => { if (by[v] && by[kin[v]]) by[v].dataset.kin = kin[v]; });
-    Object.keys(fold.label || {}).forEach(v => { if (by[v]) by[v].textContent = fold.label[v]; });
-    (fold.minor || []).forEach(v => { if (by[v]) { by[v].classList.add("minor"); by[v].textContent = "Method"; } });
-    btns.filter(b => !b.dataset.kin).forEach((b, i) => { b.title += " (" + (i + 1) + ")"; });        /* the number keys follow the tabs you can see */
-    if (!Object.keys(kin).length) return;
-    const sub = document.createElement("div"); sub.id = "wr-sub"; sub.setAttribute("role", "tablist"); sub.setAttribute("aria-label", "Arrangement"); sub.hidden = true;
-    box.insertAdjacentElement("afterend", sub);
-    sub.addEventListener("click", e => { const b = e.target.closest("button[data-go]"); if (b && by[b.dataset.go]) by[b.dataset.go].click(); });
-    let last = null;
-    const sync = () => {
-      const on = box.querySelector("button.on"), v = on ? on.dataset.v : "", top = kin[v] || v, fam = top ? [top].concat(Object.keys(kin).filter(k => kin[k] === top)) : [];
-      btns.forEach(b => b.classList.toggle("kin", v !== top && b.dataset.v === top));
-      const key = v + "|" + fam.join(","); if (key === last) return; last = key;
-      sub.hidden = fam.length < 2;
-      sub.innerHTML = sub.hidden ? "" : fam.map(k => '<button type="button" role="tab" data-go="' + k + '" aria-selected="' + (k === v) + '"' + (k === v ? ' class="on"' : "") + ' title="' + esc(noKey(by[k].title)) + '">' + esc((fold.names || {})[k] || by[k].dataset.label) + "</button>").join("");
-    };
+    const btns = Array.from(box.querySelectorAll("button[data-v]"));
+    btns.forEach((b, i) => { b.dataset.label = b.textContent.trim(); b.title = (b.title || "").replace(/\s*\(\d\)\s*$/, "") + " (" + (i + 1) + ")"; });
+    if (!btns.some(b => b.dataset.kin)) return;
+    const sync = () => { const on = box.querySelector("button.on"), up = on && on.dataset.kin; btns.forEach(b => b.classList.toggle("kin", !!up && b.dataset.v === up)); };
     new MutationObserver(sync).observe(box, { attributes: true, subtree: true, attributeFilter: ["class"] });
-    sync(); box.classList.add("folded");
+    sync();
   }
   let guideOpen = false; try { guideOpen = localStorage.getItem("archivus-guide") === "open"; } catch (_) {}
   if (document.body && !guideOpen) document.body.classList.add("guide-shut");
   function guide() {
     const side = $("dc-side"), bar = $("wr-bar"), body = document.body; if (!side || !bar) return;
-    const btn = document.createElement("button"); btn.type = "button"; btn.id = "guide-btn"; btn.title = "How to read this view";
+    const btn = document.createElement("button"); btn.type = "button"; btn.id = "guide-btn"; btn.title = "How to read this view, and where to start";
     btn.innerHTML = I('<circle cx="8" cy="8" r="6.2"/><path d="M6.2 6.3a1.9 1.9 0 1 1 2.7 1.7c-.6.4-.9.8-.9 1.4M8 11.7v.1"/>') + "<span>Guide</span>";
     const find = $("dc-find"); if (find) bar.insertBefore(btn, find); else bar.appendChild(btn);
-    let was = getComputedStyle(side).display !== "none";       /* what the instrument saw when it drew itself */
+    const wide = () => Math.round(side.getBoundingClientRect().width);
+    let was = wide();                                         /* what the instrument saw when it drew itself */
+    const set = open => { guideOpen = open; try { if (open) localStorage.setItem("archivus-guide", "open"); else localStorage.removeItem("archivus-guide"); } catch (_) {} body.classList.toggle("guide-shut", !open); sync(); };
     const sync = () => {
       const card = !!side.querySelector(".dc-card:not(.intro)"), intro = !side.hidden && !!side.querySelector(".dc-card.intro");
       body.classList.toggle("side-card", card);
+      const folded = intro && !guideOpen && !card;            /* the panel is a strip at the edge, labelled "Guide" */
+      side.classList.toggle("folded", folded);
+      if (folded) { side.setAttribute("role", "button"); side.setAttribute("tabindex", "0"); side.setAttribute("aria-label", "Open the guide to this view"); }
+      else { side.removeAttribute("role"); side.removeAttribute("tabindex"); side.removeAttribute("aria-label"); }
       btn.hidden = !intro; btn.classList.toggle("on", guideOpen); btn.setAttribute("aria-pressed", guideOpen);
-      const now = getComputedStyle(side).display !== "none";
+      const now = wide();
       if (now !== was && innerWidth > 860) requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));   /* the stage changed width: let the instrument redraw to fit */
       was = now;
     };
-    btn.addEventListener("click", () => {
-      guideOpen = !guideOpen; try { if (guideOpen) localStorage.setItem("archivus-guide", "open"); else localStorage.removeItem("archivus-guide"); } catch (_) {}
-      body.classList.toggle("guide-shut", !guideOpen); sync();
-    });
+    btn.addEventListener("click", () => set(!guideOpen));
+    side.addEventListener("click", () => { if (side.classList.contains("folded")) set(true); });
+    side.addEventListener("keydown", e => { if (side.classList.contains("folded") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); set(true); } });
     new MutationObserver(sync).observe(side, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
-    sync();
+    sync(); body.classList.add("side-ready"); sync();        /* from here the panel's own class decides its width, not the boot rule */
   }
   function tuck() {
     [["bl-houses", "Houses", "bl-toolbar"], ["pn-dombar", "Domains", "pn-toolbar"]].forEach(r => {

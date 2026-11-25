@@ -1225,10 +1225,12 @@ body.has-rail .mlist button.on { box-shadow: inset 0 0 22px rgba(201,162,39,.1);
    ------------------------------------------------------------
    The behaviour is in src/nav.js (GROUPS, foldTabs, guide, tuck).
      1 · the header: five groups, each a menu of its instruments
-     2 · folded tabs: a small switch beside the tab strip
-     3 · the guide: the right-hand "how to read this" card is shut
-         until asked for; the panel opens when something is chosen
-     4 · tucked chip rows, and the Archive's switch without the Wheel
+     2 · grouped tabs: every view keeps its tab; related views
+         stand beside the tab they belong with, smaller (v16.2)
+     3 · the guide: the right-hand "how to read this" card folds
+         to a labelled strip; the panel opens when something is chosen
+     4 · tucked chip rows
+     NOTHING IS REMOVED: the owner asked for a reorganisation.
    ============================================================ */
 /* 1 · the header */
 #hdr #rail { overflow: visible; gap: 2px; align-items: stretch; }
@@ -1278,19 +1280,25 @@ body.has-rail .mlist button.on { box-shadow: inset 0 0 22px rgba(201,162,39,.1);
 @media (max-width: 460px) { #hdr #rail .rt { padding: 0 6px; font-size: 9.5px; letter-spacing: .07em; } #hdr #rail .rt .car { display: none; } #omni-btn { padding: 0 7px; margin-left: 0; } }
 @media (prefers-reduced-motion: reduce) { #hdr #rail .grp.open .mn { animation: none; } #hdr #rail .rt .car { transition: none; } }
 
-/* 2 · folded tabs: the tab a folded view sits under is lit, and a switch beside the strip moves between its arrangements */
-#wr-tabs button.kin { color: var(--gold-bright); text-shadow: 0 0 18px rgba(232,196,85,.55); }
+/* 2 · grouped tabs (v16.2): every view keeps its tab. One marked data-kin stands beside the tab it belongs with — smaller,
+       after a dot — and that tab stays lit while it is open. Nothing is hidden. */
+#wr-tabs button[data-kin] { font-size: 10px; letter-spacing: .13em; padding-left: 4px; padding-right: 9px; margin-left: -5px; }
+#wr-tabs button[data-kin]::before { content: "·"; margin-right: 9px; opacity: .55; }
+#wr-tabs button[data-kin] + button:not([data-kin]) { margin-left: 11px; }
+#wr-tabs button.kin { color: var(--gold); }
 #wr-tabs button.minor { font-size: 10.5px; letter-spacing: .1em; margin-left: 12px; }
 #wr-tabs button.minor::before { content: "i"; display: inline-block; width: 13px; height: 13px; margin-right: 6px; border: 1px solid currentColor; border-radius: 50%; font: italic 9px/12px Georgia, serif; text-align: center; text-transform: none; letter-spacing: 0; vertical-align: 1px; }
-#wr-sub { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; padding-left: 14px; border-left: 1px solid var(--line); }
-#wr-sub[hidden] { display: none; }
-#wr-sub button { background: none; border: 1px solid var(--line); border-radius: 13px; color: #9aa3b8; cursor: pointer; padding: 4px 12px; font: 500 11.5px var(--display); letter-spacing: .03em; white-space: nowrap; transition: color .15s, border-color .15s, background-color .15s; }
-#wr-sub button:hover { color: var(--paper); border-color: var(--gold-dim); }
-#wr-sub button.on { color: var(--gold-bright); border-color: var(--gold); background: rgba(201,162,39,.09); }
-body.has-rail #wr-blurb { display: none; }                 /* the War Room's two-line blurb gave way to the switch; the same words open Causes & Aftermath */
 
-/* 3 · the guide */
-body.guide-shut:not(.side-card) #dc-side { display: none !important; }
+/* 3 · the guide: folded to a labelled strip at the right edge, never removed */
+/* (the second selector is the same strip before nav.js has run, so the instrument draws itself to the right width from the start) */
+@media (min-width: 861px) {
+  #dc-side.folded, body.guide-shut:not(.side-ready) #dc-side { flex: 0 0 38px; width: 38px; max-width: 38px; padding: 0; overflow: hidden; cursor: pointer; position: relative; transition: background-color .16s; }
+  #dc-side.folded > *, body.guide-shut:not(.side-ready) #dc-side > * { display: none; }
+  #dc-side.folded::before, body.guide-shut:not(.side-ready) #dc-side::before { content: "Guide"; position: absolute; top: 22px; left: 50%; transform: translateX(-50%); writing-mode: vertical-rl; font-family: var(--engraved); font-weight: 600; font-size: 11px; letter-spacing: .34em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+  #dc-side.folded::after { content: "‹"; position: absolute; top: 96px; left: 50%; transform: translateX(-50%); font-size: 17px; line-height: 1; color: var(--gold-dim); }
+  #dc-side.folded:hover, #dc-side.folded:focus-visible { background: rgba(201,162,39,.08); outline: 0; }
+  #dc-side.folded:hover::before, #dc-side.folded:hover::after, #dc-side.folded:focus-visible::before { color: var(--gold-bright); }
+}
 #guide-btn { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; margin-left: auto; height: 28px; padding: 0 11px; cursor: pointer; background: none; border: 1px solid var(--line); border-radius: 14px; color: #8792ad; font: 500 11.5px var(--display); letter-spacing: .03em; transition: color .15s, border-color .15s; }
 #guide-btn[hidden] { display: none; }
 #guide-btn:hover, #guide-btn.on { color: var(--gold-bright); border-color: var(--gold-dim); }
@@ -1301,4 +1309,3 @@ body.guide-shut:not(.side-card) #dc-side { display: none !important; }
 .tucked { display: none !important; }
 .tuck-btn { margin-left: auto; }
 body.has-rail #bl-houses:not(.tucked) { flex: 1 1 100%; margin-left: 0; order: 9; }
-#view-switch [data-view="wheel"] { display: none; }        /* the Wheel is out of the switch (v16); the Astrolabe is the radial view. Old links to it still open it. */
