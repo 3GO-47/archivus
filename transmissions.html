@@ -15,7 +15,7 @@
   body { overflow: auto; }
   #tx-main {
     flex: 1;
-    max-width: 1060px;
+    max-width: 1560px;
     width: 100%;
     margin: 0 auto;
     padding: 28px 24px 80px;
@@ -109,6 +109,22 @@
     transition: all 0.18s;
   }
   #masthead a.back:hover { color: var(--gold-bright); box-shadow: 0 0 12px rgba(201,162,39,0.2); }
+  /* ---- v18: the page is used. The argument beside the picture of it; the leaves two abreast. ---- */
+  .tx-top { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.5fr); gap: 26px; align-items: start; margin-bottom: 18px; }
+  .tx-top .tx-epigraph { font-size: 13.5px; } .tx-top .tx-thesis { margin-bottom: 14px; }
+  #tx-lag { border: 1px solid var(--line); border-radius: 7px; background: var(--obsidian-2); padding: 12px 14px 8px; }
+  #tx-lag h3 { font: 600 12px var(--engraved); letter-spacing: .22em; text-transform: uppercase; color: var(--gold-bright); margin: 0 0 3px; }
+  #tx-lag p { font-size: 12.5px; line-height: 1.5; color: var(--paper-dim); margin: 0 0 6px; } #tx-lag p b { color: var(--paper); font-weight: 600; }
+  #tx-lag .key { font: 10.5px var(--mono); color: #8d96af; display: flex; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 4px; } #tx-lag .key i { display: inline-block; width: 9px; height: 9px; margin-right: 5px; vertical-align: -1px; }
+  #tx-lag .key .rec { border: 1.6px solid #3fa7c4; border-radius: 50%; box-sizing: border-box; } #tx-lag .key .clm { background: #d4a437; transform: rotate(45deg) scale(.82); }
+  #tx-lag svg { display: block; width: 100%; overflow: visible; }
+  .lag-r { cursor: pointer; } .lag-r rect { fill: transparent; } .lag-r:hover rect, .lag-r.hi rect { fill: rgba(201,162,39,.1); } .lag-r.off { opacity: .16; }
+  .lag-r text { font: 11px var(--sans); fill: #cfc9b8; } .lag-r:hover text, .lag-r.hi text { fill: #e8c455; }
+  .lag-r line { stroke-width: 2; stroke-linecap: round; opacity: .75; } .lag-r .rec { fill: #0b0d14; stroke: #3fa7c4; stroke-width: 1.6; }
+  .lag-r text.far { font: 9px var(--mono); fill: #3fa7c4; } .lag-ax line { stroke: #2a3040; stroke-width: 1; stroke-dasharray: 2 3; } .lag-ax text { font: 9.5px var(--mono); fill: #8d96af; text-anchor: middle; }
+  .tx-links .tx-myth { color: #b48ef0; border-color: rgba(180,142,240,.4); }
+  @media (min-width: 1320px) { #tx-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; } #tx-list .tx-card { margin-bottom: 0; } #tx-list .tx-title { font-size: 15.5px; } }
+  @media (max-width: 1100px) { .tx-top { grid-template-columns: 1fr; gap: 12px; } }
 </style>
 <script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
 if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -135,6 +151,8 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
   </header>
 
   <main id="tx-main">
+    <div class="tx-top">
+      <div>
     <div class="tx-epigraph">
       Across esoteric literature runs one persistent claim: that innovation is not invented but <em>transmitted</em> —
       taught by Watcher, god, bound demon, dream, or rite. Azazel hands down the metallurgy of war and the use of antimony;
@@ -149,10 +167,14 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 
     <div id="tx-filters"></div>
     <div id="tx-count"></div>
+      </div>
+      <section id="tx-lag" aria-label="The lag: when each craft is first recorded, and when the text that explains it was written"></section>
+    </div>
     <div id="tx-list"></div>
   </main>
 
   <script src="src/data/transmissions.js"></script>
+  <script src="src/data/myth-links.js"></script>
   <script>
   (function () {
     "use strict";
@@ -165,6 +187,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
       oneiric:    { name: "Oneiric",    color: "#d4738f", blurb: "dreams and visions" }
     };
     let active = new Set();
+    const MYTH = window.ARCHIVUS_MYTH || { tx: {}, n: { gd: {}, bl: {} } };
 
     const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const fmtY = y => Math.abs(y) >= 10000
@@ -213,13 +236,36 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
               '<a href="' + t.links.record + '" target="_blank" rel="noopener">Record ↗</a>' +
               (t.eventRefs || []).map(id =>
                 '<a class="tx-ref" href="index.html#e=' + id + '">' + id + " → Chronicle</a>").join("") +
+              ((MYTH.tx[t.id] || {}).gd || []).map(g => '<a class="tx-ref tx-myth" href="pantheons.html#g=' + g + '">' + esc(MYTH.n.gd[g]) + " → Pantheons</a>").join("") +
+              ((MYTH.tx[t.id] || {}).bl || []).map(i => '<a class="tx-ref tx-myth" href="lineage.html#n=' + i + '">' + esc(MYTH.n.bl[i]) + " → Bloodline</a>").join("") +
             "</div>" +
           "</div>";
         list.appendChild(card);
       });
       document.getElementById("tx-count").textContent =
         shown + " of " + TX.length + " transmission claims · ordered by date of claim";
+      drawLag();
     }
+    /* ---- the lag (v18): one row a claim. A ring where the craft is first recorded, a diamond where the text that
+       explains it was written, a line between. Time runs on a logarithm of age, so 400,000 BCE and 1946 share a page. ---- */
+    const NOW = 2026, FLOOR = -9000, LG = y => Math.log10(Math.max(60, NOW - Math.max(y, FLOOR))), L0 = LG(FLOOR), L1 = Math.log10(60);   /* anything older than 9000 BCE sits at the left edge and says its own date */
+    const shortT = t => { const s = t.transmitter.split(/,| \(| — |;/)[0]; return s.length > 30 ? s.slice(0, 28) + "…" : s; };
+    function drawLag() {
+      const host = document.getElementById("tx-lag"); if (!host) return;
+      const late = TX.filter(t => t.claimYear - t.record.year >= 30), gaps = late.map(t => t.claimYear - t.record.year).sort((a, b) => a - b);
+      const W = Math.max(320, host.clientWidth - 28), LAB = W < 520 ? 118 : 196, RH = 15, H = TX.length * RH + 24, X = y => LAB + (L0 - LG(y)) / (L0 - L1) * (W - LAB - 14);
+      const ticks = [[-7000, "7000 BCE"], [-3000, "3000"], [-1000, "1000 BCE"], [1, "1 CE"], [1000, "1000"], [1500, "1500"], [1800, "1800"], [1900, "1900"]].filter((t, i) => W > 560 || i % 2 === 0);
+      let g = '<g class="lag-ax">' + ticks.map(t => '<line x1="' + X(t[0]).toFixed(1) + '" x2="' + X(t[0]).toFixed(1) + '" y1="0" y2="' + (H - 20) + '"/><text x="' + X(t[0]).toFixed(1) + '" y="' + (H - 6) + '">' + t[1] + "</text>").join("") + "</g>";
+      TX.forEach((t, i) => { const y = i * RH + RH / 2, a = X(t.record.year), b = X(t.claimYear), c = CATS[t.category].color, off = active.size && !active.has(t.category);
+        g += '<g class="lag-r' + (off ? " off" : "") + (location.hash.slice(1) === t.id ? " hi" : "") + '" data-id="' + t.id + '"><title>' + esc(t.transmitter + " — " + gapText(t) + ". Record: " + t.record.date + ". Claim: " + t.claimDate) + '</title><rect x="0" y="' + (y - RH / 2) + '" width="' + W + '" height="' + RH + '"/>'
+          + '<text x="' + (LAB - 10) + '" y="' + (y + 3.6) + '" text-anchor="end">' + esc(shortT(t)) + '</text><line x1="' + a.toFixed(1) + '" x2="' + b.toFixed(1) + '" y1="' + y + '" y2="' + y + '" stroke="' + c + '"/>'
+          + '<circle class="rec" cx="' + a.toFixed(1) + '" cy="' + y + '" r="3.6"/>' + (t.record.year < FLOOR ? '<text class="far" x="' + (a + 9).toFixed(1) + '" y="' + (y - 3) + '">◂ ' + fmtY(t.record.year) + "</text>" : "") + '<path d="M' + b.toFixed(1) + " " + (y - 4.6) + "l4.6 4.6l-4.6 4.6l-4.6 -4.6z" + '" fill="' + c + '"/></g>'; });
+      host.innerHTML = "<h3>The lag</h3><p><b>" + late.length + " of " + TX.length + "</b> claims were written after the craft they explain was already on record, by a median of <b>" + (gaps.length ? gaps[Math.floor(gaps.length / 2)].toLocaleString("en-US") : 0) + " years</b>. The rest are dreams and laboratories, where the claim and the discovery are the same event.</p>"
+        + '<div class="key"><span><i class="rec"></i>the record: the craft first attested</span><span><i class="clm"></i>the claim: when its text was written</span><span>click a row for its leaf</span></div>'
+        + '<svg class="lux" height="' + H + '" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Each claim on one time axis: the date of the record and the date of the claim">' + g + "</svg>";
+    }
+    document.getElementById("tx-lag").addEventListener("click", e => { const r = e.target.closest(".lag-r"); if (r) { if (location.hash.slice(1) === r.dataset.id) focusHash(); else location.hash = r.dataset.id; } });
+    let lagT = 0; window.addEventListener("resize", () => { clearTimeout(lagT); lagT = setTimeout(drawLag, 150); });
 
     const filters = document.getElementById("tx-filters");
     Object.entries(CATS).forEach(([id, c]) => {
@@ -248,6 +294,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
       document.querySelectorAll(".tx-card.hi").forEach(c => c.classList.remove("hi"));
       card.classList.add("hi");
       card.scrollIntoView({ block: "start", behavior: "smooth" });
+      document.querySelectorAll(".lag-r").forEach(r => r.classList.toggle("hi", r.dataset.id === h));
     }
     focusHash();
     window.addEventListener("hashchange", focusHash);

@@ -6,7 +6,9 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v17.0** — deployed 2026-11-25 in four commits. The Oracle's Reading is now statements beside their evidence, and every deduction says which facts and charts it rests on. The Coups' two studies open on a map of the red and green seizures. Also in this release (v16.3): the Archive's bar regrouped, Climate the last lane, the War Room's layer switches beside its theatres on wide screens.
+**Live version: v18.0** — deployed 2026-11-25 in four commits. A fourteenth instrument, the Situation (the present on one map, under War); the Conflicts reworked around its map; the three Myth instruments linked to each other.
+
+**Before that: v17.0** — deployed 2026-11-25 in four commits. The Oracle's Reading is now statements beside their evidence, and every deduction says which facts and charts it rests on. The Coups' two studies open on a map of the red and green seizures. Also in this release (v16.3): the Archive's bar regrouped, Climate the last lane, the War Room's layer switches beside its theatres on wide screens.
 
 **Before that: v16.2** — deployed 2026-11-25. Everything v16.0 took out of plain sight is back, reorganised: the Wheel is in the Archive's switch again; every tab is in its strip again, with related views grouped beside their parent; the War Room's blurb is back; the guide panels fold to a labelled strip instead of disappearing. Header menus wait a moment before opening on hover. No data file changed.
 

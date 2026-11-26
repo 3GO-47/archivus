@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — The Situation</title>
+<meta name="description" content="The world as it stands: the wars, the alliances, the sanctions, the year's elections, the nuclear arsenals and the straits on one map, with ninety days of dated events under it — every line with its source and its date.">
+<meta name="color-scheme" content="dark">
+<script src="src/theme.js"></script><!-- the colourway, set before anything paints -->
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<link rel="stylesheet" href="src/wars.css">
+<link rel="stylesheet" href="src/doctrines.css">
+<link rel="stylesheet" href="src/realms.css">
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
+<style>
+/* ---------- THE SITUATION (v18). Page shell, tabs, map, side panel and chips come from the shared sheets. ---------- */
+.sit .lvd { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -0.5px; flex: 0 0 auto; }
+.sit .chipbtn small { font: 10px var(--mono); color: #8d96af; margin-left: 6px; } .sit .chipbtn.bl { display: inline-flex; align-items: center; }
+.sit span.chipbtn.off { opacity: .5; cursor: default; } .sit #dc-side .chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0 8px; } .sit #dc-side .chips .chipbtn { padding: 3px 8px; font-size: 11.5px; }
+#sb-sub { padding-left: 10px; border-left: 1px solid var(--line); } #sb-sub[hidden] { display: none; }
+/* the map: a little more light in the land than the other maps, since most of it carries no colour */
+.sit .rl-map .at-c { fill: #171c2a; } .sit .rl-map .at-c.ahead { stroke: #f1ecdc; stroke-width: 1.3; stroke-dasharray: 3 2.4; vector-effect: non-scaling-stroke; }
+.sit .rl-leg i.dash { background: none; border: 1.5px dashed #f1ecdc; box-sizing: border-box; } .sit .rl-leg i.ring { background: none; border: 1.5px solid #e8c455; border-radius: 50%; box-sizing: border-box; }
+.sit .rl-leg svg { width: 14px; height: 14px; display: inline-block; vertical-align: -3px; margin-right: 5px; } .sit .rl-leg .lg-h { display: block; font: 9.5px var(--display); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin: 6px 0 0; } .sit .rl-leg small a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); }
+/* marks. Sizes are screen pixels (see place() in the engine). */
+.st-pin, .st-sx, .st-wd { cursor: pointer; } .st-pin .o { fill-opacity: .16; stroke-width: 1.3; vector-effect: non-scaling-stroke; } .st-pin .i { stroke: #0a0c12; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.st-pin.sel .o { fill-opacity: .4; stroke-width: 2.4; } .st-pin.dim, .st-sx.dim, .st-wd.dim { opacity: .28; }
+.st-pin text, .st-sx text, .st-wd text, .st-nk text { font: 600 10.5px var(--display); fill: #f1ecdc; paint-order: stroke; stroke: #0a0c12; stroke-width: 3px; stroke-linejoin: round; pointer-events: none; letter-spacing: .02em; }
+.st-sx path { fill: #0a0c12; stroke-width: 1.8; vector-effect: non-scaling-stroke; } .st-sx.sel path { stroke-width: 3; }
+.st-wd { opacity: var(--o, 1); } .st-wd .wc { stroke: #0a0c12; stroke-width: 1.2; vector-effect: non-scaling-stroke; } .st-wd .wh { fill: none; stroke-width: 1.3; vector-effect: non-scaling-stroke; opacity: .7; }
+.st-wd.sel { opacity: 1; } .st-wd.sel .wh { stroke-width: 2.4; opacity: 1; }
+@media (prefers-reduced-motion: no-preference) { .st-wd.new:not(.sel) .wh { animation: st-pulse 2.6s ease-out infinite; transform-box: fill-box; transform-origin: center; } }
+@keyframes st-pulse { 0% { transform: scale(.55); opacity: .9; } 100% { transform: scale(1.5); opacity: 0; } }
+.st-nk .o { fill: rgba(232,196,85,.1); stroke: #e8c455; stroke-width: 1.4; vector-effect: non-scaling-stroke; } .st-nk .i { fill: #e8c455; fill-opacity: .8; } .st-nk text { fill: #e8c455; font: 600 10.5px var(--mono); letter-spacing: 0; }
+/* the wire under the map: a row per kind, a mark per dated event */
+#sb-wire { flex: 0 0 auto; display: flex; height: 132px; border-top: 1px solid var(--gold-dim); background: var(--obsidian-2); }
+.ws-lab { flex: 0 0 132px; display: flex; flex-direction: column; padding: 6px 0 20px; border-right: 1px solid var(--line-faint); }
+.ws-lab button { flex: 1; min-height: 0; display: flex; align-items: center; gap: 7px; background: none; border: 0; color: var(--paper-dim); cursor: pointer; padding: 0 10px; font: 10px var(--display); letter-spacing: .14em; text-transform: uppercase; text-align: left; }
+.ws-lab button:hover, .ws-lab button.on { color: var(--gold-bright); } .ws-lab button.off { opacity: .4; } .ws-lab i { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; } .ws-lab small { margin-left: auto; font: 10px var(--mono); letter-spacing: 0; color: #8d96af; }
+.ws-plot { flex: 1; min-width: 0; position: relative; margin: 6px 26px 20px 14px; }
+.ws-rows { position: absolute; inset: 0; display: flex; flex-direction: column; } .ws-rows i { flex: 1; border-bottom: 1px solid var(--line-faint); } .ws-rows i:last-child { border-bottom-color: var(--line); }
+.ws-tk { position: absolute; bottom: -17px; transform: translateX(-50%); font: 9.5px var(--display); letter-spacing: .16em; text-transform: uppercase; color: #8d96af; white-space: nowrap; }
+.ws-tk::before { content: ""; position: absolute; left: 50%; bottom: 15px; height: 96px; border-left: 1px dashed var(--line); } .ws-tk.now { color: var(--gold-bright); transform: translateX(-100%); } .ws-tk.now::before { left: 100%; border-left: 1px solid var(--gold-dim); }
+.ws-d { position: absolute; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; border: 1.5px solid #0a0c12; background: var(--c); cursor: pointer; padding: 0; box-shadow: 0 0 7px -1px var(--c); }
+.ws-d:hover, .ws-d.sel { transform: scale(1.5); z-index: 2; border-color: #f1ecdc; } .ws-d.off { opacity: .18; }
+/* the wire, in full */
+.wl { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: 10px; align-content: start; }
+.wi-m { grid-column: 1 / -1; font: 600 12px var(--engraved); letter-spacing: .2em; text-transform: uppercase; color: var(--gold-bright); margin: 6px 0 0; padding-bottom: 5px; border-bottom: 1px solid var(--gold-dim); } .wi-m small { font: 10.5px var(--mono); letter-spacing: 0; color: #8d96af; margin-left: 10px; }
+.wi { display: flex; gap: 12px; background: var(--obsidian-2); border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 5px; padding: 10px 12px; cursor: pointer; } .wi:hover { border-color: var(--gold-dim); border-left-color: var(--c); } .wi.sel { border-color: var(--gold); border-left-color: var(--c); background: rgba(201,162,39,.1); }
+.wi-d { flex: 0 0 38px; text-align: center; font: 9.5px var(--display); letter-spacing: .16em; text-transform: uppercase; color: #8d96af; } .wi-d b { display: block; font: 600 22px/1 var(--engraved); color: var(--paper); letter-spacing: 0; margin-bottom: 2px; }
+.wi-b { flex: 1; min-width: 0; } .wi-k { font: 9px var(--display); letter-spacing: .18em; text-transform: uppercase; color: var(--c); } .wi h5 { font: 600 14px/1.3 var(--display); color: var(--paper); margin: 2px 0 4px; } .wi p { font-size: 12.5px; line-height: 1.55; color: #cfc9b8; margin: 0 0 6px; }
+.wi-s { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font: 10.5px var(--mono); color: #8d96af; } .wi-s a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); } .wi-s .lnk { margin-left: auto; border: 0; } .wi-s .lnk + .lnk { margin-left: 0; }
+/* the ledger and the ballots */
+.bl-cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.bl-card { text-align: left; background: var(--obsidian-2); border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: 5px; padding: 8px 11px 9px; cursor: pointer; color: var(--paper); display: grid; grid-template-columns: 1fr auto; gap: 0 8px; }
+.bl-card:hover { border-color: var(--gold-dim); border-top-color: var(--c); } .bl-card.sel { border-color: var(--gold); border-top-color: var(--c); background: rgba(201,162,39,.1); }
+.bl-card b { font: 700 17px var(--engraved); letter-spacing: .08em; color: var(--c); } .bl-card i { font: normal 12px var(--mono); color: var(--paper); align-self: center; } .bl-card span { grid-column: 1 / -1; font: 12px var(--display); color: var(--paper); } .bl-card small { grid-column: 1 / -1; font: 10px var(--mono); color: #8d96af; }
+.st-tbl-wrap { flex: 1; min-height: 0; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--obsidian-2); }
+.st-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.st-tbl th { position: sticky; top: 0; z-index: 1; background: var(--obsidian-3); font: 9.5px var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--gold-dim); white-space: nowrap; } .st-tbl th.c { text-align: center; color: var(--c, var(--gold)); } .st-tbl th.num, .st-tbl td.num { text-align: right; }
+.st-tbl td { padding: 5px 9px; border-bottom: 1px solid var(--line-faint); color: #cfc9b8; vertical-align: top; line-height: 1.45; } .st-tbl td.c { text-align: center; width: 62px; } .st-tbl td.num { font: 11.5px var(--mono); color: var(--gold-bright); }
+.st-tbl tr.row { cursor: pointer; } .st-tbl tr.row:hover td { background: rgba(201,162,39,.06); } .st-tbl tr.sel td { background: rgba(201,162,39,.13); }
+.st-tbl td.nm { font: 500 13px var(--display); color: var(--paper); white-space: nowrap; } .st-tbl td.dt { font: 11px var(--mono); white-space: nowrap; color: var(--paper); } .st-tbl td.out { min-width: 260px; } .st-tbl td.out em { color: #8d96af; } .st-tbl td.sr { font: 10.5px var(--mono); } .st-tbl td.sr a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); }
+.st-tbl .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: var(--c); box-shadow: 0 0 6px -1px var(--c); vertical-align: -1px; } .st-tbl .dot.p { background: none; border: 2px solid var(--c); box-sizing: border-box; box-shadow: none; }
+.wtag { display: inline-block; font: 10.5px var(--sans); color: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 3px; padding: 0 6px; margin: 1px 4px 1px 0; white-space: nowrap; }
+.bk { display: inline-block; font: 9px var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--c); border: 1px solid var(--c); border-radius: 3px; padding: 1px 6px; white-space: nowrap; margin-right: 6px; }
+.ba-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 12px; } .ba-grid > aside { overflow: auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.ah { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; } .ah button { text-align: left; background: var(--obsidian-2); border: 1px dashed var(--line); border-radius: 4px; color: var(--paper); cursor: pointer; padding: 5px 8px; font: 12.5px var(--display); } .ah button:hover { border-color: var(--gold-dim); }
+.ah b { display: block; font: 10px var(--mono); color: var(--gold); font-weight: 400; } .ah small { display: block; font: 10px var(--mono); color: #8d96af; }
+.fc { border-left: 2px solid #ff9a8c; padding: 2px 0 2px 10px; cursor: pointer; } .fc b { font: 600 13px var(--display); color: var(--paper); } .fc b small { font: 10.5px var(--mono); color: #8d96af; margin-left: 8px; } .fc p { font-size: 12.5px; line-height: 1.5; color: #cfc9b8; margin: 2px 0 0; } .fc a, .sit .hint a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); }
+/* cards */
+.sit .lv-meter { display: flex; gap: 3px; margin: 8px 0 10px; } .sit .lv-meter i { flex: 1; height: 7px; border-radius: 1px; background: var(--line); } .sit .lv-meter i.on { background: var(--c); }
+.sit .loss { margin: 6px 0 0; padding: 6px 8px; background: rgba(255,255,255,.025); border-radius: 3px; font-size: 12.5px; line-height: 1.45; color: #cfc9b8; } .sit .loss b { color: var(--paper); font-weight: 600; } .sit .loss small { display: block; font: 10.5px/1.5 var(--mono); color: #8d96af; margin-top: 2px; } .sit .loss small a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); }
+.sit .dth { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 4px 0 8px; } .sit .dth div { background: var(--obsidian-2); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; } .sit .dth span { display: block; font: 9px var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); } .sit .dth b { font: 600 13px var(--mono); color: var(--paper); }
+.sit .srcs a { display: block; white-space: normal; overflow-wrap: anywhere; font-family: var(--sans); font-size: 12px; line-height: 1.45; color: var(--paper-dim); text-decoration: none; padding: 4px 0; border-bottom: 1px solid var(--line-faint); } .sit .srcs a:hover { color: var(--gold-bright); } .sit .srcs a small { font: 10px var(--mono); color: #8d96af; margin-left: 8px; }
+.sit a.lnk { text-decoration: none; } .sit a.lnk.go { color: var(--gold-bright); }
+.sit .mth p { font-size: 13px; line-height: 1.6; color: #cfc9b8; max-width: 78ch; margin: 0; } .sit .mth a { color: var(--gold); }
+@media (max-width: 1250px) { .bl-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ba-grid { grid-template-columns: 1fr; } .ba-grid > aside { overflow: visible; } }
+#sb-leg2 { display: none; }
+@media (max-width: 860px) {
+  #sb-leg { display: none; } #sb-leg2 { display: block; position: static; max-width: none; margin: 8px 12px; }
+  #sb-wire { height: 150px; } .ws-lab { flex-basis: 96px; } .ws-lab small { display: none; } .ws-plot { margin-right: 14px; } .ws-d { width: 13px; height: 13px; }
+  .wl { grid-template-columns: 1fr; } .bl-cards { grid-template-columns: 1fr 1fr; } .st-tbl-wrap { max-height: 70dvh; flex: none; } .ba-grid { display: block; } .ba-grid > aside { margin-top: 12px; } #sb-sub { border-left: 0; padding-left: 0; }
+}
+</style>
+<link rel="stylesheet" href="src/themes.css"><!-- generated: the three colourways (tools/build-themes.js) -->
+</head>
+<body class="wr dc rl sit">
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · THE SITUATION</h1>
+      <p class="tagline">the world as it stands — wars, blocs, sanctions, ballots, arsenals and straits on one map, with ninety days of dated events under it</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+  <nav id="wr-bar" aria-label="Views">
+    <div id="wr-tabs" role="tablist">
+      <button role="tab" data-v="board" title="The present on one map, read through five lenses">The Board</button>
+      <button role="tab" data-v="wire" data-kin="board" title="Every dated event of the last ninety days, each with its source">The Wire</button>
+      <button role="tab" data-v="blocs" title="Who sits in which alliance, who is under sanctions, who holds the bomb: one ledger">The Blocs</button>
+      <button role="tab" data-v="ballots" title="The elections of 2026 and what they decided">The Ballots</button>
+      <button role="tab" class="minor" data-v="method" title="What each layer rests on, and every source">Method &amp; sources</button>
+    </div>
+    <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a country, an event, a bloc or a strait…  ( / )" autocomplete="off" aria-label="Find a country, an event, a bloc or a strait"></div>
+  </nav>
+  <main id="dc-main">
+    <div id="dc-stage">
+      <!-- THE BOARD -->
+      <section id="v-board" class="wr-view dc-view">
+        <div class="dc-bar">
+          <div class="chips" id="sb-lens" role="group" aria-label="Lens"></div>
+          <div class="chips" id="sb-sub" role="group" aria-label="Bloc" hidden></div>
+          <div class="chips" id="sb-lay" role="group" aria-label="Marks"></div>
+          <span class="wr-note" id="sb-n"></span>
+        </div>
+        <div class="rl-map" id="sb-wrap">
+          <svg id="sb" role="img" aria-label="World map of the present: wars, blocs, sanctions, ballots, arsenals, straits and dated events"></svg>
+          <div class="rl-zoom"><button class="chipbtn" id="sb-zi" title="Zoom in">+</button><button class="chipbtn" id="sb-zo" title="Zoom out">−</button><button class="chipbtn" id="sb-zr" title="Reset the view">⟲</button></div>
+          <div id="sb-leg" class="plate rl-leg"></div>
+          <div id="sb-tip" class="plate rl-tip" hidden></div>
+        </div>
+        <div id="sb-leg2" class="plate rl-leg"></div><!-- the legend again, below the map on a phone -->
+        <div id="sb-wire" aria-label="The wire: ninety days of dated events, by kind"></div>
+      </section>
+      <!-- THE WIRE -->
+      <section id="v-wire" class="wr-view dc-view" hidden>
+        <div class="dc-bar"><div class="chips" id="wi-k" role="group" aria-label="Kind of event"></div><span class="wr-note" id="wi-n"></span></div>
+        <div class="pane"><div id="wi-list" class="wl"></div></div>
+      </section>
+      <!-- THE BLOCS -->
+      <section id="v-blocs" class="wr-view dc-view" hidden>
+        <div class="dc-bar"><span class="wr-note" id="bl-n"></span></div>
+        <div class="pane"><div class="bl-cards" id="bl-cards"></div><div class="st-tbl-wrap" id="bl-wrap"></div></div>
+      </section>
+      <!-- THE BALLOTS -->
+      <section id="v-ballots" class="wr-view dc-view" hidden>
+        <div class="dc-bar"><span class="wr-note" id="ba-n"></span></div>
+        <div class="pane"><div class="ba-grid"><div class="st-tbl-wrap" id="ba-wrap"></div><aside id="ba-side"></aside></div></div>
+      </section>
+      <!-- METHOD -->
+      <section id="v-method" class="wr-view dc-view" hidden><div class="pane mth" id="mt-pane"></div></section>
+    </div>
+    <aside id="dc-side" aria-live="polite"></aside>
+  </main>
+  <noscript><p style="padding:24px">The Situation needs JavaScript. The data is readable in <code>src/data/situation.js</code>.</p></noscript>
+  <script src="assets/world2.js"></script>
+  <script src="src/data/conflicts.js"></script>
+  <script src="src/data/situation.js"></script>
+  <script src="src/realms-kit.js"></script>
+  <script src="src/situation-app.js"></script>
+</body>
+</html>

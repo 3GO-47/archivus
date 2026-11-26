@@ -3,7 +3,7 @@
 
 **Live: https://3go-47.github.io/archivus/**
 
-Archivus is a self-contained instrument for exploring the whole arc of human history — thirteen linked instruments over one hand-curated, fully-sourced archive of 628 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus. **v8.0** adds the War Room (both World Wars on an animated map), a navigation rail shared by every page, and a legibility pass over the Archive:
+Archivus is a self-contained instrument for exploring the whole arc of human history — fourteen linked instruments over one hand-curated, fully-sourced archive of 628 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus. **v8.0** adds the War Room (both World Wars on an animated map), a navigation rail shared by every page, and a legibility pass over the Archive:
 
 | Instrument | File | What it holds |
 |---|---|---|
@@ -54,7 +54,7 @@ Mouse: scroll = zoom (about the cursor; in the Wheel, about the pointer's angle;
 
 ## The frame (v10)
 
-Thirteen pages, one instrument. `src/nav.js` is the first thing in every `<body>` and gives each page the same header — brand, the thirteen instruments, search — in place before first paint, so nothing moves between pages except a gold marker that glides from the instrument you left to the one you entered. Page changes cross-fade (native cross-document view transitions on http(s) in browsers that have them, with the hovered page prerendered; a hand-made fade on `file://` and elsewhere). Each instrument reopens where you left it: view, selection and time window are remembered for the session. The first time you enter an instrument a title card passes; after that, nothing interrupts.
+Fourteen pages, one instrument. `src/nav.js` is the first thing in every `<body>` and gives each page the same header — brand, the fourteen instruments, search — in place before first paint, so nothing moves between pages except a gold marker that glides from the instrument you left to the one you entered. Page changes cross-fade (native cross-document view transitions on http(s) in browsers that have them, with the hovered page prerendered; a hand-made fade on `file://` and elsewhere). Each instrument reopens where you left it: view, selection and time window are remembered for the session. The first time you enter an instrument a title card passes; after that, nothing interrupts.
 
 ## Seen at a glance (v11)
 
@@ -112,6 +112,37 @@ The rule reaches the page three ways. `tools/build-themes.js` reads the four sha
 - Wikipedia is used for the comparable table and for tabulations of each party's claims, alongside primary and news sources (UN bodies, the State Department, the Home Office, CFR, ACLED, Critical Threats, Al Jazeera, WAFA, Times of Israel, Mediazona and others).
 
 **To update it:** edit `src/data/conflicts.js` (the header explains every field), set `meta.asOf`, then `node tools/validate-conflicts.js` and `node tools/build-mobile.js --zip`. The validator refuses a figure without a source, a map name that is not on the map, or a designation without the list in the card's sources.
+
+## The present tense (v18)
+
+Asked for on 2026-11-25: *"review the war and myth tabs. id love to see you enhance all 3 tabs under Myth and then specifically under war, i want the conflicts tab to be revamped and i want a new tabs digesting all current geopolitical events visually."*
+
+**1 · The Situation (`situation.html`, fourteenth instrument, third under War).** The world as it stood on 25 November 2026, on one map.
+
+- **The Board.** Five lenses repaint the map: *Wars* (read from the Conflicts, never copied), *Blocs* (NATO, CSTO, SCO, BRICS with its partner countries, the Alliance of Sahel States, the EU; pick one to see it whole), *Sanctions* (the US Treasury's country programmes, and the six countries the EU's own 2026 brief names), *Ballots* (who voted in 2026 and whether power changed; a dashed outline where a vote is ahead) and *Arsenals* (SIPRI's nine nuclear states, ring = every warhead, disc = deployed). On every lens: a dot for each dated event of the last ninety days, coloured by kind and pulsing if it is under ten days old, and a diamond for each of six straits, coloured by its state.
+- **The wire, under the map.** One row a kind (war, diplomacy, ballots, sanctions, straits, power), one mark a dispatch, placed by its date. Click a mark, a dot, a diamond, a ring or a country: the card beside the map gives the statement and, directly under it, the source it rests on.
+- **A country's card** gathers everything the page knows about it: its wars, its blocs, the sanctions on it, its arsenal, its last vote and its next, and every dispatch that names it.
+- **The Wire** (all forty dispatches, newest first, each with its source link), **the Blocs** (one ledger: a row a country, a column a bloc, then sanctions, warheads and wars on its soil) and **the Ballots** (35 national votes of 2026, the votes ahead, and three governments changed by other means).
+- **What it will not do.** It does not update itself: it is a dated snapshot and says so on every view. A vote whose result was not read says "held; result not read" and stops. The EU sanctions list is only the six the brief names. The wire is a selection of what was read, not a census.
+- Data: `src/data/situation.js` (schema at its head). Engine: `src/situation-app.js`. Deep links: `situation.html#v=board&l=blocs&b=brics`, `#d=trilateral`, `#c=Iran`, `#s=hormuz`, `#w=sudan`. Search finds every dispatch, bloc and strait.
+
+**2 · The Conflicts, reworked around the map.** Nothing was removed; the five tabs are where they were.
+
+- The ladder that sat under the map is now a **rail beside it**, worst rung first, and each conflict carries its 2026 count as a bar on one scale. The map has the full height of the screen. Under 1100px the ladder goes back under the map.
+- A **count** heads the rail: major wars, wars, how many are worsening or easing, and the dead counted in 2026 across the conflicts the running table covers, with its source.
+- **Rings are sized by the year's dead** (square root, so area is honest) and a worsening conflict pulses. The armed groups' diamonds are quiet until a conflict is chosen.
+- **The card** names the two newest reports directly under "Now", sets the two sides against each other, and draws every loss figure in the conflict as a bar on one scale, coloured by who gave it, so a claim can be seen against a count. "Nearly 1.6 million" is drawn as 1,600,000.
+- **The Ladder** shows how long each conflict has run against the oldest on the page.
+
+**3 · Myth: the three instruments point at each other, and use the page.**
+
+- `tools/build-myth.js` writes `src/data/myth-links.js`: 96 gods matched to their node in the Bloodline, and seven claims of the Transmissions matched to the god or figure they name. Matching is by name only and the tool prints every link for a person to read. Each god's panel, each figure's panel and each claim now leads to the other two.
+- **Transmissions:** *the lag*, a chart with a row for each of the 37 claims: a ring where the craft is first recorded, a diamond where the text that explains it was written. Twenty of the 37 were written after the craft was already on record. The argument sits beside the chart instead of above a narrow column, and the leaves run two abreast on a wide screen.
+- **Bloodline:** *the line back.* Choosing anyone lights their whole line of descent to the root on the tree and lists it in the panel, link by link.
+- **Pantheons:** opens with the first sky at the left edge so its neighbours fill the screen.
+- Not done: the Bloodline is the owner's own board and the Pantheons' gods carry no citations in their data; none were invented. Only the Transmissions have a source for every claim.
+
+Tests: `node tools/tests/situation.js` (34 checks; add `mobile` for the single-file builds).
 
 ## A statement and what it rests on (v17)
 
@@ -307,7 +338,7 @@ All data lives in `src/data/` as window-global script files (no fetch, so `file:
 
 **To add a doctrine:** append a node to `doctrines.js` with its family, coordinates, origin, `d`, `c`, `u` and `fr`; it appears on the Compass, Lineage, Atlas and Library at once. Placements are editorial conventions — keep the critics' case beside every doctrine. Validate with `node tools/validate-doctrines.js` (`--urls` lists every citation).
 
-**After any change:** `node tools/build-mobile.js --zip` regenerates the search index and rebuilds the thirteen single-file `mobile/` builds and `exports/archivus-site.zip`. Sourcing standards and the research trail live in `research/`.
+**After any change:** `node tools/build-mobile.js --zip` regenerates the search index and rebuilds the fourteen single-file `mobile/` builds and `exports/archivus-site.zip`. Sourcing standards and the research trail live in `research/`.
 
 ## Epistemics
 
@@ -328,7 +359,8 @@ archivus/
 ├── doctrines.html        the Doctrines (v9)
 ├── realms.html           the Realms (v11)
 ├── coups.html            the Coups (v11)
-├── conflicts.html        the Conflicts (v13)
+├── conflicts.html        the Conflicts (v13; the map reworked in v18)
+├── situation.html        the Situation (v18): the world as it stands
 ├── oracle.html           the Oracle (v14): what the whole record points to
 ├── lineage.html          the Bloodline
 ├── pantheons.html        the Pantheons
@@ -348,13 +380,14 @@ archivus/
 │   ├── realms-app.js     Realms engine (map, compass, ledger, drift, United States)
 │   ├── coups-app.js      Coups engine (roll, record, the two studies, patterns)
 │   ├── conflicts-app.js  Conflicts engine (map, ladder, toll, belligerents, method)
+│   ├── situation-app.js  Situation engine (board and its five lenses, wire, blocs, ballots, method)
 │   ├── oracle-app.js     Oracle engine (facts, broken-axis charts, reading, lines, horizon, method)
 │   ├── realms-kit.js     shared by all three: world map, year slider, tooltips, hash state
 │   ├── realms.css        theme for both (builds on doctrines.css)
 │   ├── *-app.js          one renderer per instrument
 │   ├── styles.css        the observatory theme (shared)
 │   └── data/             all datasets (see schema above)
-├── mobile/               single-file builds of all thirteen pages
+├── mobile/               single-file builds of all fourteen pages
 ├── tools/                build-mobile.js · build-index.js · build-themes.js · build-realms.py · build-oracle.js · validate-oracle.js · validate-wars.js · validate-doctrines.js · validate-conflicts.js · validate-realms.js
 ├── exports/              archivus-site.zip (deploy-ready) · archivus-v7.2-backup.zip
 └── research/             sources, notes, provenance, expansion plans · data/ (Freedom House scores as captured)
@@ -419,4 +452,6 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 
 - *A statement and what it rests on (v17)* — the Oracle's Reading as statements beside their evidence; every deduction tied to the facts and charts it rests on; a map of the red and green seizures in the Coups.
 
-Current state: **v17.0** — thirteen instruments behind five doors, three colourways, all datasets validated. Live: v17.0 (deployed 2026-11-25).
+- *The present tense (v18)* — a fourteenth instrument, the Situation: wars, blocs, sanctions, ballots, arsenals and straits on one map with ninety days of dated, sourced events under it. The Conflicts reworked around its map. The three Myth instruments linked to each other; the Transmissions given a chart of the lag between craft and claim, the Bloodline a lit line of descent.
+
+Current state: **v18.0** — fourteen instruments behind five doors, three colourways, all datasets validated. Live: v18.0 (deployed 2026-11-25).

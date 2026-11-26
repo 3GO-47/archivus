@@ -87,6 +87,9 @@
   #pn-p-note { font-size:13px; line-height:1.62; color:var(--paper); margin-top:12px; padding-top:10px;
     border-top:1px solid var(--line-faint); }
   #pn-p-x { margin-top:14px; }
+  /* v18: the same figure in the other two Myth instruments */
+  .pn-out { display:block; font-family:var(--display); font-size:12.5px; border:1px solid var(--line); border-left:2px solid #b48ef0; border-radius:3px; padding:6px 10px; margin:0 0 6px; background:rgba(180,142,240,.05); }
+  .pn-out small { display:block; font:10.5px var(--mono); color:#8d96af; margin-top:1px; } .pn-out:hover { border-color:var(--gold-dim); border-left-color:#b48ef0; }
   .pn-xcard { font-size:12.5px; line-height:1.55; color:var(--paper-dim);
     border-left:2px solid var(--line); padding:6px 10px; margin-bottom:7px; background:rgba(255,255,255,.02); }
   .pn-xcard.pn-x-o { border-left-color:#9b6fc3; }
@@ -161,6 +164,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
   </main>
 
   <script src="src/data/pantheons.js"></script>
+  <script src="src/data/myth-links.js"></script>
   <script src="src/pantheon-app.js"></script>
 </body>
 </html>

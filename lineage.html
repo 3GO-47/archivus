@@ -110,6 +110,11 @@
     text-transform:uppercase; display:block; margin-top:10px; }
   #bl-note { font-size:13px; line-height:1.6; color:var(--paper); margin-top:14px; padding-top:12px;
     border-top:1px solid var(--line-faint); }
+  /* v18: the same figure in the other two Myth instruments */
+  .bl-out { display:block; font-family:var(--display); font-size:12.5px; color:var(--gold); text-decoration:none; border:1px solid var(--line); border-left:2px solid #b48ef0; border-radius:3px; padding:6px 10px; margin:6px 0 0; background:rgba(180,142,240,.05); }
+  .bl-line { font-size:12.5px; line-height:1.75; color:var(--paper-dim); margin:0 0 10px; padding:6px 9px; border-left:2px solid var(--gold-dim); background:rgba(201,162,39,.05); }
+  .bl-line a { color:var(--gold); cursor:pointer; text-decoration:none; } .bl-line a:hover { color:var(--gold-bright); } .bl-line span { color:#59617c; margin:0 5px; } .bl-line i { font-style:normal; color:var(--paper); font-weight:600; }
+  .bl-out small { display:block; font:10.5px var(--mono); color:#8d96af; margin-top:1px; } .bl-out:hover { border-color:var(--gold-dim); border-left-color:#b48ef0; color:var(--gold-bright); }
 </style>
 <script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
 if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -167,6 +172,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
   <script src="src/data/events6.js"></script>
   <script src="src/data/lineage2.js"></script>
   <script src="src/data/lineage3.js"></script>
+  <script src="src/data/myth-links.js"></script>
   <script src="src/lineage-app.js"></script>
 </body>
 </html>

@@ -80,6 +80,31 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 .srcs a { display: block; white-space: normal; overflow-wrap: anywhere; font-family: var(--sans); font-size: 12px; line-height: 1.45; color: var(--paper-dim); text-decoration: none; padding: 4px 0; border-bottom: 1px solid var(--line-faint); } .srcs a:hover { color: var(--gold-bright); } .srcs a small { font: 10px var(--mono); color: #8d96af; margin-left: 6px; }
 .mth p, .mth li { font-size: 13px; line-height: 1.6; color: #cfc9b8; max-width: 78ch; } .mth ul { margin: 0; padding-left: 18px; } .mth .def { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 4px 12px; font-size: 13px; line-height: 1.5; color: #cfc9b8; margin: 0; }
 .mth .def dt { font: 600 12px var(--engraved); letter-spacing: .14em; text-transform: uppercase; color: var(--paper); } .mth .def dd { margin: 0 0 4px; }
+/* ---------- v18: the map is the page; the ladder is a rail beside it ---------- */
+#mp-read { flex: 0 0 auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 8px 12px 0; }
+#mp-read div { background: var(--obsidian-2); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px 6px; } #mp-read div b { display: block; font: 700 20px/1.1 var(--engraved); } #mp-read div span { font: 9px var(--display); letter-spacing: .12em; text-transform: uppercase; color: #8d96af; white-space: nowrap; }
+#mp-read p { grid-column: 1 / -1; margin: 0; font: 10.5px/1.5 var(--mono); color: #8d96af; } #mp-read p b { color: var(--paper); font-weight: 600; } #mp-read p a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); }
+#mp-scale { flex-direction: row-reverse; } .sc-c .fg, .sc-c .br { display: none; } .sc-c .nm { display: inline; }
+.cf-pin .p { fill: none; stroke-width: 1.4; vector-effect: non-scaling-stroke; opacity: 0; } .cf-pin.dim .p { display: none; }
+@media (prefers-reduced-motion: no-preference) { .cf-pin.up .p { animation: cf-pulse 2.8s ease-out infinite; transform-box: fill-box; transform-origin: center; } }
+@keyframes cf-pulse { 0% { transform: scale(.9); opacity: .75; } 100% { transform: scale(1.7); opacity: 0; } }
+.cf-mk.quiet { opacity: .5; }
+.ld-card .age { display: block; height: 3px; background: var(--line); border-radius: 2px; margin: 5px 0 2px; } .ld-card .age i { display: block; height: 100%; background: var(--c); border-radius: 2px; opacity: .8; }
+.cf-vs { text-align: center; font: 9px var(--display); letter-spacing: .3em; text-transform: uppercase; color: #8d96af; margin: -4px 0 8px; position: relative; } .cf-vs::before, .cf-vs::after { content: ""; position: absolute; top: 50%; width: 36%; border-top: 1px solid var(--line); } .cf-vs::before { left: 0; } .cf-vs::after { right: 0; }
+.cf-side.s0 { border-left-color: var(--gold-dim); } .cf-side.s1 { border-left-color: #5b93b8; }
+.loss .lb { display: block; height: 4px; border-radius: 2px; margin: 4px 0 1px; background: #8d96af; } .loss .lb.claim { background: #ff7a66; } .loss .lb.own { background: var(--gold); } .loss .lb.count { background: #49c9b8; }
+.cf .now-src { margin: -4px 0 10px; } .cf .now-src span { color: #66708c; } .cf .now-src a, .cf a.lnk { color: var(--gold); text-decoration: none; } .cf .now-src a { border-bottom: 1px dotted var(--gold-dim); }
+@media (min-width: 1101px) {
+  #v-map:not([hidden]) { display: grid; grid-template-columns: 286px minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); }
+  #v-map > .dc-bar { grid-column: 1 / -1; } #v-map > #mp-wrap { grid-column: 2; grid-row: 2 / 4; } #v-map > .sc-ax, #v-map > #mp-leg2 { display: none; }
+  #v-map > #mp-read { grid-column: 1; grid-row: 2; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; padding: 10px 10px 8px 12px; border-right: 1px solid var(--line-faint); } #mp-read div { display: flex; align-items: baseline; gap: 7px; padding: 3px 8px 4px; } #mp-read div b { font-size: 18px; min-width: 22px; }
+  #v-map > #mp-scale { grid-column: 1; grid-row: 3; flex-direction: column; max-height: none; overflow: auto; padding: 0 8px 12px 12px; gap: 8px; border-top: 0; border-right: 1px solid var(--line-faint); }
+  #v-map .sc-col { flex: none !important; border-top: 0; border-left: 3px solid var(--c); border-radius: 0 5px 5px 0; } #v-map .sc-b { flex: none; overflow: visible; flex-direction: column; flex-wrap: nowrap; gap: 0; padding: 0 4px 4px; }
+  #v-map .sc-c { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 0 8px; border: 0; border-radius: 3px; padding: 3px 6px 4px; text-align: left; font-size: 12px; overflow: visible; white-space: normal; }
+  #v-map .sc-c .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--paper); } #v-map .sc-c .fg { display: block; font: 10.5px var(--mono); color: #8d96af; }
+  #v-map .sc-c .br { display: block; grid-column: 1 / -1; height: 3px; border-radius: 2px; background: var(--c); margin-top: 2px; box-shadow: 0 0 6px -1px var(--c); }
+  #v-map .sc-c:hover { background: rgba(201,162,39,.08); } #v-map .sc-c.sel { background: rgba(201,162,39,.16); box-shadow: inset 0 0 0 1px var(--gold); } #v-map .sc-c.sel .nm, #v-map .sc-c:hover .nm { color: var(--gold-bright); }
+}
 @media (max-width: 1100px) { #ld-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: auto; } .ld-col { min-height: 300px; } }
 @media (max-width: 860px) {
   #mp-scale { flex-direction: column; max-height: none; } .sc-col { flex: none; } .sc-b { max-height: none; overflow: visible; }
@@ -130,6 +155,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
           <div id="mp-tip" class="plate rl-tip" hidden></div>
         </div>
         <div id="mp-leg2" class="plate rl-leg"></div><!-- the legend again, below the map on a phone -->
+        <div id="mp-read" aria-label="The count"></div>
         <div id="mp-scale" aria-label="The scale, from tension to major war"></div>
         <div class="sc-ax"><span>◂ tension</span><span>kinetic warfare ▸</span></div>
       </section>
