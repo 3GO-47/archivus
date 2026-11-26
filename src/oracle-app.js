@@ -363,7 +363,7 @@
   }
 
   /* ---------------- state ---------------- */
-  const st = { v: "reading", i: O.lines[0].id, e: null, hc: null };
+  const st = { v: "reading", i: O.lines[0].id, e: null, hc: null, r: O.reading[0][0] };   /* r: the statement whose evidence is open in the Reading */
   let tabs, built = {};
   const pips = l => '<span class="or-pips" title="' + esc(l.deduce.map(d => GR[d[0]].n).join(" · ")) + '">' + l.deduce.map(d => '<i style="background:' + GR[d[0]].c + '"></i>').join("") + "</span>";
   const badge = g => '<span class="or-g" style="color:' + GR[g].c + ";border-color:" + GR[g].c + '">' + esc(GR[g].n) + "</span>";
@@ -373,39 +373,81 @@
     + '<path d="M46 3v7M46 82v7M3 46h4M85 46h4" stroke="#c9a227" stroke-width="1.2"/></svg>';
   const head = (t, s) => '<h4 class="or-h"><span>' + esc(t) + "</span></h4>" + (s ? '<p class="or-hs">' + esc(s) + "</p>" : "");
 
+  /* ---------------- a statement and what it rests on (v17) ----------------
+     The owner: the Oracle wasted its space and gave "no easy way to get from a statement … to its substantiation".
+     So one set of blocks serves both views:
+       the Reading — the eight statements in a column; beside them, everything the chosen one rests on;
+       the Lines   — the same dossier for each of the eleven lines.
+     In a dossier the facts are numbered, and every graded deduction carries a row saying which facts and which
+     charts it rests on (O.rests, written by hand in src/data/oracle.js). Pressing one lights it and brings it into view. */
+  const RESTS = O.rests || {};
+  const ul = a => "<ul>" + a.map(x => "<li>" + T(x) + "</li>").join("") + "</ul>";
+  const shortT = t => String(t).split(",")[0];
+  const srcsOf = l => l.src.map(k => k.indexOf("archive:") === 0 ? "<span>" + esc(k.slice(8)) + "</span>" : K.link("https://ourworldindata.org/grapher/" + SS.s[k].slug, SS.s[k].t + " — " + SS.s[k].c.replace(/ [–-] (with|processed).*$/, ""))).join("");
+  const restsRow = (l, j) => { const r = (RESTS[l.id] || [])[j]; if (!r) return "";
+    return '<div class="or-rest"><span>Rests on</span>'
+      + r[0].map(i => '<button type="button" data-f="' + i + '" title="' + esc(fill(l.shows[i])) + '">fact ' + (i + 1) + "</button>").join("")
+      + r[1].map(i => '<button type="button" data-c="' + i + '" title="Show this chart">chart · ' + esc(shortT(l.charts[i].t)) + "</button>").join("")
+      + (r[3] ? '<button type="button" data-e="' + r[3] + '" title="Open this expectation on the Horizon">on the Horizon →</button>' : "")
+      + (r[2] ? "<em>" + esc(r[2]) + "</em>" : "") + "</div>"; };
+  const dossier = (l, headHTML, tail) => headHTML
+      + '<div class="or-stats">' + l.stats.map(x => '<div style="border-top-color:' + l.c + '"><b>' + T(x[0]) + "</b><span>" + T(x[1]) + "</span></div>").join("") + "</div>"
+      + '<div class="or-charts n' + l.charts.length + (l.charts.some(isWide) ? " w" : "") + '">' + l.charts.map(chartBlock).join("") + "</div>"
+      + '<div class="or-cols2"><div>'
+      + '<section class="or-card or-shows"><h4><i>◆</i>What the record shows<small>the facts, numbered</small></h4><ol class="or-facts">' + l.shows.map((x, i) => '<li data-f="' + i + '">' + T(x) + "</li>").join("") + '</ol><p class="srcs"><b>Drawn from</b>' + srcsOf(l) + "</p></section>"
+      + '<section class="or-card against"><h4><i>⚖</i>The case against</h4>' + ul(l.against) + "</section></div><div>"
+      + '<section class="or-card or-points"><h4><i>➤</i>What it points to<small>each graded, each tied to what it rests on</small></h4><ul class="or-ded">' + l.deduce.map((d, j) => { const r = (RESTS[l.id] || [])[j] || [[], []];
+          return '<li data-d="' + j + '" data-fs="' + r[0].join(" ") + '" data-cs="' + r[1].join(" ") + '" style="border-left-color:' + GR[d[0]].c + '">' + badge(d[0]) + '<span class="hz">' + esc(d[1]) + "</span><p>" + T(d[2]) + "</p>" + restsRow(l, j) + "</li>"; }).join("") + "</ul></section>"
+      + '<section class="or-card"><h4><i>◉</i>What to watch</h4>' + ul(l.watch) + "</section></div></div>"
+      + '<div class="chips tp">' + l.links.map(k => '<a class="chipbtn" href="' + esc(k[1]) + '">' + esc(k[0]) + " →</a>").join("") + "</div>"
+      + '<div class="cleg or-gl">' + O.grades.map(g => '<span title="' + esc(g.def) + '"><i style="background:' + g.c + ';border-radius:50%"></i><b>' + esc(g.n) + "</b> " + esc(g.def.split(".")[0].replace(/:.*$/, "")) + ".</span>").join("") + "</div>" + (tail || "");
+  /* light what a deduction rests on; bring the first of it into view if it is off the screen */
+  function trace(root, fs, cs, from) {
+    root.querySelectorAll(".lit").forEach(x => x.classList.remove("lit"));
+    const hits = fs.map(i => root.querySelector('.or-facts li[data-f="' + i + '"]')).concat(cs.map(i => root.querySelector('.or-ch[data-c="' + i + '"]'))).filter(Boolean);
+    hits.forEach(x => x.classList.add("lit")); if (from) from.classList.add("lit");
+    const pane = root.closest(".pane"); if (!hits[0] || !pane) return;
+    const b = hits[0].getBoundingClientRect(), p = pane.getBoundingClientRect();
+    if (b.top < p.top + 6 || b.bottom > p.bottom - 6) hits[0].scrollIntoView({ block: "center", behavior: window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+  const warm = el => { document.querySelectorAll("#dc-stage .hot").forEach(x => x.classList.remove("hot")); if (!el) return; const root = el.closest(".or-doss"); if (!root) return;
+    if (el.dataset.d != null) { el.dataset.fs.split(" ").filter(Boolean).forEach(i => { const f = root.querySelector('.or-facts li[data-f="' + i + '"]'); if (f) f.classList.add("hot"); }); el.dataset.cs.split(" ").filter(Boolean).forEach(i => { const c = root.querySelector('.or-ch[data-c="' + i + '"]'); if (c) c.classList.add("hot"); }); }
+    else root.querySelectorAll(".or-ded li[data-d]").forEach(d => { if (d.dataset.fs.split(" ").indexOf(el.dataset.f) >= 0) d.classList.add("hot"); }); };
+
   /* ---------------- the Reading ---------------- */
   function drawReading() {
     const n = O.lines.length;
-    $("rd-pane").innerHTML = '<div class="or-top"><div class="or-eye">' + EYE + '</div><div><div class="or-kicker">The Reading · as it stands on ' + esc(WHEN) + '</div><h2 class="or-title">Where the record points</h2>'
-      + '<p class="lead">The Archive gathers the record in one place. This is what it points to: ' + nWord(O.reading.length) + " deductions, each resting on a line you can open, each graded by what it rests on, each set beside the best case against it. None is a prophecy.</p></div></div>"
+    $("rd-pane").innerHTML = '<div class="or-top tight"><div class="or-eye">' + EYE + '</div><div><div class="or-kicker">The Reading · as it stands on ' + esc(WHEN) + '</div><h2 class="or-title">Where the record points</h2>'
+      + '<p class="lead">' + nWord(O.reading.length).replace(/^./, c => c.toUpperCase()) + " deductions from the whole record. Choose one, and what it rests on opens beside it: the figures, the charts, the numbered facts, their sources, and the best case against it. None is a prophecy.</p></div></div>"
+      + '<div class="or-md"><ol class="or-syn" aria-label="The statements">' + O.reading.map((r, i) => { const l = LB[r[0]]; return '<li><button type="button" data-r="' + r[0] + '" style="--c:' + l.c + '"><span class="num">' + ROMAN[i + 1] + "</span><b>" + T(r[1]) + '</b><span class="tx">' + T(r[2]) + '</span><em><span class="sg">' + icon(r[0]) + "</span>" + esc(l.n) + pips(l) + "<u>what it rests on →</u></em></button></li>"; }).join("") + "</ol>"
+      + '<section id="rd-ev" class="or-ev or-doss" aria-live="polite"></section></div>'
       + '<section class="or-panel or-loomwrap"><div class="or-ph"><b>The loom</b><small>every line of the record on one frame, from the dawn of farming to 2100 · the time axis is cut into panels so the last two centuries can be seen · each line is drawn to its own scale · click a line to open it</small></div><div id="rd-loom"></div>'
       + '<div class="cleg or-ll"><span><i class="nowk"></i>now</span><span><i class="dsh"></i>projected by its source</span>' + O.horizon.classes.map(c => '<span><i style="background:' + c.c + ';border-radius:50%"></i>' + esc(c.n.toLowerCase()) + "</span>").join("") + "<span>· at the foot: what is expected, and on what footing</span></div></section>"
-      + head("What it points to")
-      + '<ol class="or-syn">' + O.reading.map((r, i) => { const l = LB[r[0]]; return '<li><button data-i="' + r[0] + '" style="border-top-color:' + l.c + '"><span class="num" style="color:' + l.c + '">' + ROMAN[i + 1] + '</span><span class="sg" style="color:' + l.c + '">' + icon(r[0]) + "</span><b>" + T(r[1]) + "</b><span>" + T(r[2]) + "</span><em>" + esc(l.n) + " →" + pips(l) + "</em></button></li>"; }).join("") + "</ol>"
       + head("The ledger", "All " + nWord(n) + " lines, each drawn from the first year its source covers. The dots are the grades of its deductions.")
       + '<div class="mx-wrap or-panel" style="padding:0"><table class="tbl or-tbl"><thead><tr><th>Line</th><th>The whole record</th><th>Now</th><th>Where it points</th><th>Grades</th></tr></thead><tbody>'
       + O.lines.map(l => '<tr data-i="' + l.id + '" tabindex="0"><td class="m"><span class="sg" style="color:' + l.c + '">' + icon(l.id) + "</span><b>" + esc(l.n) + "</b><small>" + esc(l.kind === "cycle" ? "a return" : "a trend") + " · " + esc(l.q) + '</small></td><td class="sp">' + spark(l.spark, l.sparkLog, l.c) + '</td><td class="nw"><b>' + T(l.now[1]) + "</b><small>" + T(l.now[0]) + "</small></td><td>" + T(l.verdict) + "</td><td>" + pips(l) + "</td></tr>").join("")
       + "</tbody></table></div>"
       + '<div class="cleg or-gl">' + O.grades.map(g => '<span title="' + esc(g.def) + '"><i style="background:' + g.c + ';border-radius:50%"></i><b>' + esc(g.n) + "</b></span>").join("") + "</div>";
-    mountLoom();
+    drawEvidence(); mountLoom();
+  }
+  /* the chosen statement, and everything it rests on, beside the list */
+  function drawEvidence() {
+    const box = $("rd-ev"); if (!box) return;
+    const k = Math.max(0, O.reading.findIndex(x => x[0] === st.r)), r = O.reading[k], l = LB[r[0]];
+    box.innerHTML = dossier(l, '<header class="or-evh"><div class="or-emb" style="color:' + l.c + ";border-color:" + l.c + '">' + icon(l.id) + '</div><div><span class="or-kind">Statement ' + ROMAN[k + 1] + " of " + ROMAN[O.reading.length] + " · what it rests on · the line " + esc(l.n) + "</span><h3>" + T(r[1]) + "</h3><p>" + T(r[2]) + "</p></div></header>");
+    mountCharts(box, l.charts);
+    const list = document.querySelector("#rd-pane .or-syn");
+    list.querySelectorAll("button[data-r]").forEach(b => { const on = b.dataset.r === r[0]; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+    list.style.top = Math.min(0, $("rd-pane").clientHeight - list.offsetHeight - 30) + "px";      /* a list taller than the window scrolls to its foot, then holds */
   }
 
   /* ---------------- the Lines ---------------- */
   function drawLines() {
-    const l = LB[st.i], ix = O.lines.indexOf(l), prev = O.lines[ix - 1], next = O.lines[ix + 1], ul = a => "<ul>" + a.map(x => "<li>" + T(x) + "</li>").join("") + "</ul>";
-    const srcs = l.src.map(k => k.indexOf("archive:") === 0 ? "<span>" + esc(k.slice(8)) + "</span>" : K.link("https://ourworldindata.org/grapher/" + SS.s[k].slug, SS.s[k].t + " — " + SS.s[k].c.replace(/ [–-] (with|processed).*$/, ""))).join("");
+    const l = LB[st.i], ix = O.lines.indexOf(l), prev = O.lines[ix - 1], next = O.lines[ix + 1];
     $("ln-pane").innerHTML = '<div class="grid2 md"><div class="col"><div class="mlist or-list">' + O.lines.map(x => '<button data-i="' + x.id + '" class="' + (x.id === st.i ? "on" : "") + '"><span class="sg" style="color:' + x.c + '">' + icon(x.id) + "</span>" + esc(x.n) + pips(x) + "<small>" + esc(x.q) + "</small></button>").join("") + "</div></div>"
-      + '<div class="col or-line"><header class="or-hero"><div class="or-emb" style="color:' + l.c + ";border-color:" + l.c + '">' + icon(l.id) + '</div><div><span class="or-kind">' + ROMAN[ix + 1] + " · " + (l.kind === "cycle" ? "a return · what has happened before, and how often" : "a trend · what has moved one way, and for how long") + "</span><h3>" + esc(l.n) + "<small>" + esc(l.q) + '</small></h3><p class="or-verdict">' + T(l.verdict) + "</p></div></header>"
-      + '<div class="or-stats">' + l.stats.map(s => '<div style="border-top-color:' + l.c + '"><b>' + T(s[0]) + "</b><span>" + T(s[1]) + "</span></div>").join("") + "</div>"
-      + '<div class="or-charts n' + l.charts.length + (l.charts.some(isWide) ? " w" : "") + '">' + l.charts.map(chartBlock).join("") + "</div>"
-      + '<div class="or-cols"><section class="or-card"><h4><i>◆</i>What the record shows</h4>' + ul(l.shows) + "</section>"
-      + '<section class="or-card"><h4><i>➤</i>What it points to<small>graded by what it rests on</small></h4><ul class="or-ded">' + l.deduce.map(d => '<li style="border-left-color:' + GR[d[0]].c + '">' + badge(d[0]) + '<span class="hz">' + esc(d[1]) + "</span><p>" + T(d[2]) + "</p></li>").join("") + "</ul></section>"
-      + '<section class="or-card against"><h4><i>⚖</i>The case against</h4>' + ul(l.against) + "</section>"
-      + '<section class="or-card"><h4><i>◉</i>What to watch</h4>' + ul(l.watch) + "</section></div>"
-      + '<div class="chips tp">' + l.links.map(k => '<a class="chipbtn" href="' + esc(k[1]) + '">' + esc(k[0]) + " →</a>").join("") + "</div>"
-      + '<div class="cleg or-gl">' + O.grades.map(g => '<span title="' + esc(g.def) + '"><i style="background:' + g.c + ';border-radius:50%"></i><b>' + esc(g.n) + "</b> " + esc(g.def.split(".")[0].replace(/:.*$/, "")) + ".</span>").join("") + "</div>"
-      + '<p class="srcs"><b>Drawn from</b>' + srcs + "</p>"
-      + '<nav class="or-step">' + (prev ? '<button data-i="' + prev.id + '"><small>← ' + ROMAN[ix] + "</small>" + esc(prev.n) + "</button>" : "<span></span>") + (next ? '<button data-i="' + next.id + '"><small>' + ROMAN[ix + 2] + " →</small>" + esc(next.n) + "</button>" : "<span></span>") + "</nav></div></div>";
+      + '<div class="col or-line or-doss">' + dossier(l,
+          '<header class="or-hero"><div class="or-emb" style="color:' + l.c + ";border-color:" + l.c + '">' + icon(l.id) + '</div><div><span class="or-kind">' + ROMAN[ix + 1] + " · " + (l.kind === "cycle" ? "a return · what has happened before, and how often" : "a trend · what has moved one way, and for how long") + "</span><h3>" + esc(l.n) + "<small>" + esc(l.q) + '</small></h3><p class="or-verdict">' + T(l.verdict) + "</p></div></header>",
+          '<nav class="or-step">' + (prev ? '<button data-i="' + prev.id + '"><small>← ' + ROMAN[ix] + "</small>" + esc(prev.n) + "</button>" : "<span></span>") + (next ? '<button data-i="' + next.id + '"><small>' + ROMAN[ix + 2] + " →</small>" + esc(next.n) + "</button>" : "<span></span>") + "</nav>") + "</div></div>";
     mountCharts($("ln-pane"), l.charts);
   }
 
@@ -428,9 +470,9 @@
   function drawHorizon() {
     const a = hzShown(), n = c => HZ.filter(h => h.c === c).length, decs = {};
     a.forEach(o => { const d = o.e.startYear < 2030 ? "Before 2030" : o.e.startYear >= 2060 ? "2060 and after" : "The " + Math.floor(o.e.startYear / 10) * 10 + "s"; (decs[d] = decs[d] || []).push(o); });
-    $("hz-pane").innerHTML = '<div class="or-top slim"><div><div class="or-kicker">The Horizon · ' + HZ[0].e.startYear + " – " + HZ[HZ.length - 1].e.startYear + '</div><h2 class="or-title">What is next</h2>'
-      + '<p class="lead">As far as anything dated can be said. The Archive holds ' + HZ.length + " expectations. They are not equally knowable, so they are sorted by what each rests on: an orbit, a plan, a trend, or a claim.</p></div></div>"
-      + '<div class="chips">' + '<button class="chipbtn' + (st.hc ? "" : " on") + '" data-hc="">All ' + HZ.length + "</button>" + O.horizon.classes.map(c => '<button class="chipbtn' + (st.hc === c.id ? " on" : "") + '" data-hc="' + c.id + '" title="' + esc(c.def) + '"><span class="fdot" style="background:' + c.c + '"></span>' + esc(c.n) + " " + n(c.id) + "</button>").join("") + "</div>"
+    $("hz-pane").innerHTML = '<div class="or-top slim tight split"><div><div class="or-kicker">The Horizon · ' + HZ[0].e.startYear + " – " + HZ[HZ.length - 1].e.startYear + '</div><h2 class="or-title">What is next</h2>'
+      + '<p class="lead">As far as anything dated can be said. The Archive holds ' + HZ.length + " expectations. They are not equally knowable, so they are sorted by what each rests on: an orbit, a plan, a trend, or a claim. Choose one to read what it rests on and its source.</p></div>"
+      + '<div class="chips">' + '<button class="chipbtn' + (st.hc ? "" : " on") + '" data-hc="">All ' + HZ.length + "</button>" + O.horizon.classes.map(c => '<button class="chipbtn' + (st.hc === c.id ? " on" : "") + '" data-hc="' + c.id + '" title="' + esc(c.def) + '"><span class="fdot" style="background:' + c.c + '"></span>' + esc(c.n) + " " + n(c.id) + "</button>").join("") + "</div></div>"
       + '<section class="or-panel"><div class="or-ph"><b>The sky ahead</b><small>one light per expectation · larger = weightier in the Archive · the time axis is cut at 2035, 2050 and 2075</small></div><div id="hz-strip"></div></section>'
       + '<div class="or-defs">' + O.horizon.classes.map(c => '<div style="border-top-color:' + c.c + '"><b style="color:' + c.c + '">' + esc(c.n) + "</b><span>" + esc(c.def) + "</span></div>").join("") + "</div>"
       + Object.keys(decs).map(d => head(d + " · " + decs[d].length) + '<div class="or-hz">' + decs[d].map(o => '<button data-e="' + o.e.id + '" class="' + (st.e === o.e.id ? "on" : "") + '" style="border-left-color:' + HC[o.c].c + '"><span class="y">' + circa(o) + o.e.startYear + "</span><b>" + esc(o.e.title) + '</b><i style="color:' + HC[o.c].c + '">' + esc(HC[o.c].n) + "</i></button>").join("") + "</div>").join("");
@@ -484,9 +526,13 @@
   const VIEW = { reading: drawReading, lines: drawLines, horizon: drawHorizon, method: drawMethod };
   function sync(fromHash) {
     tabs.paint(); renderSide(); VIEW[st.v]();             /* the side panel first: it decides how wide the charts can be */
-    if (!fromHash) K.hash.write({ v: st.v, i: st.v === "lines" ? st.i : null, e: st.v === "horizon" ? st.e : null });
+    if (!fromHash) writeHash();
     document.title = "ARCHIVUS — The Oracle" + (st.v === "lines" ? " · " + LB[st.i].n : "");
   }
+  const writeHash = () => K.hash.write({ v: st.v, i: st.v === "lines" ? st.i : null, e: st.v === "horizon" ? st.e : null, r: st.v === "reading" && st.r !== O.reading[0][0] ? st.r : null });
+  const openStatement = (id, keep) => { if (!O.reading.some(x => x[0] === id)) return; st.r = id;
+    if (st.v !== "reading") { st.v = "reading"; sync(); } else { drawEvidence(); writeHash(); }
+    const ev = $("rd-ev"), pane = $("rd-pane"); if (innerWidth <= 1100) ev.scrollIntoView({ block: "start" }); else if (!keep && ev.getBoundingClientRect().top < pane.getBoundingClientRect().top) pane.scrollTop = Math.max(0, document.querySelector("#rd-pane .or-md").offsetTop - 8); };
   const go = v => { st.v = v; sync(); const p = $("v-" + v).querySelector(".pane"); if (p) p.scrollTop = 0; };
   const openLine = id => { if (!LB[id]) return; st.v = "lines"; st.i = id; sync(); const p = $("ln-pane"); p.scrollTop = 0; if (innerWidth <= 860) p.querySelector(".or-line").scrollIntoView({ block: "start" }); };
   const openEvent = id => { st.v = "horizon"; st.e = id; if (st.hc && O.horizon.of[id] !== st.hc) st.hc = null; sync(); };
@@ -495,17 +541,25 @@
     const q = K.hash.read();
     if (q.v && tabs.ids.indexOf(q.v) >= 0) st.v = q.v;
     if (q.i && LB[q.i]) { st.i = q.i; if (!q.v) st.v = "lines"; }
+    if (q.r && O.reading.some(x => x[0] === q.r)) st.r = q.r;
     st.e = q.e && O.horizon.of[q.e] ? q.e : null; if (st.e && !q.v) st.v = "horizon";
     built.boot = 1; sync(true);
   }
   function boot() {
     tabs = K.tabs(() => st.v, go);
     $("dc-stage").addEventListener("click", e => {
+      const rb = e.target.closest(".or-rest button[data-f], .or-rest button[data-c]");          /* one thing a deduction rests on */
+      if (rb) { const li = rb.closest("li[data-d]"); return trace(li.closest(".or-doss"), rb.dataset.f != null ? [rb.dataset.f] : [], rb.dataset.c != null ? [rb.dataset.c] : [], li); }
+      const sy = e.target.closest(".or-syn button[data-r]"); if (sy) return openStatement(sy.dataset.r);
+      const dd = !e.target.closest("a, button") && e.target.closest(".or-ded li[data-d]");           /* the deduction itself: everything it rests on */
+      if (dd) return trace(dd.closest(".or-doss"), dd.dataset.fs.split(" ").filter(Boolean), dd.dataset.cs.split(" ").filter(Boolean), dd);
       const hc = e.target.closest("[data-hc]"); if (hc) { st.hc = hc.dataset.hc || null; if (st.e && st.hc && O.horizon.of[st.e] !== st.hc) st.e = null; return sync(); }
       const ev = e.target.closest("[data-e]"); if (ev) return openEvent(ev.dataset.e);
       const b = e.target.closest("[data-i]"); if (b) openLine(b.dataset.i);
     });
     $("dc-stage").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches("tr[data-i], rect[data-i]")) openLine(e.target.dataset.i); });
+    let hot = null; $("dc-stage").addEventListener("mouseover", e => { const el = e.target.closest(".or-ded li[data-d], .or-facts li[data-f]"); if (el !== hot) { hot = el; warm(el); } });
+    $("dc-stage").addEventListener("mouseleave", () => { hot = null; warm(null); });
     $("dc-side").addEventListener("click", e => {
       if (e.target.closest(".sd-x")) { st.e = null; return sync(); }
       const b = e.target.closest("[data-i]"); if (b) openLine(b.dataset.i);
@@ -517,9 +571,9 @@
       if (st.v === "lines") { const n = O.lines[O.lines.indexOf(LB[st.i]) + d]; if (n) { st.i = n.id; sync(); } }
       else if (st.v === "horizon" && st.e) { const a = hzShown(), n = a[a.findIndex(h => h.e.id === st.e) + d]; if (n) { st.e = n.e.id; sync(); } }
     });
-    const hay = O.lines.map(l => ({ label: l.n, sub: "Line · " + l.q, i: l.id, t: (l.n + " " + l.q + " " + fill(l.verdict) + " " + l.shows.join(" ")).toLowerCase() }))
-      .concat(HZ.map(h => ({ label: h.e.title, sub: h.e.startYear + " · " + HC[h.c].n, e: h.e.id, t: (h.e.title + " " + h.e.desc).toLowerCase() })));
-    K.finder($("dc-q"), q => hay.filter(h => h.t.indexOf(q) >= 0), h => h.e ? openEvent(h.e) : openLine(h.i));
+    const hay = O.reading.map((r, i) => ({ label: fill(r[1]), sub: "Statement " + ROMAN[i + 1] + " · " + LB[r[0]].n, r: r[0], t: (fill(r[1]) + " " + fill(r[2])).toLowerCase() })).concat(O.lines.map(l => ({ label: l.n, sub: "Line · " + l.q, i: l.id, t: (l.n + " " + l.q + " " + fill(l.verdict) + " " + l.shows.join(" ")).toLowerCase() }))
+      .concat(HZ.map(h => ({ label: h.e.title, sub: h.e.startYear + " · " + HC[h.c].n, e: h.e.id, t: (h.e.title + " " + h.e.desc).toLowerCase() }))));
+    K.finder($("dc-q"), q => hay.filter(h => h.t.indexOf(q) >= 0), h => h.e ? openEvent(h.e) : h.r ? openStatement(h.r) : openLine(h.i));
     let rt = 0, lw = innerWidth; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (innerWidth === lw) return; lw = innerWidth; renderSide(); VIEW[st.v](); }, 160); });
     window.addEventListener("hashchange", applyHash);
     applyHash();

@@ -118,7 +118,7 @@
     const open = (g, by) => { if (!g.classList.contains("open")) { shut(); g.classList.add("open"); g.firstChild.setAttribute("aria-expanded", "true"); } g._by = by; };
     grps.forEach(g => {
       const btn = g.firstChild; let t = 0;
-      btn.addEventListener("click", () => { if (g.classList.contains("open") && g._by === "click") shut(); else open(g, "click"); });
+      btn.addEventListener("click", () => { clearTimeout(t); if (g.classList.contains("open") && g._by === "click") shut(); else open(g, "click"); });   /* a click settles it: no pending hover may reopen what Escape then closes */
       /* a mouse opens by resting on the door; a finger never fires these as "mouse", so a tap is always the click above */
       /* …after a short rest (110ms), so a pointer only crossing the header on its way elsewhere opens nothing; moving from one open menu to the next is immediate */
       g.addEventListener("pointerenter", e => { if (e.pointerType !== "mouse") return; clearTimeout(t); if (g.classList.contains("open")) return;
@@ -126,7 +126,7 @@
       g.addEventListener("pointerleave", e => { if (e.pointerType !== "mouse") return; clearTimeout(t); t = setTimeout(() => { if (g._by === "hover" || !g.contains(document.activeElement)) close(g); }, 200); });
       g.addEventListener("keydown", e => {
         const links = Array.from(g.querySelectorAll(".mn a")), i = links.indexOf(e.target);
-        if (e.key === "Escape" && g.classList.contains("open")) { e.stopPropagation(); shut(); btn.focus(); }
+        if (e.key === "Escape" && g.classList.contains("open")) { clearTimeout(t); e.stopPropagation(); shut(); btn.focus(); }
         else if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); e.stopPropagation(); open(g, "click"); links[i < 0 ? 0 : (i + (e.key === "ArrowDown" ? 1 : links.length - 1)) % links.length].focus(); }
       });
       g.addEventListener("focusout", e => { if (e.relatedTarget && !g.contains(e.relatedTarget)) close(g); });

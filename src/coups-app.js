@@ -31,7 +31,7 @@
   const wiki = t => "https://en.wikipedia.org/wiki/" + t;
   const okDot = (e, ok) => '<span class="okd o' + (ok == null ? e.ok : ok) + '" style="color:' + D.ideo[e.i][1] + '" title="' + OKT[ok == null ? e.ok : ok][0] + '"></span>';
 
-  const st = { v: "roll", i: null, c: null, yr: null, fi: null, fg: null, fo: null, m: "att", red: "cases", green: "cases" };
+  const st = { v: "roll", i: null, c: null, yr: null, fi: null, fg: null, fo: null, m: "att", red: "map", green: "map", sc: null, sy: null, lay: { red: 1, green: 1, claim: 0 } };   /* sc, sy, lay: the seizure map's country, "up to" year and layers */
   const built = {};
   let tabs = null, map = null;
 
@@ -46,7 +46,7 @@
 
   /* ---------------- state ---------------- */
   function sync(skipHash) {
-    if (!skipHash) K.hash.write({ v: st.v, s: st.v === "red" || st.v === "green" ? (st[st.v] !== "cases" ? st[st.v] : null) : null, i: st.i, c: st.v === "record" ? st.c : null, y: st.v === "record" ? st.yr : null });
+    if (!skipHash) K.hash.write({ v: st.v, s: st.v === "red" || st.v === "green" ? (st[st.v] !== "map" ? st[st.v] : null) : null, i: st.i, c: st.v === "record" ? st.c : null, y: st.v === "record" ? st.yr : null });
     tabs.paint(); renderSide(); render(st.v);
   }
   function go(v) { if (tabs.ids.indexOf(v) < 0) return; st.v = v; sync(); }
@@ -155,7 +155,7 @@
   }
 
   /* ---------------- the two studies ---------------- */
-  const SECS = [["cases", "The cases", "Every attempt, the road taken and the conditions present beforehand"], ["before", "What came before", "The recurring preconditions, counted"], ["against", "The other ledger", "Coups made to stop it, and what never happened"]];
+  const SECS = [["map", "The map", "Where each creed took, or tried to take, a state — the red and the green on one map"], ["cases", "The cases", "Every attempt, the road taken and the conditions present beforehand"], ["before", "What came before", "The recurring preconditions, counted"], ["against", "The other ledger", "Coups made to stop it, and what never happened"]];
   const caseOf = (S, c) => { const e = BY[c[0]]; return { e, route: c[1], f: c[2], n: c[3] || e.n, ok: c[4] == null ? e.ok : c[4] }; };
   function drawStudy(key) {
     const S = D[key], pane = $(key + "-pane"), PK = Object.keys(S.pre), cases = S.cases.map(c => caseOf(S, c)).sort((a, b) => a.e.y - b.e.y);
@@ -169,6 +169,8 @@
     $(key + "-secs").innerHTML = '<span class="sec-t" style="color:' + S.color + '">' + S.title + "</span>" + SECS.map(d => '<button class="chipbtn' + (d[0] === st[key] ? " on" : "") + '" data-sec="' + d[0] + '" title="' + esc(d[2]) + '">' + d[1] + "</button>").join("") + '<span class="sec-n">' + cases.length + " cases · " + cases.filter(c => c.ok === 1).length + " held power</span>";
     const held = cases.filter(c => c.ok === 1), lost = cases.filter(c => c.ok !== 1), share = (list, f) => list.filter(c => c.f.indexOf(f) >= 0).length;
     let h = "";
+    if (st[key] === "map") return drawSeizeMap(key);
+    delete pane.dataset.sec;
     if (st[key] === "cases") {
       const tbl = list => '<table class="mx cases"><thead><tr><th>Year</th><th class="nm">Case</th><th title="The road taken"> </th>' + PK.map(f => '<th class="f" title="' + esc(S.pre[f][0] + " — " + S.pre[f][1]) + '">' + S.pre[f][2] + "</th>").join("") + "<th></th></tr></thead><tbody>"
         + list.map(c => '<tr class="go" data-i="' + c.e.id + '" title="' + esc(c.n + " — " + c.e.pl) + '"><td class="y">' + yr(c.e.y) + '</td><td class="nm"' + (c.e.id === st.i ? ' style="color:var(--gold-bright)"' : "") + ">" + esc(c.n) + '</td><td><span class="rt" title="' + esc(S.routes[c.route]) + '">' + c.route + "</span></td>" + PK.map(f => '<td class="f" style="color:' + (c.f.indexOf(f) >= 0 ? S.color : "#232a3c") + '"><span class="dot"></span></td>').join("") + "<td>" + okDot(c.e, c.ok) + "</td></tr>").join("") + "</tbody></table>";
@@ -305,9 +307,97 @@
   }
   function renderSide() {
     const side = $("dc-side"), e = st.i && BY[st.i];
-    const html = e ? eventCard(e) : st.v === "record" && st.c ? countryCard(st.c) : st.v === "record" && st.yr ? yearCard(st.yr) : null;
+    const study = (st.v === "red" || st.v === "green") && st[st.v] === "map";
+    const html = e ? eventCard(e) : st.v === "record" && st.c ? countryCard(st.c) : st.v === "record" && st.yr ? yearCard(st.yr) : study && st.sc ? seizeCard(st.sc) : null;
     if (!html && innerWidth <= 860) { side.hidden = true; return; }
     side.hidden = false; side.innerHTML = '<div class="dc-card' + (html ? "" : " intro") + '">' + (html || intro()) + "</div>"; side.scrollTop = 0;
+  }
+
+  /* ---------------- the seizure map (v17) ----------------
+     The owner: "why is there no map of the red and green seizures? seems like an easy way to view presumed coalitions".
+     One map, in both studies: every country where a Marxist or an Islamist seizure in the roll took place, coloured by
+     creed and by how it ended, with a year control to watch each family spread. A third layer, off until asked for,
+     marks the governments that claim such an ideology today (V-Dem, through the Realms).
+     It is deliberately labelled as what it is: where a creed took or tried to take a state. A seizure is not an
+     alliance, and a creed that held power in 1949 may not hold it now. */
+  const CL = window.ARCHIVUS_CLAIMS || { S: [], R: [], year: null, src: "" }, FAMK = ["red", "green"], SZ = {}, smap = {};
+  FAMK.forEach(k => D[k].cases.forEach(c => { const x = caseOf(D[k], c); if (!x.e.iso) return; const o = SZ[x.e.iso] = SZ[x.e.iso] || { red: [], green: [] }; o[k].push(x); }));
+  Object.keys(SZ).forEach(i => FAMK.forEach(k => SZ[i][k].sort((a, b) => a.e.y - b.e.y)));
+  const SZY0 = Math.min.apply(null, FAMK.map(k => Math.min.apply(null, D[k].cases.map(c => BY[c[0]].y)))), SZY1 = new Date().getFullYear();
+  const RANK = { 1: 3, 2: 2, 0: 1 }, ALPHA = { 3: 1, 2: 0.62, 1: 0.3 };                       /* held > brief > failed */
+  const szBest = (iso, k) => { const y = st.sy || SZY1; let b = 0; ((SZ[iso] || {})[k] || []).forEach(x => { if (x.e.y <= y) b = Math.max(b, RANK[x.ok]); }); return b; };
+  const rgba = (hex, a) => "rgba(" + parseInt(hex.slice(1, 3), 16) + "," + parseInt(hex.slice(3, 5), 16) + "," + parseInt(hex.slice(5, 7), 16) + "," + a + ")";
+  const claimOf = iso => CL.S.indexOf(iso) >= 0 ? "red" : CL.R.indexOf(iso) >= 0 ? "green" : null;
+  const szLine = (x, k) => '<small><span class="fdot" style="background:' + D[k].color + '"></span>' + yr(x.e.y) + " · " + esc(x.n) + " · " + OKT[x.ok][2].toLowerCase() + "</small>";
+  function drawSeizeMap(key) {
+    const S = D[key], pane = $(key + "-pane");
+    if (pane.dataset.sec !== "map" || !smap[key] || !pane.contains(smap[key].svg)) {
+      pane.dataset.sec = "map";
+      pane.innerHTML = '<p class="lead">Where the two creeds took, or tried to take, a state: every Marxist and every Islamist seizure named in the roll, on one map. Solid is a seizure that held, paler one that was brief, palest one that failed. A seizure is not an alliance, and a creed that held power once may not hold it now — the third layer shows who claims such an ideology today.</p>'
+        + '<div class="dc-bar sz-bar"><div class="chips" id="' + key + '-lay" role="group" aria-label="Layers"></div>'
+        + '<label class="sz-yr"><span>Up to</span><input type="range" id="' + key + '-sy" min="' + SZY0 + '" max="' + SZY1 + '" step="1" aria-label="Show seizures up to this year"><b id="' + key + '-syv"></b></label>'
+        + '<div class="chips sz-marks" id="' + key + '-marks">' + [[1848, "1848"], [1917, "1917"], [1949, "1949"], [1979, "1979"], [1991, "1991"], [0, "Today"]].map(m => '<button type="button" class="chipbtn" data-sy="' + m[0] + '">' + m[1] + "</button>").join("") + "</div></div>"
+        + '<div class="rl-map sz-map" id="' + key + '-mw"><svg id="' + key + '-map" role="img" aria-label="World map of the red and green seizures"></svg>'
+        + '<div class="rl-zoom"><button class="chipbtn" data-z="in" title="Zoom in">+</button><button class="chipbtn" data-z="out" title="Zoom out">−</button><button class="chipbtn" data-z="reset" title="Reset the view">⟲</button></div>'
+        + '<div class="plate rl-leg" id="' + key + '-leg"></div><div class="plate rl-tip" id="' + key + '-tip" hidden></div></div>'
+        + '<div class="sz-list" id="' + key + '-list"></div>';
+      const svg = $(key + "-map"), tip = K.tip($(key + "-tip"), $(key + "-mw"));
+      const m = K.worldMap(svg, { map: REC.map || {}, tip, onView: () => sizeClaims(key), onPick: iso => { st.sc = iso && (SZ[iso] || claimOf(iso)) && iso !== st.sc ? iso : null; st.i = null; sync(); },
+        tipFor: (iso, name) => { const o = iso && SZ[iso], c = iso && claimOf(iso); if (!o && !c) return "<b>" + esc(NAME[iso] || name) + "</b><small>no seizure by either creed in the roll</small>";
+          return "<b>" + esc(NAME[iso] || name) + "</b>" + (o ? FAMK.map(k => o[k].map(x => szLine(x, k)).join("")).join("") : "<small>no seizure by either creed in the roll</small>")
+            + (c ? "<small>claims a " + (c === "red" ? "socialist or communist" : "religious") + " ideology today (V-Dem, " + CL.year + ")</small>" : ""); } });
+      m.svg = svg; smap[key] = m;
+      $(key + "-lay").addEventListener("click", e => { const b = e.target.closest("[data-lay]"); if (b) { st.lay[b.dataset.lay] = st.lay[b.dataset.lay] ? 0 : 1; drawSeizeMap(key); } });
+      $(key + "-sy").addEventListener("input", e => { st.sy = +e.target.value >= SZY1 ? null : +e.target.value; drawSeizeMap(key); });
+      $(key + "-marks").addEventListener("click", e => { const b = e.target.closest("[data-sy]"); if (b) { st.sy = +b.dataset.sy || null; drawSeizeMap(key); } });
+      $(key + "-mw").querySelector(".rl-zoom").addEventListener("click", e => { const b = e.target.closest("[data-z]"); if (b) b.dataset.z === "in" ? m.zoomBy(1 / 1.6) : b.dataset.z === "out" ? m.zoomBy(1.6) : m.reset(); });
+      $(key + "-list").addEventListener("click", e => { const c = e.target.closest("[data-sc]"); if (c) { st.sc = c.dataset.sc; st.i = null; sync(); m.focus(st.sc); } });
+    }
+    const m = smap[key], y = st.sy || SZY1, other = key === "red" ? "green" : "red";
+    $(key + "-secs").innerHTML = '<span class="sec-t" style="color:' + S.color + '">' + S.title + "</span>" + SECS.map(d => '<button class="chipbtn' + (d[0] === st[key] ? " on" : "") + '" data-sec="' + d[0] + '" title="' + esc(d[2]) + '">' + d[1] + "</button>").join("") + '<span class="sec-n">' + S.cases.length + " cases · " + S.cases.filter(c => caseOf(S, c).ok === 1).length + " held power</span>";
+    $(key + "-lay").innerHTML = FAMK.map(k => '<button type="button" class="chipbtn' + (st.lay[k] ? " on" : "") + '" data-lay="' + k + '" aria-pressed="' + !!st.lay[k] + '"><span class="fdot" style="background:' + D[k].color + '"></span>' + (k === "red" ? "Red seizures" : "Green seizures") + "</button>").join("")
+      + '<button type="button" class="chipbtn' + (st.lay.claim ? " on" : "") + '" data-lay="claim" aria-pressed="' + !!st.lay.claim + '" title="Governments whose claim to rule V-Dem codes as socialist or communist, or as religious (any faith), in ' + CL.year + '"><span class="sz-dia"></span>Claims it today</button>';
+    $(key + "-sy").value = y; $(key + "-syv").textContent = st.sy ? yr(st.sy) : "today";
+    $(key + "-marks").querySelectorAll("button").forEach(b => b.classList.toggle("on", (+b.dataset.sy || null) === st.sy));
+    /* a country takes the colour of the creed that got furthest there (this study's creed on a tie); the other, if it too was there, is its outline */
+    const count = { red: 0, green: 0, both: 0 }, rows = [];
+    m.paint(iso => {
+      const b = { red: st.lay.red ? szBest(iso, "red") : 0, green: st.lay.green ? szBest(iso, "green") : 0 }, ps = m.paths[iso] || [];
+      const top = b[key] >= b[other] ? key : other, low = top === key ? other : key;
+      ps.forEach(p => { p.style.stroke = b[top] && b[low] ? D[low].color : ""; p.style.strokeWidth = b[top] && b[low] ? "1.6" : ""; });
+      if (!b[top]) return NAME[iso] ? "#1b2233" : null;
+      FAMK.forEach(k => { if (b[k]) count[k]++; }); if (b.red && b.green) count.both++;
+      rows.push([iso, b]); return rgba(D[top].color, ALPHA[b[top]]);
+    });
+    /* a state too small for these shapes (Grenada) is not on the map; it is still counted and still listed */
+    const unseen = Object.keys(SZ).filter(iso => !m.paths[iso]).map(iso => [iso, { red: st.lay.red ? szBest(iso, "red") : 0, green: st.lay.green ? szBest(iso, "green") : 0 }, 1]).filter(r => r[1].red || r[1].green);
+    unseen.forEach(r => { FAMK.forEach(k => { if (r[1][k]) count[k]++; }); if (r[1].red && r[1].green) count.both++; rows.push(r); });
+    m.over.querySelectorAll(".sz-claim").forEach(x => x.remove());
+    if (st.lay.claim) FAMK.forEach(k => (k === "red" ? CL.S : CL.R).forEach(iso => { const ps = m.paths[iso]; if (!ps) return; let best = null, area = -1; ps.forEach(p => { const bb = p.getBBox(); if (bb.width * bb.height > area) { area = bb.width * bb.height; best = bb; } });
+      m.over.appendChild(K.svgEl("path", { class: "sz-claim", "data-x": best.x + best.width / 2, "data-y": best.y + best.height / 2, fill: D[k].color, stroke: "#f4efe0", "vector-effect": "non-scaling-stroke", "stroke-width": 1.4, "pointer-events": "none" })); }));
+    sizeClaims(key); m.select(st.sc);
+    const sw = (c, a, t) => '<span><i style="background:' + rgba(c, a) + '"></i>' + t + "</span>";
+    $(key + "-leg").innerHTML = "<b>" + (st.sy ? "Seizures up to " + yr(st.sy) : "Every seizure in the two studies") + "</b>"
+      + (st.lay.red ? sw(D.red.color, 1, "red, held") + sw(D.red.color, .62, "brief") + sw(D.red.color, .3, "failed") + "<br>" : "")
+      + (st.lay.green ? sw(D.green.color, 1, "green, held") + sw(D.green.color, .62, "brief") + sw(D.green.color, .3, "failed") + "<br>" : "")
+      + (st.lay.red && st.lay.green ? '<span><i style="background:none;border:1.6px solid ' + D[other].color + '"></i>outline: the other creed was there too</span><br>' : "")
+      + (st.lay.claim ? '<span><span class="sz-dia" style="background:' + D.red.color + '"></span>claims a socialist or communist ideology today</span><br><span><span class="sz-dia" style="background:' + D.green.color + '"></span>claims a religious ideology today (any faith)</span>' : "")
+      + "<small>" + count.red + " countries with a red seizure · " + count.green + " with a green · " + count.both + " with both" + (st.lay.claim ? " · claims: " + CL.src + ", coded " + CL.year : "") + ". " + (unseen.length ? unseen.map(r => esc(NAME[r[0]] || r[0])).join(", ") + (unseen.length > 1 ? " are" : " is") + " too small to draw here and " + (unseen.length > 1 ? "are" : "is") + " in the list below. " : "") + "The roll is a selection of named seizures, not a count; click a country for its cases.</small>";
+    const land = k => rows.filter(r => r[1][k]).sort((a, b) => b[1][k] - a[1][k] || (NAME[a[0]] || a[0]).localeCompare(NAME[b[0]] || b[0]));
+    $(key + "-list").innerHTML = [key, other].filter(k => st.lay[k]).map(k => '<div><h4 style="color:' + D[k].color + '">' + (k === "red" ? "Red" : "Green") + " · " + land(k).length + ' countries<small>held first, then brief, then failed</small></h4><div class="chips">'
+      + land(k).map(r => '<button type="button" class="nchip' + (st.sc === r[0] ? " on" : "") + '" data-sc="' + r[0] + '"' + (r[2] ? ' title="Too small to draw on this map"' : "") + '><span class="fdot" style="background:' + rgba(D[k].color, ALPHA[r[1][k]]) + ";box-shadow:0 0 0 1px " + D[k].color + '"></span>' + esc(NAME[r[0]] || r[0]) + "</button>").join("") + "</div></div>").join("");
+  }
+  /* the "claims it today" marks keep one size on the screen however far the map is zoomed */
+  function sizeClaims(key) { const m = smap[key]; if (!m) return; const r = 5 * m.scale();
+    m.over.querySelectorAll(".sz-claim").forEach(d => { const x = +d.dataset.x, y = +d.dataset.y, ry = r / m.SY; d.setAttribute("d", "M" + x + " " + (y - ry) + "L" + (x + r) + " " + y + "L" + x + " " + (y + ry) + "L" + (x - r) + " " + y + "Z"); }); }
+  function seizeCard(iso) {
+    const o = SZ[iso] || { red: [], green: [] }, c = claimOf(iso);
+    let h = '<button class="sd-x" title="Close (Esc)" aria-label="Close">×</button><div class="sd-k">On the seizure map</div><div class="sd-t">' + esc(NAME[iso] || iso) + "</div>"
+      + '<div class="sd-d">' + o.red.length + " red · " + o.green.length + " green, in the roll</div>";
+    FAMK.forEach(k => { if (!o[k].length) return; h += '<div class="sd-k" style="color:' + D[k].color + '">' + (k === "red" ? "Red seizures" : "Green seizures") + "</div>"
+      + o[k].map(x => '<button class="rel s" data-i="' + x.e.id + '" style="border-left-color:' + D[k].color + '">' + esc(x.n) + "<i>" + yr(x.e.y) + " · " + esc(D[k].routes[x.route] || "") + " · " + OKT[x.ok][2].toLowerCase() + "</i></button>").join(""); });
+    h += '<div class="sd-k">Today</div><div class="sd-d" style="border-left:2px solid ' + (c ? D[c].color : "#8d96af") + ';padding-left:10px">' + (c ? "Its government claims a " + (c === "red" ? "socialist or communist" : "religious") + " ideology to justify its rule (" + esc(CL.src) + ", coded " + CL.year + ")." : "V-Dem does not code its government as claiming a socialist, communist or religious ideology.") + "</div>";
+    return h + '<div class="sd-links"><a href="realms.html#v=map&c=' + iso + '">' + esc(NAME[iso] || iso) + ' today, in the Realms ⟶</a><a href="doctrines.html#v=atlas">The party-states year by year, in the Doctrines ⟶</a></div>';
   }
 
   /* ---------------- boot ---------------- */
@@ -326,14 +416,14 @@
       (window.ARCHIVUS_COUNTRIES || []).forEach(c => { const i = FIX[c.n] || inv[c.n]; if (i && NAME[i]) REC.map[c.n] = i; }); }
     tabs = K.tabs(() => st.v, go);
     $("dc-side").addEventListener("click", e => {
-      if (e.target.closest(".sd-x")) { if (st.i) st.i = null; else if (st.c) st.c = null; else st.yr = null; return sync(); }
+      if (e.target.closest(".sd-x")) { if (st.i) st.i = null; else if (st.c) st.c = null; else if (st.yr) st.yr = null; else st.sc = null; return sync(); }
       const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); return go(g.dataset.go); }
       const c = e.target.closest("[data-c]"); if (c) { e.preventDefault(); st.v = "record"; pickCountry(c.dataset.c); return setTimeout(() => map && map.focus(st.c), 80); }
       const b = e.target.closest("[data-i]"); if (b) pickEvent(b.dataset.i);
     });
     document.addEventListener("keydown", e => {
       if (e.target.closest("input, textarea") || e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key === "Escape" && (st.i || st.c || st.yr)) { if (st.i) st.i = null; else if (st.c) st.c = null; else st.yr = null; return sync(); }
+      if (e.key === "Escape" && (st.i || st.c || st.yr || st.sc)) { if (st.i) st.i = null; else if (st.c) st.c = null; else if (st.yr) st.yr = null; else st.sc = null; return sync(); }
       const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (!d) return;
       if (st.i) { const idx = L.filter(x => x.id === st.i || st.v !== "roll" || passes(x)).sort((a, b) => a.y - b.y || a.ix - b.ix), n = idx[idx.indexOf(BY[st.i]) + d]; if (n) pickEvent(n.id); }   /* ← → walk the roll in order */
       else if (st.v === "red" || st.v === "green") { const i = SECS.findIndex(x => x[0] === st[st.v]) + d; if (SECS[i]) { st[st.v] = SECS[i][0]; sync(); } }

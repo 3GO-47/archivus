@@ -1230,6 +1230,7 @@ body.has-rail .mlist button.on { box-shadow: inset 0 0 22px rgba(201,162,39,.1);
      3 · the guide: the right-hand "how to read this" card folds
          to a labelled strip; the panel opens when something is chosen
      4 · tucked chip rows
+     5 · the Archive's bar and the War Room's map controls, regrouped (v16.3)
      NOTHING IS REMOVED: the owner asked for a reorganisation.
    ============================================================ */
 /* 1 · the header */
@@ -1309,3 +1310,32 @@ body.has-rail .mlist button.on { box-shadow: inset 0 0 22px rgba(201,162,39,.1);
 .tucked { display: none !important; }
 .tuck-btn { margin-left: auto; }
 body.has-rail #bl-houses:not(.tucked) { flex: 1 1 100%; margin-left: 0; order: 9; }
+
+/* 5 · the two busiest first screens, regrouped (v16.3). Every control is where it was or beside it; none is hidden.
+   THE ARCHIVE'S BAR — the views become the same engraved tabs every other instrument has (the Astrolabe, which is
+   another instrument, stands beside them as a grouped tab does); then one boxed control per job — Filters, Search,
+   the "In view" panel — and the rest (tours, the window's oracle, export, reset, the dice) as quiet text. */
+@media (min-width: 861px) {
+  body.has-rail #bar { gap: 6px; }
+  body.has-rail #view-switch { border: 0; border-radius: 0; overflow: visible; gap: 2px; padding-right: 10px; margin-right: 6px; border-right: 1px solid var(--line); }
+  body.has-rail #view-switch .view-btn { background: none; border: 0; border-bottom: 2px solid transparent; box-shadow: none; padding: 8px 12px 6px; font-family: var(--display); font-weight: 500; font-size: 11.5px; letter-spacing: .13em; text-transform: uppercase; color: #8792ad; white-space: nowrap; }
+  body.has-rail #view-switch .view-btn:hover { color: var(--paper); }
+  body.has-rail #view-switch .view-btn.active { background: none; color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 18px rgba(232,196,85,.55); }
+  body.has-rail #view-switch a.view-btn { font-size: 10px; padding-left: 4px; padding-right: 6px; margin-left: -5px; }
+  body.has-rail #view-switch a.view-btn::before { content: "·"; margin-right: 9px; opacity: .55; }
+  body.has-rail #bar #tours-btn, body.has-rail #bar #oracle-btn { background: none; border-color: transparent; box-shadow: none; padding: 8px 9px; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; }
+  body.has-rail #bar #export-btn, body.has-rail #bar #reset, body.has-rail #bar #dice-btn { background: none; border-color: transparent; box-shadow: none; color: #8792ad; padding: 8px 7px; min-width: 0; }
+  body.has-rail #bar #tours-btn:hover, body.has-rail #bar #oracle-btn:hover, body.has-rail #bar #export-btn:hover, body.has-rail #bar #reset:hover, body.has-rail #bar #dice-btn:hover { color: var(--gold-bright); border-color: transparent; }
+  body.has-rail #bar #dock-btn { margin: 0 4px 0 8px; }
+}
+/* THE WAR ROOM'S MAP — "what to show" joins "where to look" in one row at the foot of the map, leaving the top to the
+   date alone. Only when the map itself is wide enough for both side by side (a container query on the map, so it holds
+   whatever the window and the side panel are doing); otherwise the layers stay at the top right, as before. */
+body.has-rail #map-wrap { container-type: inline-size; container-name: warmap; }
+@container warmap (min-width: 1245px) { body.has-rail #map-tools { top: auto; bottom: 12px; max-width: none; flex-wrap: nowrap; } }   /* body.has-rail: wars.css loads later and sets top */
+@container warmap (min-width: 1390px) {
+  body.has-rail #theaters, body.has-rail #map-tools { align-items: center; }
+  #theaters::before { content: "Theatre"; }
+  #map-tools::before { content: "Show"; }
+  #theaters::before, #map-tools::before { font-family: var(--engraved); font-weight: 600; font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase; color: #8792ad; padding: 0 7px 0 8px; }
+}

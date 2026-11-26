@@ -266,3 +266,14 @@ body.rl { --free: #49c9b8; --part: #c9a227; --not: #a23b33; --up: #49c9b8; --dow
   .tbl.bills, .tbl.bills tbody, .tbl.bills tr, .tbl.bills td { display: block; width: auto !important; } .tbl.bills thead { display: none; }
   .tbl.bills td { border: 0; padding: 2px 4px; } .tbl.bills tr { border-bottom: 1px solid var(--line-faint); padding: 9px 0; }
 }
+
+/* the seizure map in the Coups' two studies (v17) */
+.sz-bar { padding: 0; gap: 8px 16px; flex-wrap: wrap; align-items: center; border: 0; }
+.sz-yr { display: inline-flex; align-items: center; gap: 9px; font: 10.5px var(--mono); color: #8d96af; flex: 1 1 260px; min-width: 200px; max-width: 520px; }
+.sz-yr span { font: 600 9.5px var(--display); letter-spacing: .18em; text-transform: uppercase; } .sz-yr input { flex: 1; min-width: 80px; accent-color: #c9a227; }
+.sz-yr b { font: 600 14px var(--display); color: var(--gold-bright); min-width: 52px; }
+.sz-marks .chipbtn { padding: 3px 9px; font-size: 11px; }
+.pane > .sz-map { flex: 1 0 auto; height: clamp(360px, 58vh, 720px); min-height: 360px; border: 1px solid var(--line); border-radius: 7px; }
+.sz-dia { display: inline-block; width: 8px; height: 8px; transform: rotate(45deg); background: #f4efe0; border: 1px solid #f4efe0; margin: 0 7px 0 2px; vertical-align: 0; }
+.sz-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 22px; } .sz-list h4 { margin: 0 0 6px; } .sz-list .nchip.on { border-color: var(--gold); color: var(--gold-bright); }
+@media (max-width: 860px) { .sz-list { grid-template-columns: 1fr; } .pane > .sz-map { height: 56vh; } }
