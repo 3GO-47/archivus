@@ -35,9 +35,9 @@
   const srcList = ks => '<div class="srcs">' + (ks || []).filter(k => SRC[k]).map(k => '<a href="' + esc(SRC[k][1]) + '" target="_blank" rel="noopener">' + esc(SRC[k][0]) + "<small>" + esc(fd(SRC[k][2])) + "</small></a>").join("") + "</div>";
 
   /* everything known about a country, gathered once: the map's tooltip, its card and the ledger all read this */
-  const F = {}, fact = n => F[n] || (F[n] = { n, blocs: [], us: [], eu: false, nuke: null, ballots: [], ahead: [], force: [], wire: [], wars: [] });
+  const F = {}, fact = n => F[n] || (F[n] = { n, blocs: [], us: [], eu: null, un: null, nuke: null, ballots: [], ahead: [], force: [], wire: [], wars: [] });
   BL.forEach(b => { b.members.forEach(n => fact(n).blocs.push([b, "member"])); (b.partners || []).forEach(n => fact(n).blocs.push([b, "partner"])); });
-  D.sanc.us.forEach(r => fact(r[0]).us.push(r)); D.sanc.eu.forEach(n => { fact(n).eu = true; });
+  D.sanc.us.forEach(r => fact(r[0]).us.push(r)); D.sanc.eu.forEach(r => { fact(r[0]).eu = r; }); D.sanc.un.forEach(r => { fact(r[0]).un = r; });
   D.nukes.list.forEach(r => { fact(r[0]).nuke = r; });
   D.ballots.forEach(r => fact(r[1]).ballots.push(r)); D.ahead.forEach(r => fact(r[1]).ahead.push(r)); D.force.forEach(r => fact(r[1]).force.push(r));
   W.forEach(w => (w.w || []).forEach(n => fact(n).wire.push(w)));
@@ -46,7 +46,8 @@
 
   const LENS = [["wars", "Wars", "Where the fighting is, by severity"], ["blocs", "Blocs", "Who stands with whom: the alliances and groupings"], ["sanctions", "Sanctions", "Who is under American and European sanctions"],
                 ["ballots", "Ballots", "Who voted in 2026, and whether power changed hands"], ["arsenals", "Arsenals", "The nine nuclear-armed states"]];
-  const SANC = { us: "#e08a3c", eu: "#5b9be0", both: "#e5484d" };
+  const SANC = { us: "#e08a3c", eu: "#5b9be0", un: "#62c073", n: ["", "#c9a227", "#e08a3c", "#e5484d"] };     /* n: painted by how many of the three sanction it */
+  const sancBy = f => [f.us.length ? "US" : "", f.eu ? "EU" : "", f.un ? "UN" : ""].filter(Boolean);
   const BAL = { "new": ["Power changed hands", "#e8c455"], held: ["The governing side kept power", "#5b7fa8"], hung: ["No majority, or count not final", "#b48ef0"], won: ["A winner is reported", "#49c9b8"], nr: ["Held; result not read", "#4a5266"] };
 
   const st = { v: "board", l: "wars", b: null, k: null, d: null, c: null, s: null, g: null, w: null, wire: 1, straits: 1 };
@@ -80,7 +81,7 @@
     const f = F[n]; if (!f) return null;
     if (st.l === "wars") { if (!f.wars.length) return null; const top = f.wars.reduce((a, c) => c.lv > a.lv ? c : a); return sink(lv(top).c, 0.3 + 0.12 * top.lv); }
     if (st.l === "blocs") { const m = blocOf(n); return m ? sink(m[0].c, m[1] === "member" ? 0.78 : 0.3) : null; }
-    if (st.l === "sanctions") return f.us.length && f.eu ? sink(SANC.both, 0.8) : f.us.length ? sink(SANC.us, 0.72) : f.eu ? sink(SANC.eu, 0.72) : null;
+    if (st.l === "sanctions") { const n = sancBy(f).length; return n ? sink(SANC.n[n], 0.5 + 0.12 * n) : null; }
     if (st.l === "ballots") { const b = balOf(n); return b ? sink(BAL[b[4]][1], b[4] === "nr" ? 0.6 : 0.8) : f.ahead.length ? "#1c2233" : null; }
     return f.nuke ? sink("#e8c455", 0.2 + 0.07 * Math.log10(f.nuke[4])) : null;
   }
@@ -93,7 +94,7 @@
     const f = F[name]; let h = "<b>" + esc(nm(name)) + "</b>"; if (!f) return h;
     if (f.wars.length) h += "<small>" + f.wars.map(c => c.lv + " · " + esc(c.n.split(":")[0])).join("<br>") + "</small>";
     if (f.blocs.length) h += "<small>" + f.blocs.map(x => x[0].n + (x[1] === "partner" ? " partner" : "")).join(" · ") + "</small>";
-    if (f.us.length || f.eu) h += "<small>Sanctions: " + [f.us.length ? "US" : "", f.eu ? "EU" : ""].filter(Boolean).join(" and ") + "</small>";
+    if (sancBy(f).length) h += "<small>Sanctions: " + sancBy(f).join(", ") + "</small>";
     if (f.nuke) h += "<small>" + f.nuke[4].toLocaleString("en") + " nuclear warheads</small>";
     const b = balOf(name); if (b) h += "<small>Voted " + fd(b[0]) + " — " + BAL[b[4]][0].toLowerCase() + "</small>";
     return h;
@@ -103,8 +104,8 @@
     let h = "";
     if (st.l === "wars") h = "<b>Wars, by severity</b>" + LV.map(l => sw(l.c, l.n + " " + l.name)).join("") + "<small>Read from the Conflicts, compiled " + fd(CF.meta.asOf) + ". Click a ring for the conflict.</small>";
     else if (st.l === "blocs") h = "<b>Blocs</b>" + BL.map(b => sw(b.c, b.n)).join("") + "<small>" + (st.b ? "Members solid" + (BBY[st.b].partners ? ", partner countries faint" : "") + ". " + srcIn(BBY[st.b].s) : "A country in several is painted for the first in this order. Pick one above to see it whole, or open the Blocs for the full ledger.") + "</small>";
-    else if (st.l === "sanctions") h = "<b>Under sanctions</b>" + sw(SANC.us, "United States") + sw(SANC.eu, "European Union") + sw(SANC.both, "both") + "<small>" + esc(D.sanc.note) + " " + srcIn(["ofac", "eusan"]) + "</small>";
-    else if (st.l === "ballots") h = "<b>Voted in 2026</b>" + Object.keys(BAL).map(k => sw(BAL[k][1], BAL[k][0])).join("") + '<span><i class="dash"></i>votes in the months ahead</span><small>' + srcIn(["ifes", "ifesup"]) + "</small>";
+    else if (st.l === "sanctions") h = "<b>Under sanctions, by how many of three</b>" + sw(SANC.n[3], "US, EU and UN") + sw(SANC.n[2], "two of them") + sw(SANC.n[1], "one") + "<small>A regime may be an embargo, or a list of a few people; a country's card says which. " + srcIn(["ofac", "eumap"]) + "</small>";
+    else if (st.l === "ballots") h = "<b>Voted in 2026</b>" + Object.keys(BAL).filter(k => D.ballots.some(r => r[4] === k)).map(k => sw(BAL[k][1], BAL[k][0])).join("") + '<span><i class="dash"></i>votes in the months ahead</span><small>' + srcIn(["ifes", "ifesup"]) + "</small>";
     else h = "<b>Nuclear arsenals</b>" + '<span><i class="ring"></i>ring: every warhead</span><span><i style="background:#e8c455;border-radius:50%"></i>disc: deployed</span><small>SIPRI estimates for January 2026: ' + D.nukes.world[3].toLocaleString("en") + " in all, " + D.nukes.world[0].toLocaleString("en") + " deployed. " + srcIn(D.nukes.s) + "</small>";
     h += '<span class="lg-h">On every lens</span><span><svg viewBox="-8 -8 16 16"><circle r="4" fill="#e8c455"/></svg>a dispatch, coloured by kind</span><span><svg viewBox="-8 -8 16 16"><path d="M0 -6L6 0L0 6L-6 0Z" fill="none" stroke="#ff5f4a" stroke-width="2"/></svg>a strait, by its state</span>';
     return h;
@@ -192,17 +193,17 @@
 
   /* ---------------- the blocs: one ledger ---------------- */
   function drawBlocs() {
-    const rows = Object.keys(F).filter(n => { const f = F[n]; return f.blocs.length || f.us.length || f.eu || f.nuke; }).map(n => F[n]);
+    const rows = Object.keys(F).filter(n => { const f = F[n]; return f.blocs.length || f.us.length || f.eu || f.un || f.nuke; }).map(n => F[n]);
     const key = f => { const m = f.blocs.filter(x => x[1] === "member")[0]; return m ? BL.indexOf(m[0]) : f.blocs.length ? 7 : 8; };
     rows.sort((a, b) => key(a) - key(b) || (b.nuke ? b.nuke[4] : 0) - (a.nuke ? a.nuke[4] : 0) || b.blocs.length - a.blocs.length || a.n.localeCompare(b.n));   /* by camp; within one, the armed and the many-sided first */
     $("bl-cards").innerHTML = BL.map(b => '<button class="bl-card' + (st.g === b.id ? " sel" : "") + '" data-g="' + b.id + '" style="--c:' + b.c + '"><b>' + b.n + "</b><i>" + (b.members.length + (b.off || []).length) + (b.partners ? " + " + b.partners.length : "") + "</i><span>" + esc(b.full) + "</span><small>" + esc(b.kind) + "</small></button>").join("");
-    let h = '<table class="st-tbl"><thead><tr><th>Country</th>' + BL.map(b => '<th class="c" style="--c:' + b.c + '" title="' + esc(b.full) + '">' + b.n + "</th>").join("") + '<th class="c" title="Under a US Treasury sanctions programme">US sanctions</th><th class="c" title="Named in the EU\'s 2026 brief on restrictive measures">EU sanctions</th><th class="num">Warheads</th><th>Wars on its soil</th></tr></thead><tbody>';
+    let h = '<table class="st-tbl"><thead><tr><th>Country</th>' + BL.map(b => '<th class="c" style="--c:' + b.c + '" title="' + esc(b.full) + '">' + b.n + "</th>").join("") + '<th class="c" title="Under a US Treasury sanctions programme">US sanctions</th><th class="c" title="Under an EU regime on the EU sanctions map">EU sanctions</th><th class="c" title="Under a UN Security Council regime">UN sanctions</th><th class="num">Warheads</th><th>Wars on its soil</th></tr></thead><tbody>';
     rows.forEach(f => {
       h += '<tr class="row' + (st.c === f.n ? " sel" : "") + '" data-c="' + esc(f.n) + '"><td class="nm">' + esc(nm(f.n)) + "</td>" + BL.map(b => { const m = f.blocs.filter(x => x[0] === b)[0]; return '<td class="c" style="--c:' + b.c + '">' + (m ? m[1] === "member" ? '<i class="dot"></i>' : '<i class="dot p" title="Partner country"></i>' : "") + "</td>"; }).join("")
-        + '<td class="c">' + (f.us.length ? '<i class="dot" style="--c:' + SANC.us + '" title="' + esc(f.us.map(r => r[1]).join("; ")) + '"></i>' : "") + '</td><td class="c">' + (f.eu ? '<i class="dot" style="--c:' + SANC.eu + '"></i>' : "") + '</td><td class="num">' + (f.nuke ? f.nuke[4].toLocaleString("en") : "") + "</td><td>"
+        + '<td class="c">' + (f.us.length ? '<i class="dot" style="--c:' + SANC.us + '" title="' + esc(f.us.map(r => r[1]).join("; ")) + '"></i>' : "") + '</td><td class="c">' + (f.eu ? '<i class="dot" style="--c:' + SANC.eu + '" title="' + esc(f.eu[1]) + '"></i>' : "") + '</td><td class="c">' + (f.un ? '<i class="dot" style="--c:' + SANC.un + '" title="' + esc(f.un[1]) + '"></i>' : "") + '</td><td class="num">' + (f.nuke ? f.nuke[4].toLocaleString("en") : "") + "</td><td>"
         + f.wars.map(c => '<span class="wtag" style="--c:' + lv(c).c + '">' + esc(c.n.split(":")[0]) + "</span>").join("") + "</td></tr>"; });
     $("bl-wrap").innerHTML = h + "</tbody></table>";
-    $("bl-n").innerHTML = rows.length + " countries that sit in a bloc, are under sanctions or hold nuclear weapons. ● member · ○ partner country. Sources: " + srcIn(["nato", "csto", "ajsco", "brics", "aes", "eu", "ofac", "eusan", "sipri"]) + ".";
+    $("bl-n").innerHTML = rows.length + " countries that sit in a bloc, are under sanctions or hold nuclear weapons. ● member · ○ partner country. Sources: " + srcIn(["nato", "csto", "ajsco", "brics", "aes", "eu", "ofac", "eumap", "sipri"]) + ".";
     if (!built.blocs) { built.blocs = 1;
       $("bl-cards").addEventListener("click", e => { const b = e.target.closest("[data-g]"); if (b) sel("g", b.dataset.g); });
       $("bl-wrap").addEventListener("click", e => { const r = e.target.closest("tr[data-c]"); if (r) sel("c", r.dataset.c); }); }
@@ -216,7 +217,7 @@
     $("ba-wrap").innerHTML = h + "</tbody></table>";
     $("ba-side").innerHTML = "<h4>Still to come<small>" + D.ahead.length + '</small></h4><div class="ah">' + D.ahead.map(r => '<button data-c="' + esc(r[1]) + '"><b>' + fd(r[0]) + "</b>" + esc(nm(r[1])) + "<small>" + esc(r[2]) + "</small></button>").join("") + '</div><p class="hint">Dates: ' + srcIn(["ifesup"]) + ". For South Sudan the Conflicts' source gives December 2026; the election guide gives 11 February 2027.</p>"
       + "<h4>Power changed outside a ballot</h4>" + D.force.map(r => '<div class="fc" data-c="' + esc(r[1]) + '"><b>' + esc(nm(r[1])) + "<small>" + fd(r[0]) + "</small></b><p>" + esc(r[2]) + " " + srcIn(r[3]) + "</p></div>").join("");
-    $("ba-n").innerHTML = D.ballots.length + " national votes of 2026: " + cnt("new") + " changed the government, " + cnt("held") + " kept it, " + cnt("hung") + " left no majority or are still being counted, " + cnt("won") + " report a winner, and for " + cnt("nr") + " the result was not read. Dates: " + srcIn(["ifes"]) + ".";
+    $("ba-n").innerHTML = D.ballots.length + " national votes of 2026: " + cnt("new") + " changed the government, " + cnt("held") + " kept it, " + cnt("hung") + " left no majority or are still being counted, " + cnt("won") + " report a winner" + (cnt("nr") ? ", and for " + cnt("nr") + " the result was not read" : "") + ". Dates: " + srcIn(["ifes"]) + ".";
     if (!built.ballots) { built.ballots = 1;
       const pick = e => { if (e.target.closest("a")) return; const r = e.target.closest("[data-c]"); if (r) sel("c", r.dataset.c); };
       $("ba-wrap").addEventListener("click", pick); $("ba-side").addEventListener("click", pick); }
@@ -262,7 +263,8 @@
     const f = F[n]; let h = X_BTN + '<div class="sd-k">The situation of</div><div class="sd-t">' + esc(nm(n)) + "</div>";
     if (f.wars.length) h += '<div class="sd-k">At war, or near it</div>' + f.wars.map(c => rel("data-w", c.id, c.n, c.lv + " · " + lv(c).name + (c.d26 ? " · 2026: " + c.d26 : ""), lv(c).c)).join("");
     if (f.blocs.length) h += '<div class="sd-k">Stands with</div>' + f.blocs.map(x => rel("data-g", x[0].id, x[0].full, (x[1] === "partner" ? "partner country" : "member") + " · " + x[0].kind.toLowerCase(), x[0].c)).join("");
-    if (f.us.length || f.eu) h += '<div class="sd-k">Under sanctions</div>' + f.us.map(r => '<div class="loss"><b>United States</b><small>' + esc(r[1]) + " · last changed " + fd(r[2]) + " · " + srcA("ofac") + "</small></div>").join("") + (f.eu ? '<div class="loss"><b>European Union</b><small>named in the EU\'s 2026 brief on restrictive measures · ' + srcA("eusan") + "</small></div>" : "");
+    if (sancBy(f).length) h += '<div class="sd-k">Under sanctions</div>' + f.us.map(r => '<div class="loss"><b>United States</b><small>' + esc(r[1]) + " · last changed " + fd(r[2]) + " · " + srcA("ofac") + "</small></div>").join("")
+      + (f.eu ? '<div class="loss"><b>European Union</b><small>' + esc(f.eu[1]) + " · " + srcA("eumap") + "</small></div>" : "") + (f.un ? '<div class="loss"><b>United Nations</b><small>' + esc(f.un[1]) + " · " + srcA("eumap") + " · " + srcA("uncom") + "</small></div>" : "");
     if (f.nuke) h += '<div class="sd-k">Nuclear arsenal</div><div class="dth"><div><span>Warheads</span><b>' + f.nuke[4].toLocaleString("en") + "</b></div><div><span>Deployed</span><b>" + (f.nuke[1] ? f.nuke[1].toLocaleString("en") : "—") + '</b></div></div><p class="hint">SIPRI estimate, January 2026 · ' + srcIn(D.nukes.s) + "</p>";
     if (f.ballots.length || f.ahead.length || f.force.length) { h += '<div class="sd-k">Who rules, and by what vote</div>';
       f.force.forEach(r => { h += '<div class="loss"><b>' + fd(r[0]) + "</b> " + esc(r[2]) + "<small>" + srcIn(r[3]) + "</small></div>"; });
