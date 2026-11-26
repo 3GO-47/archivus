@@ -429,3 +429,78 @@ window.ARCHIVUS_ORACLE = {
     ]
   }
 };
+
+/* ---------------- what each deduction rests on (v17) ----------------
+   The owner: "no easy way to get from a statement made in the oracle to its substantiation."
+   So every graded deduction names the facts and the charts of its own line that it rests on.
+   One row per deduction, in the order of that line's `deduce`:
+       [ facts, charts, note, horizon ]
+     facts   — which entries of the line's `shows` it rests on (0-based; shown to the reader as "fact 1", "fact 2"…)
+     charts  — which of the line's charts shows it (0-based)
+     note    — said plainly when a deduction rests on something that is NOT a figure on the page
+     horizon — the id of a dated expectation it rests on, if it rests on one
+   Written by hand: it is a judgement about which fact carries which sentence, and it must be kept honest.
+   A deduction with no fact and no chart MUST carry a note. tools/validate-oracle.js checks all of it. */
+window.ARCHIVUS_ORACLE.rests = {
+  power: [
+    [[4, 0], [0]],
+    [[1], [0]],
+    [[0, 2, 3], [0]],
+    [[], [], "This rests on two cases from history, both named in the sentence. No series on this page measures it."]
+  ],
+  orders: [
+    [[0, 1], [0]],
+    [[0, 2], [0]],
+    [[], [], "A reading of the years since 1945, not a figure on this page. The count of governments ended by force is on the line Force."]
+  ],
+  war: [
+    [[2, 4], [3]],
+    [[3], [2]],
+    [[0], [0]],
+    [[1], [1]]
+  ],
+  rule: [
+    [[0, 1, 3], [0]],
+    [[1, 2], [0]],
+    [[1], [0]]
+  ],
+  force: [
+    [[1, 2, 3], [0]],
+    [[1, 2], [0]],
+    [[1], [0]]
+  ],
+  machines: [
+    [[0, 1, 2], [0, 1]],
+    [[3], [2]],
+    [[], [], "This rests on a survey of experts recorded on the Horizon, not on a measured series.", "agi-median"],
+    [[], [], "A claim made by its proponents and recorded on the Horizon. Nothing on this page supports it or can test it.", "singularity-claim"]
+  ],
+  life: [
+    [[0, 1], [0]],
+    [[5], [0]],
+    [[4], [2]],
+    [[2], [1]]
+  ],
+  people: [
+    [[0], [0]],
+    [[3], []],
+    [[0, 1, 2], [0, 1]],
+    [[2], [1]]
+  ],
+  plagues: [
+    [[0, 1, 2], [0]],
+    [[3], []]
+  ],
+  energy: [
+    [[0], [0]],
+    [[3, 4], [1, 2]],
+    [[1, 2], [0]]
+  ],
+  climate: [
+    [[0, 1], [0, 1]],
+    [[2, 3], [2]],
+    [[1], [1]],
+    [[], [], "This rests on two events in the Archive, both named in the sentence. No series on this page measures it."]
+  ]
+};
+

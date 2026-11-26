@@ -10,8 +10,8 @@ window.ARCHIVUS_THEMES = [
   { id: "exploration", name: "Exploration / Migration", color: "#c87f3a" },
   { id: "law",         name: "Law / Governance",        color: "#7c9ac9" },
   { id: "disease",     name: "Disease / Demography",    color: "#8aa14f" },
-  { id: "climate",     name: "Climate / Environment",   color: "#4fae9c" },
-  { id: "myth",        name: "Myth & Cult",             color: "#c874a6" }
+  { id: "myth",        name: "Myth & Cult",             color: "#c874a6" },
+  { id: "climate",     name: "Climate / Environment",   color: "#4fae9c" }      // last on purpose: the owner's least-wanted category, so it closes every order (v16.3)
 ];
 /* Future/Anticipated is a FLAG (event.future), not a theme: anticipated events
    live in their real categories and wear a spectral white ring in every view.
