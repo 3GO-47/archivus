@@ -50,6 +50,8 @@
       icon: I('<path d="M2.6 11.4L2 5.2l3.4 2.6L8 3.4l2.6 4.4L14 5.2l-.6 6.2zM3.2 13.6h9.6"/>') },
     { id: "conflicts", href: "conflicts.html", label: "Conflicts", tip: "Every conflict under way now, from tension to major war",
       icon: I('<circle cx="8" cy="8" r="5.2"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><path d="M8 1.2v3M8 11.8v3M1.2 8h3M11.8 8h3"/>') },
+    { id: "situation", href: "situation.html", label: "Situation", tip: "The world as it stands: wars, blocs, sanctions, ballots and the last ninety days",
+      icon: I('<circle cx="8" cy="8" r="6.2"/><path d="M8 8L12.2 4.6"/><circle cx="8" cy="8" r="1.1" fill="currentColor"/><circle cx="11.2" cy="10.6" r=".9" fill="currentColor"/><circle cx="4.6" cy="6" r=".9" fill="currentColor"/>') },
     { id: "lineage", href: "lineage.html", label: "Bloodline", tip: "The family tree, from the gods of Sumer to the lines of the Messiah",
       icon: I('<path d="M8 2v4M8 6H4v3M8 6h4v3M4 9v2M12 9v2"/><circle cx="8" cy="2.4" r="1" fill="currentColor"/><circle cx="4" cy="12.4" r="1.3"/><circle cx="12" cy="12.4" r="1.3"/>') },
     { id: "pantheons", href: "pantheons.html", label: "Pantheons", tip: "Seven divine family trees and the roads between them",
@@ -67,7 +69,7 @@
     { solo: "oracle" },
     { id: "record", label: "Record", tip: "All recorded history, three ways", items: ["archive", "astrolabe", "codex"], more: ["trial"] },
     { id: "power", label: "Power", tip: "Who rules, how, and how it changes hands", items: ["realms", "coups", "doctrines"] },
-    { id: "war", label: "War", tip: "The world wars, and the wars under way now", items: ["wars", "conflicts"] },
+    { id: "war", label: "War", tip: "The world wars, the wars under way now, and the world as it stands", items: ["wars", "conflicts", "situation"] },
     { id: "myth", label: "Myth", tip: "Gods, bloodlines and the knowledge they are said to have taught", items: ["lineage", "pantheons", "transmissions"] }
   ];
   const FILES = ITEMS.map(it => it.href);
@@ -251,8 +253,8 @@
 
   /* ───────────── search everything ───────────── */
   const KINDS = { go: ["Instrument", "#e8c455"], ev: ["Record", "#c9a227"], "do": ["Doctrine", "#e5484d"], th: ["Forerunner", "#d8c690"], ba: ["Battle", "#ff7a66"],
-    le: ["Leader", "#5b9be0"], bl: ["Bloodline", "#b48ef0"], gd: ["God", "#5bc8dd"], tx: ["Transmission", "#62c073"], cn: ["Country", "#49c9b8"], cu: ["Seizure", "#e08a3c"], cf: ["Conflict", "#e0502f"], or: ["Reading", "#e8c455"] };
-  const WHERE = { ev: "The Archive", "do": "Doctrines", th: "Doctrines", ba: "War Room", le: "War Room", bl: "Bloodline", gd: "Pantheons", tx: "Transmissions", cn: "Realms", cu: "Coups", cf: "Conflicts", or: "Oracle" };
+    le: ["Leader", "#5b9be0"], bl: ["Bloodline", "#b48ef0"], gd: ["God", "#5bc8dd"], tx: ["Transmission", "#62c073"], cn: ["Country", "#49c9b8"], cu: ["Seizure", "#e08a3c"], cf: ["Conflict", "#e0502f"], st: ["Dispatch", "#e8c455"], or: ["Reading", "#e8c455"] };
+  const WHERE = { ev: "The Archive", "do": "Doctrines", th: "Doctrines", ba: "War Room", le: "War Room", bl: "Bloodline", gd: "Pantheons", tx: "Transmissions", cn: "Realms", cu: "Coups", cf: "Conflicts", st: "Situation", or: "Oracle" };
   const norm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const rec = r => ({ l: r[0], k: r[1], h: r[2], s: r[3] || "", w: r[4] || 0, nl: norm(r[0]), ns: norm(r[3] || "") });
   const GO = ITEMS.map(it => rec([it.label.replace(/<[^>]+>/g, ""), "go", it.href, it.tip, 9]));

@@ -36,7 +36,7 @@
   const ORDER = ["blue", "black", "white"];
   /* shared stylesheets beyond styles.css, per page: w wars.css · d doctrines.css · r realms.css
      (tools/build-themes.js checks this table against the pages and refuses to build if it is stale) */
-  const SHEETS = { wars: "w", doctrines: "w d", realms: "w d r", coups: "w d r", conflicts: "w d r", oracle: "w d r" };
+  const SHEETS = { wars: "w", doctrines: "w d", realms: "w d r", coups: "w d r", conflicts: "w d r", situation: "w d r", oracle: "w d r" };
 
   /* ---------- colour arithmetic ---------- */
   const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };

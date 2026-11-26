@@ -2,8 +2,9 @@
    ARCHIVUS — THE CONFLICTS (v13)
    Every conflict under way, read five ways from one file
    (src/data/conflicts.js):
-     · the Map          — countries shaded by severity, a pin per
-                          conflict, a diamond per armed group
+     · the Map          — countries shaded by severity, a ring per conflict sized by
+                          its dead, a diamond per armed group, and the ladder as a
+                          rail beside it (v18)
      · the Ladder       — all of them on one scale, tension → major war
      · the Toll         — what each side has lost, and who says so
      · the Belligerents — the armed groups, and which governments list
@@ -22,7 +23,10 @@
   const num = s => { const m = s == null ? null : String(s).replace(/,/g, "").match(/\d+/); return m ? +m[0] : null; };
   const weight = c => num(c.d26) != null && /^[\d,]/.test(String(c.d26)) ? num(c.d26) : num(c.d25) != null && /^[\d,]/.test(String(c.d25)) ? num(c.d25) * 0.6 : 0;
   L.sort((a, b) => b.lv - a.lv || weight(b) - weight(a) || a.n.localeCompare(b.n));     /* the reading order everywhere: worst first */
+  const WMAX = Math.max.apply(null, L.map(weight));
+  const counted = c => num(c.d26) != null && /^[\d,]/.test(String(c.d26)) ? num(c.d26) : null;                      /* the 2026 figure, where the table gives one */
   const lv = c => LV[c.lv - 1];
+  const YEAR = +D.meta.asOf.slice(0, 4), OLDEST = Math.min.apply(null, L.map(c => c.since));
   const TR = { up: ["▲", "worsening"], flat: ["▬", "unchanging"], down: ["▼", "easing"] };
   const tr = c => c.tr ? '<em class="tr-' + c.tr + '" title="' + TR[c.tr][1] + " — " + esc(c.trBy) + '">' + TR[c.tr][0] + "</em>" : "";
   const PK = { state: "State", armed: "Armed group", gang: "Criminal organisation", bloc: "Coalition" };
@@ -106,19 +110,25 @@
     /* pins and diamonds */
     marks = []; map.over.textContent = "";
     vis.slice().reverse().forEach(c => {                    /* worst last, so they sit on top */
-      const l = lv(c), g = el("g", { class: "cf-pin" + (st.i === c.id ? " sel" : st.i ? " dim" : ""), "data-cf": c.id }), tag = "@c" + c.id;
-      g.appendChild(el("circle", { r: 4.5 + c.lv * 2, class: "o", fill: l.c, stroke: l.c, "data-n": tag })); g.appendChild(el("circle", { r: 2.7, class: "i", fill: l.c, "data-n": tag }));
-      if (st.i === c.id || (c.lv === 5 && !st.i)) g.appendChild(el("text", { x: 8 + c.lv * 2, y: 3.6 }, c.n.split(":")[0]));
+      /* the ring grows with the year's dead (square root, so area is honest); a conflict with no count keeps its level's size */
+      const l = lv(c), R = Math.max(4.5 + c.lv * 1.4, 5 + 17 * Math.sqrt(weight(c) / WMAX)), g = el("g", { class: "cf-pin" + (st.i === c.id ? " sel" : st.i ? " dim" : "") + (c.tr === "up" ? " up" : ""), "data-cf": c.id }), tag = "@c" + c.id;
+      if (c.tr === "up") g.appendChild(el("circle", { r: R.toFixed(1), class: "p", stroke: l.c }));
+      g.appendChild(el("circle", { r: R.toFixed(1), class: "o", fill: l.c, stroke: l.c, "data-n": tag })); g.appendChild(el("circle", { r: 2.7, class: "i", fill: l.c, "data-n": tag }));
+      if (st.i === c.id || (c.lv === 5 && !st.i)) g.appendChild(el("text", { x: (R + 4).toFixed(1), y: 3.6 }, c.n.split(":")[0]));
       mark(g, c.at[0], c.at[1]);
     });
     if (st.act) ARMED.forEach(x => { if (!x.p.at || !shown(x.c) || (st.only && x.des === "none")) return;
-      const g = el("g", { class: "cf-mk" + (st.i && st.i !== x.c.id ? " dim" : ""), "data-cf": x.c.id }); diamond(g, x.des);
+      const g = el("g", { class: "cf-mk" + (st.i && st.i !== x.c.id ? " dim" : st.i ? "" : " quiet"), "data-cf": x.c.id }); diamond(g, x.des);
       Array.prototype.forEach.call(g.childNodes, n => n.setAttribute("data-n", "@p" + x.ix)); mark(g, x.p.at[0], x.p.at[1]); });
     place();
     /* the scale under the map */
-    $("mp-scale").innerHTML = LV.map((l, i) => { const cs = L.filter(c => c.lv === l.n);
+    /* the ladder as a rail: worst rung first; each conflict carries its 2026 count as a bar on one scale */
+    $("mp-scale").innerHTML = LV.slice().reverse().map(l => { const i = l.n - 1, cs = L.filter(c => c.lv === l.n);
       return '<div class="sc-col" style="--c:' + l.c + ";flex-grow:" + Math.max(1.4, Math.sqrt(cs.length) * 1.25).toFixed(2) + (st.lvf[i] ? "" : ";opacity:.45") + '"><div class="sc-h" title="' + esc(l.def) + '"><b>' + l.n + "</b>" + l.name + "<i>" + cs.length + '</i></div><div class="sc-b">'
-        + cs.map(c => '<button class="sc-c' + (st.i === c.id ? " sel" : "") + '" data-i="' + c.id + '" title="' + esc(c.n) + '">' + esc(c.n.split(":")[0]) + tr(c) + "</button>").join("") + "</div></div>"; }).join("");
+        + cs.map(c => { const n = counted(c); return '<button class="sc-c' + (st.i === c.id ? " sel" : "") + '" data-i="' + c.id + '" title="' + esc(c.n + (c.d26 ? " — 2026: " + c.d26 : "")) + '"><span class="nm">' + esc(c.n.split(":")[0]) + tr(c) + "</span>" + (n != null ? '<span class="fg">' + n.toLocaleString("en") + '</span><i class="br" style="width:' + Math.max(2, Math.sqrt(n / WMAX) * 100).toFixed(1) + '%"></i>' : "") + "</button>"; }).join("") + "</div></div>"; }).join("");
+    const tot = L.map(counted).filter(v => v != null), up = L.filter(c => c.tr === "up").length, down = L.filter(c => c.tr === "down").length;
+    $("mp-read").innerHTML = '<div><b style="color:' + LV[4].c + '">' + L.filter(c => c.lv === 5).length + '</b><span>Major wars</span></div><div><b style="color:' + LV[3].c + '">' + L.filter(c => c.lv === 4).length + '</b><span>Wars</span></div><div><b class="tr-up">' + up + '</b><span>Worsening ▲</span></div><div><b class="tr-down">' + down + "</b><span>Easing ▼</span></div>"
+      + "<p><b>" + tot.reduce((a, v) => a + v, 0).toLocaleString("en") + "</b> dead counted in 2026 to late August, across " + tot.length + " conflicts: the running table's own figures, its lower one where it gives a range. " + src("wl") + "</p>";
     const groups = ARMED.filter(x => x.p.at && shown(x.c)), listed = groups.filter(x => x.des !== "none").length;
     $("mp-n").textContent = vis.length + " of " + L.length + " conflicts shown · " + groups.length + " armed groups placed, " + listed + " of them on a terrorist list · as of " + asOfT;
   }
@@ -127,7 +137,7 @@
   function drawLadder() {
     $("ld-cols").innerHTML = LV.map(l => { const cs = L.filter(c => c.lv === l.n);
       return '<div class="ld-col" style="--c:' + l.c + '"><div class="ld-h"><b>' + l.n + "</b><span>" + l.name + "</span><p>" + esc(l.def) + '</p></div><div class="ld-b">'
-        + cs.map(c => '<button class="ld-card' + (st.i === c.id ? " sel" : "") + '" data-i="' + c.id + '" style="--c:' + l.c + '"><b>' + esc(c.n) + " " + tr(c) + "</b><small>" + esc(c.rg) + " · since " + c.since + "</small>"
+        + cs.map(c => '<button class="ld-card' + (st.i === c.id ? " sel" : "") + '" data-i="' + c.id + '" style="--c:' + l.c + '"><b>' + esc(c.n) + " " + tr(c) + "</b><small>" + esc(c.rg) + " · since " + c.since + " · " + (YEAR - c.since < 1 ? "this year" : YEAR - c.since + (YEAR - c.since === 1 ? " year" : " years")) + '</small><i class="age" title="How long it has run, against the oldest on the page (' + OLDEST + ')"><i style="width:' + Math.max(3, (YEAR - c.since) / (YEAR - OLDEST) * 100).toFixed(1) + '%"></i></i>'
           + (c.d26 || c.d25 ? "<small>" + (c.d26 ? "2026: " + esc(c.d26) : "") + (c.d26 && c.d25 ? " · " : "") + (c.d25 ? "2025: " + esc(c.d25) : "") + "</small>" : "<small>" + (c.lv <= 2 ? "no deaths reported" : "no comparable yearly count — open the card") + "</small>") + "</button>").join("") + "</div></div>"; }).join("");
     if (!built.ld) { built.ld = 1; $("ld-cols").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) pick(b.dataset.i === st.i ? null : b.dataset.i); }); }
   }
@@ -181,26 +191,32 @@
   }
 
   /* ---------------- the side panel ---------------- */
+  /* the size of a written figure, for a bar: "nearly 1.6 million" is 1,600,000, "up to 325,000 (…)" is 325,000 */
+  const mag = t => { const m = String(t == null ? "" : t).replace(/,/g, "").match(/(\d+(?:\.\d+)?)\s*(million|thousand)?/); return m ? +m[1] * (m[2] === "million" ? 1e6 : m[2] === "thousand" ? 1e3 : 1) : 0; };
+  /* a conflict's two most recent dated sources: what the "Now" line rests on */
+  const newest = c => c.src.filter(k => SRC[k] && /^\d{4}-\d\d/.test(SRC[k][2])).sort((a, b) => SRC[b][2] < SRC[a][2] ? -1 : 1).slice(0, 2);
   function card(c) {
     const l = lv(c), pos = L.indexOf(c), prev = L[pos - 1], next = L[pos + 1];
     let h = '<button class="sd-x" title="Close (Esc)" aria-label="Close">×</button><div class="sd-k">' + esc(c.rg) + " · " + esc(c.ty) + '</div><div class="sd-t">' + esc(c.n) + '</div>'
       + '<div class="sd-d"><i class="lvd" style="background:' + l.c + '"></i>Level ' + l.n + " · " + l.name + (c.tr ? " · " + TR[c.tr][1] + " (" + esc(c.trBy) + ")" : "") + " · since " + c.since + "</div>"
       + '<div class="lv-meter" style="--c:' + l.c + '">' + LV.map(x => "<i" + (x.n <= c.lv ? ' class="on"' : "") + "></i>").join("") + '</div><div class="lv-ax"><span>tension</span><span>major war</span></div>'
-      + '<div class="sd-k">Now</div><p class="sd-p">' + esc(c.now) + "</p>"
+      + '<div class="sd-k">Now</div><p class="sd-p">' + esc(c.now) + "</p>" + '<p class="hint now-src">Newest reports read: ' + newest(c).map(k => src(k) + " <span>" + esc(SRC[k][2]) + "</span>").join(" · ") + "</p>"
       + '<div class="sd-k">How it came about</div><p class="sd-p">' + esc(c.sum) + "</p>";
     if (c.d25 || c.d26 || c.cum) h += '<div class="sd-k">The dead</div><div class="dth"><div><span>2025</span><b>' + esc(c.d25 || "—") + "</b></div><div><span>2026, to late Aug</span><b>" + esc(c.d26 || "—") + "</b></div><div><span>In all</span><b>" + esc(c.cum || "—") + "</b></div></div>"
       + (c.src.indexOf("wl") >= 0 ? '<p class="hint">Yearly figures: ' + src("wl") + ", one table for every conflict.</p>" : "");
     (c.toll || []).forEach(t => { h += '<div class="loss"><b>' + esc(t[1]) + "</b><small>" + esc(t[0]) + " · " + esc(t[2]) + " · " + src(t[3]) + "</small></div>"; });
     h += '<div class="sd-k">The sides, and what each has lost</div>';
-    c.sides.forEach(s => {
-      h += '<div class="cf-side"><b>' + esc(s.n) + "</b>" + s.parties.map(p => '<div class="pty"><span>' + esc(p.n) + '</span><span class="k">' + PK[p.k] + "</span>"
+    /* one scale for every figure in this conflict, so a claim can be seen against a count */
+    const big = Math.max.apply(null, [1].concat(c.sides.map(s => Math.max.apply(null, [0].concat((s.loss || []).map(r => mag(r[1])))))));
+    c.sides.forEach((s, si) => {
+      h += (si ? '<div class="cf-vs">against</div>' : "") + '<div class="cf-side s' + (si % 2) + '"><b>' + esc(s.n) + "</b>" + s.parties.map(p => '<div class="pty"><span>' + esc(p.n) + '</span><span class="k">' + PK[p.k] + "</span>"
         + (p.us ? '<span class="dz" title="' + esc(D.des.us.list) + '">US list · ' + esc(p.us) + "</span>" : "") + (p.uk ? '<span class="dz" title="' + esc(D.des.uk.list) + '">UK list · ' + esc(p.uk) + "</span>" : "")
         + (!p.us && !p.uk && (p.k === "armed" || p.k === "gang") ? '<span class="dz no">on neither list</span>' : "") + (p.note ? "<p>" + esc(p.note) + "</p>" : "") + "</div>").join("")
-        + ((s.loss || []).length ? s.loss.map(r => '<div class="loss"><span class="kd ' + r[3] + '">' + KD[r[3]] + "</span><b>" + esc(r[1]) + "</b><small>" + esc(r[0]) + (r[2] !== "—" ? " · " + esc(r[2]) : "") + " · " + src(r[4]) + "</small></div>").join("")
+        + ((s.loss || []).length ? s.loss.map(r => '<div class="loss"><span class="kd ' + r[3] + '">' + KD[r[3]] + "</span><b>" + esc(r[1]) + "</b>" + (mag(r[1]) ? '<i class="lb ' + r[3] + '" style="width:' + Math.max(1.5, Math.sqrt(mag(r[1]) / big) * 100).toFixed(1) + '%"></i>' : "") + "<small>" + esc(r[0]) + (r[2] !== "—" ? " · " + esc(r[2]) : "") + " · " + src(r[4]) + "</small></div>").join("")
           : '<div class="loss"><small>No figure for this side in the sources read.</small></div>') + "</div>";
     });
     h += '<div class="sd-k">Sources</div><div class="srcs">' + c.src.map(k => '<a href="' + esc(SRC[k][1]) + '" target="_blank" rel="noopener">' + esc(SRC[k][0]) + "<small>" + esc(SRC[k][2]) + "</small></a>").join("") + "</div>"
-      + '<div class="sd-links">' + (st.v !== "map" ? '<button class="lnk" data-go="map">On the map ⟶</button>' : "") + (prev ? '<button class="lnk" data-i="' + prev.id + '">◂ ' + esc(prev.n.split(":")[0]) + "</button>" : "") + (next ? '<button class="lnk" data-i="' + next.id + '">' + esc(next.n.split(":")[0]) + " ▸</button>" : "") + "</div>";
+      + '<div class="sd-links">' + (st.v !== "map" ? '<button class="lnk" data-go="map">On the map ⟶</button>' : "") + '<a class="lnk" href="situation.html#v=board&w=' + c.id + '">The wider situation ⟶</a>' + (prev ? '<button class="lnk" data-i="' + prev.id + '">◂ ' + esc(prev.n.split(":")[0]) + "</button>" : "") + (next ? '<button class="lnk" data-i="' + next.id + '">' + esc(next.n.split(":")[0]) + " ▸</button>" : "") + "</div>";
     return h;
   }
   function countryCard(name) {

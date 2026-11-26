@@ -268,6 +268,11 @@
             link(other) + " — " + esc(o.x.t) + "</div>";
         }).join("")
       : "";
+    /* v18: where the same figure stands in the Bloodline, and what the Transmissions say was taught (src/data/myth-links.js) */
+    const MY = window.ARCHIVUS_MYTH, my = MY && MY.gd[id];
+    if (my) document.getElementById("pn-p-x").innerHTML += '<div class="kicker">Elsewhere in the Archive</div>'
+      + (my.bl != null ? '<a class="pn-out" href="lineage.html#n=' + my.bl + '">In the Bloodline ⟶<small>' + esc(MY.n.bl[my.bl]) + ", in the family tree</small></a>" : "")
+      + (my.tx || []).map(t => '<a class="pn-out" href="transmissions.html#' + t + '">In the Transmissions ⟶<small>said to have taught: ' + esc(MY.n.tx[t]) + "</small></a>").join("");
     panel.classList.add("open");
     wirePanelLinks();
     conns.forEach(o => arcEls[o.i] && arcEls[o.i].classList.add("sel"));
@@ -346,7 +351,9 @@
   /* open on the Mesopotamian sky at reading zoom, not the whole tiny heavens (v10: on a desk as well as a phone —
      at "fit" the names are a few pixels tall; "Fit all" is one click away) */
   const phone = window.matchMedia && window.matchMedia("(max-width: 760px)").matches;
-  if (clusterX.meso != null) centerOn(clusterX.meso + clusterW.meso / 2, clusterY.meso + clusterH.meso / 2, phone ? 0.85 : 0.8);
+  if (clusterX.meso != null) { centerOn(clusterX.meso + clusterW.meso / 2, clusterY.meso + clusterH.meso / 2, phone ? 0.85 : 0.8);
+    /* v18: on a wide screen the first sky sits at the left edge, so its neighbours fill the rest instead of empty space */
+    if (!phone && rectOf().width > clusterW.meso * k + 120) { tx = 34 - clusterX.meso * k; apply(); } }
   window.addEventListener("resize", apply);          /* keep the reader's place; "Fit all" restores the overview */
   /* v10: deep links from the search palette and from the frame's memory */
   function applyHash() {

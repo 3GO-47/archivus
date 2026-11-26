@@ -453,7 +453,7 @@
 
   /* ---- selection & record panel ---- */
   const panel = document.getElementById("bl-panel");
-  let selected = null;
+  let selected = null, lineOpen = null;
   function closePanel() {
     panel.classList.remove("open");
     if (selected != null && nodeEls[selected]) nodeEls[selected].classList.remove("sel");
@@ -471,7 +471,11 @@
     selected = id;
     setHash("#n=" + id);
     nodeEls[id].classList.add("sel");
-    edgeEls.forEach(x => x.classList.toggle("hl", +x.dataset.a === id || +x.dataset.b === id));
+    /* v18: the line back — first parent, then that parent's, to the root. It is lit on the tree and listed in the panel,
+       so "descends from" is something the reader can follow link by link rather than take on trust. */
+    const chain = []; { let c = id, g = 0; const seen = new Set(); while (c != null && !seen.has(c) && g++ < 400) { seen.add(c); chain.unshift(c); c = (parentsD[c] || [])[0]; } }
+    const onLine = new Set(); for (let j = 1; j < chain.length; j++) { onLine.add(chain[j - 1] + ">" + chain[j]); onLine.add(chain[j] + ">" + chain[j - 1]); }
+    edgeEls.forEach(x => x.classList.toggle("hl", +x.dataset.a === id || +x.dataset.b === id || onLine.has(x.dataset.a + ">" + x.dataset.b)));
     const n = byId[id];
     const H = HOUSES[n.h];
     document.getElementById("bl-house").innerHTML =
@@ -489,9 +493,16 @@
     const issue = (childrenD[id] || []);
     const consorts = [...new Set(unionsOf[id] || [])];
     let rels = "";
+    if (chain.length > 2) { const full = lineOpen === id || chain.length <= 12, shown = full ? chain : chain.slice(0, 2).concat([-1], chain.slice(-6));
+      rels += "<b>The line back · " + (chain.length - 1) + " generations, lit on the tree</b><div class=\"bl-line\">" + shown.map(c => c === -1 ? '<a data-line="1" title="Show every generation">… ' + (chain.length - 8) + " more …</a>" : c === id ? "<i>" + shortOf(c) + "</i>" : link(c)).join('<span>›</span>') + "</div>"; }
     if (parents.length) rels += "<b>Descent from</b>" + parents.map(p => '<div class="bl-rel">' + link(p) + "</div>").join("");
     if (consorts.length) rels += "<b>Union / consort</b>" + consorts.map(p => '<div class="bl-rel">' + link(p) + "</div>").join("");
     if (issue.length) rels += "<b>Issue / linked</b>" + issue.map(c => '<div class="bl-rel">' + link(c) + "</div>").join("");
+    /* v18: where the same figure stands in the Pantheons, and what the Transmissions say was taught (src/data/myth-links.js) */
+    const MY = window.ARCHIVUS_MYTH, my = MY && MY.bl[id];
+    if (my) rels += "<b>Elsewhere in the Archive</b>"
+      + (my.gd ? '<a class="bl-out" href="pantheons.html#g=' + my.gd + '">In the Pantheons ⟶<small>' + MY.n.gd[my.gd] + ", among the gods of its own sky</small></a>" : "")
+      + (my.tx || []).map(t => '<a class="bl-out" href="transmissions.html#' + t + '">In the Transmissions ⟶<small>said to have taught: ' + MY.n.tx[t] + "</small></a>").join("");
     document.getElementById("bl-rels").innerHTML = rels;
     const note = document.getElementById("bl-note");
     note.textContent = n.t || "";
@@ -499,6 +510,7 @@
     panel.classList.add("open");
     panel.querySelectorAll("a[data-go]").forEach(a =>
       a.addEventListener("click", () => { const g = +a.dataset.go; centerOn(PX(byId[g]), PY(byId[g]), Math.max(k, 0.8)); select(g); }));
+    const more = panel.querySelector("a[data-line]"); if (more) more.addEventListener("click", () => { lineOpen = id; select(id); });
   }
 
   /* a clicked bridge tells its story in the record panel */
