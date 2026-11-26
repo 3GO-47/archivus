@@ -11,7 +11,8 @@
    src      key → [label, url, date of the page]
    blocs    id, name, colour, kind, members / partners (names as the map spells them),
             `off` = members with no shape on the map, note, sources
-   sanc     us: [country, programme as OFAC names it, date OFAC last updated it]; eu: [countries]
+   sanc     us: [country, programme as OFAC names it, date OFAC last updated it]
+            eu, un: [country, what the regime is, as the EU sanctions map describes it]
    nukes    [country, deployed, stored, military stockpile, total inventory, lat, lon] — SIPRI, January 2026
    straits  id, name, at [lat, lon], status, one line, figures [label, value], sources, cf
    wire     id, d (date), k (kind), t (headline), x (what happened), at [lat, lon], w (countries),
@@ -56,7 +57,16 @@ window.ARCHIVUS_SITUATION = {
     sipri:    ["SIPRI Yearbook 2026, chapter 8 — World nuclear forces (the table for January 2026)", "https://www.sipri.org/sites/default/files/YB26%2008%20World%20Nuclear%20Forces.pdf", "2026-06"],
     sipripr:  ["SIPRI — Increasing focus on nuclear weapons amid heightened escalation risks: new Yearbook out now", "https://www.sipri.org/media/press-release/2026/increasing-focus-nuclear-weapons-amid-heightened-escalation-risks-new-sipri-yearbook-out-now", "2026-06"],
     ofac:     ["US Treasury, Office of Foreign Assets Control — Sanctions programs and country information", "https://ofac.treasury.gov/sanctions-programs-and-country-information", "2026-11-23"],
-    eusan:    ["EU External Action Service — EU restrictive measures, 2026 brief (PDF)", "https://www.eeas.europa.eu/sites/default/files/2026/documents/2026_9_10_restrictive_measures_2.pdf", "2026"],
+    eumap:    ["EU Sanctions Map — every regime in force, EU and UN (PDF, generated 26 Nov 2026)", "https://www.sanctionsmap.eu/api/v1/pdf/regime", "2026-11-26"],
+    uncom:    ["UN Security Council — Sanctions and other committees (Repertoire of practice)", "https://www.un.org/securitycouncil/content/repertoire/sanctions-and-other-committees", "2023"],
+    ajjpn:    ["Al Jazeera — PM Sanae Takaichi's party wins supermajority in Japan snap elections", "https://aljazeera.com/news/2026/2/8/pm-sanae-takaichis-party-set-for-majority-in-japan-parliamentary-elections", "2026-02-08"],
+    ajbgr:    ["Al Jazeera — Bulgaria's former President Radev wins election: All you need to know", "https://www.aljazeera.com/news/2026/4/20/bulgarias-former-president-radev-wins-election-all-you-need-to-know", "2026-04-20"],
+    ajzmb:    ["Al Jazeera — Zambia's President Hakainde Hichilema wins second term", "https://www.aljazeera.com/news/2026/8/18/zambias-hichilema-wins-second-term-as-president", "2026-08-18"],
+    meduza:   ["Meduza — United Russia won 349 of 450 seats in Russia's new State Duma", "https://meduza.io/en/news/2026/09/25/united-russia-won-349-of-450-seats-in-russia-s-new-state-duma-parliament-will-include-46-war-participants", "2026-09-25"],
+    ajmar:    ["Al Jazeera — PAM wins big in Morocco parliament elections but falls short of majority", "https://www.aljazeera.com/news/2026/9/26/pam-wins-big-in-morocco-parliament-elections-but-falls-short-of-majority", "2026-09-26"],
+    osw:      ["Centre for Eastern Studies (OSW) — Latvian parliamentary election: a historic victory for the United List", "https://www.osw.waw.pl/en/publikacje/analyses/2026-10-06/latvian-parliamentary-election-historic-victory-united-list", "2026-10-06"],
+    bsig:     ["Brussels Signal — Nationalist parties tighten grip on Bosnia as Dodik claims victory off the ballot", "https://brusselssignal.eu/2026/10/nationalist-parties-tighten-grip-on-bosnia-as-dodik-claims-victory-off-the-ballot/", "2026-10"],
+    starbg:   ["Reuters, carried by The Star — Bulgaria's Iotova wins presidential runoff, near-final results show", "https://www.thestar.com.my/news/world/2026/11/02/bulgaria039s-iotova-wins-presidential-runoff-near-final-results-show", "2026-11-02"],
     nato:     ["NATO — Member countries", "https://www.nato.int/cps/en/natohq/topics_52044.htm", "2026"],
     eu:       ["European Union — EU countries", "https://european-union.europa.eu/principles-countries-history/country-profiles_en", "2026"],
     brics:    ["BRICS Brasil — About the BRICS: members and partner countries", "https://brics.br/en/about-the-brics", "2025"],
@@ -106,8 +116,22 @@ window.ARCHIVUS_SITUATION = {
       ["Venezuela", "Venezuela-Related Sanctions", "2026-11-04"], ["Yemen", "Yemen-related Sanctions", "2021-11-18"]
     ],
     usOff: [["Western Balkans", "Balkans-Related Sanctions", "2025-11-20"], ["Hong Kong", "Hong Kong-Related Sanctions", "2026-07-17"], ["Ukraine (occupied areas) and Russia", "Ukraine-/Russia-related Sanctions", "2026-10-09"]],
-    eu: ["Russia", "Iran", "Syria", "North Korea", "Venezuela", "Guatemala"],
-    euNote: "The six the EU's own 2026 brief names. The Union's full list of regimes is longer; this page shows only those read."
+    /* EU and UN regimes, read from the EU's own sanctions map on 26 Nov 2026. The words after each country are the map's. */
+    eu: [
+      ["Belarus", "restrictive measures"], ["Bosnia and Herz.", "restrictive measures"], ["Burundi", "restrictive measures"], ["China", "the arms embargo that followed Tiananmen Square, 1989"],
+      ["North Korea", "restrictive measures, beside the UN's"], ["Dem. Rep. Congo", "restrictive measures, beside the UN's"], ["Guatemala", "restrictive measures"], ["Guinea", "restrictive measures"],
+      ["Guinea-Bissau", "restrictive measures, beside the UN's"], ["Haiti", "restrictive measures, beside the UN's"], ["Iran", "three regimes: human rights, drones, and non-proliferation beside the UN's"],
+      ["Lebanon", "measures in view of the situation in Lebanon"], ["Libya", "restrictive measures, beside the UN's"], ["Mali", "restrictive measures"], ["Moldova", "two regimes: destabilisation of Moldova, and Transnistria"],
+      ["Myanmar", "restrictive measures"], ["Nicaragua", "restrictive measures"], ["Niger", "restrictive measures"], ["Russia", "three regimes: sectoral, human rights and hybrid threats"],
+      ["S. Sudan", "restrictive measures, beside the UN's"], ["Sudan", "two regimes: the UN's, and the EU's own on stability and transition"], ["Syria", "restrictive measures"],
+      ["Tunisia", "misappropriation of state funds"], ["Turkey", "unauthorised drilling in the Eastern Mediterranean"], ["Venezuela", "restrictive measures"], ["Zimbabwe", "an arms embargo only"]
+    ],
+    un: [
+      ["Afghanistan", "the Taliban regime"], ["Central African Rep.", "UN regime"], ["North Korea", "UN regime"], ["Dem. Rep. Congo", "UN regime"], ["Guinea-Bissau", "UN regime"], ["Haiti", "UN regime"],
+      ["Iran", "non-proliferation"], ["Iraq", "UN regime"], ["Lebanon", "two UN regimes, one over the Beirut bombing of 2005"], ["Libya", "UN regime"], ["Somalia", "UN regime"],
+      ["S. Sudan", "UN regime"], ["Sudan", "UN regime"], ["Yemen", "UN regime"]
+    ],
+    euNote: "EU and UN regimes are those on the EU's own sanctions map on 26 November 2026. Left off the map here because they are not aimed at the country named: the four EU regimes filed under Ukraine (over Russia's occupation and old state funds), a claims provision left from the Yugoslav wars filed under Serbia and Montenegro, and the EU's shield against American extraterritorial law. The UN's list was checked against the Security Council's own table of committees, which runs to 2023."
   },
 
   /* ---------------- nuclear arsenals: SIPRI, January 2026 ---------------- */
@@ -214,8 +238,18 @@ window.ARCHIVUS_SITUATION = {
       x: "Lula won the runoff with just over 51% to Flávio Bolsonaro's 48%. Bolsonaro refused to recognise the result and said he would seek to have the vote annulled." },
     { id: "serbia-vote", d: "2026-10-25", k: "ballot", t: "Serbia: Vučić's party loses", at: [44.8, 20.47], w: ["Serbia"], s: ["axios"],
       x: "A student-led opposition movement defeated the party of Aleksandar Vučić, who had sought to become prime minister. He conceded." },
+    { id: "bulgaria-president", d: "2026-11-02", k: "ballot", t: "Bulgaria elects Iliana Iotova president", at: [42.7, 23.32], w: ["Bulgaria"], s: ["starbg"],
+      x: "Iotova, acting president since Rumen Radev resigned in January to run for parliament, won the runoff of 1 November with 57.58% to Andrey Gyurov's 39.47%, on near-final results. She is the country's first elected woman head of state." },
     { id: "pkk-camps", d: "2026-10-15", approx: 1, k: "power", t: "PKK fighters leave four camps in northern Iraq", at: [36.9, 43.9], w: ["Iraq", "Turkey"], s: ["cfrTur"], cf: "pkk",
       x: "The withdrawal followed a Turkish law of August 2026 setting the terms of disbandment and reintegration. Kurdish parties say Ankara has not delivered the reforms it promised." },
+    { id: "latvia-vote", d: "2026-10-06", k: "ballot", t: "Latvia: the prime minister's list wins", at: [56.95, 24.1], w: ["Latvia"], s: ["osw"],
+      x: "The United List of Prime Minister Andris Kulbergs won 41 of 100 seats in the election of 3 October; Latvia First took 17. Turnout, 51.5%, was the lowest on record for a parliamentary vote. Kulbergs is expected to form a new centre-right government." },
+    { id: "bosnia-vote", d: "2026-10-04", k: "ballot", t: "Bosnia votes; the nationalist parties hold", at: [43.86, 18.41], w: ["Bosnia and Herz."], s: ["bsig"],
+      x: "On preliminary results Denis Bećirović kept the Bosniak seat of the presidency and Željka Cvijanović the Serb seat; Darijana Filipović of the HDZ took the Croat seat from Željko Komšić. Milorad Dodik, barred from office and not on the ballot, claimed victory for his party. Turnout was about 42%." },
+    { id: "morocco-vote", d: "2026-09-26", k: "ballot", t: "Morocco: PAM first, short of a majority", at: [34.02, -6.83], w: ["Morocco"], s: ["ajmar"],
+      x: "PAM won 97 of 395 seats in the election of 23 September and must build a coalition; 198 are needed. The RNI fell from 102 seats to 66 and the Islamist PJD returned with 54, saying it will stay in opposition. Turnout was 38%." },
+    { id: "duma-vote", d: "2026-09-25", k: "ballot", t: "Russia: United Russia takes 349 of 450 seats", at: [56.6, 39.2], w: ["Russia"], s: ["meduza"],
+      x: "The election commission's final count of the vote of 18–20 September, the first State Duma election since the invasion of Ukraine: United Russia 349, the Communists 37, the LDPR 23, New People 19, A Just Russia 17. Forty-six of the new deputies took part in the war. Some protocols, among them from occupied Ukraine, had not been published." },
     { id: "congo-ebola", d: "2026-09-29", k: "war", t: "The UN hears that Congo's peace deals have not stopped the fighting", at: [1.4, 29.6], w: ["Dem. Rep. Congo"], s: ["undrc"], cf: "drc",
       x: "The Security Council was told the fighting in the east goes on. The same provinces are in the grip of the country's largest Ebola outbreak: 3,901 deaths by 26 September." },
     { id: "sweden-vote", d: "2026-09-17", k: "ballot", t: "Sweden changes government", at: [59.33, 18.07], w: ["Sweden"], s: ["ajswe"],
@@ -235,7 +269,7 @@ window.ARCHIVUS_SITUATION = {
     ["2026-01-15", "Uganda", "President and parliament", "Yoweri Museveni won a seventh term.", "held", ["ifes", "opovo"]],
     ["2026-02-01", "Costa Rica", "President and assembly", "Laura Fernández won; she succeeds Rodrigo Chaves.", "won", ["ifes", "opovo"]],
     ["2026-02-08", "Portugal", "President, second round", "António José Seguro was elected.", "won", ["ifes", "opovo"]],
-    ["2026-02-08", "Japan", "House of Representatives", "", "nr", ["ifes"]],
+    ["2026-02-08", "Japan", "House of Representatives", "A snap election called by Prime Minister Sanae Takaichi: her Liberal Democratic Party won 316 of 465 seats.", "held", ["ajjpn"]],
     ["2026-02-08", "Thailand", "House of Representatives", "Bhumjaithai, the party of Prime Minister Anutin, came first.", "won", ["ifes", "opovo"]],
     ["2026-02-12", "Bangladesh", "Parliament", "The Bangladesh Nationalist Party won.", "won", ["ifes", "opovo"]],
     ["2026-03-05", "Nepal", "House of Representatives", "The Rastriya Swatantra Party won; Balendra Shah was named prime minister.", "new", ["ifes", "opovo"]],
@@ -246,7 +280,7 @@ window.ARCHIVUS_SITUATION = {
     ["2026-04-10", "Djibouti", "President", "Ismail Omar Guelleh was re-elected.", "held", ["ifes", "opovo"]],
     ["2026-04-12", "Hungary", "National Assembly", "Péter Magyar's Tisza defeated Viktor Orbán, who conceded after 16 years in power.", "new", ["cbs", "opovo", "axios"]],
     ["2026-04-12", "Benin", "President", "Romuald Wadagni succeeded Patrice Talon.", "won", ["ifes", "opovo"]],
-    ["2026-04-19", "Bulgaria", "National Assembly", "", "nr", ["ifes"]],
+    ["2026-04-19", "Bulgaria", "National Assembly", "Progressive Bulgaria, the new party of former president Rumen Radev, won 44.7% and about 130 of 240 seats; the previous cabinet had resigned in December.", "new", ["ajbgr"]],
     ["2026-05-17", "Cabo Verde", "National Assembly", "The PAICV returned to power after ten years.", "new", ["ifes", "opovo"]],
     ["2026-05-24", "Cyprus", "House of Representatives", "The centre-right DISY came first.", "won", ["ifes", "opovo"]],
     ["2026-06-01", "Ethiopia", "House of People's Representatives", "Abiy Ahmed's Prosperity Party won.", "held", ["ifes", "opovo"]],
@@ -255,16 +289,16 @@ window.ARCHIVUS_SITUATION = {
     ["2026-06-07", "Peru", "President, runoff", "Keiko Fujimori won.", "won", ["ifes", "opovo"]],
     ["2026-06-21", "Colombia", "President, runoff", "Abelardo de la Espriella, of the right, won.", "won", ["ifes", "opovo", "axios"]],
     ["2026-07-02", "Algeria", "National People's Assembly", "The FLN took the most votes.", "held", ["ifes", "opovo"]],
-    ["2026-08-13", "Zambia", "President and assembly", "", "nr", ["ifes"]],
+    ["2026-08-13", "Zambia", "President and assembly", "Hakainde Hichilema was re-elected with about 61.4% to Brian Mundubile's 38%. Opposition figures were arrested on election night; EU observers called the vote largely peaceful in a climate that limited basic freedoms.", "held", ["ajzmb"]],
     ["2026-09-13", "Sweden", "Parliament", "The left-leaning opposition won 176 seats to 173; Prime Minister Kristersson resigned.", "new", ["ajswe"]],
-    ["2026-09-18", "Russia", "State Duma", "", "nr", ["ifes"]],
-    ["2026-09-23", "Morocco", "Chamber of Representatives", "", "nr", ["ifes"]],
-    ["2026-10-03", "Latvia", "Parliament", "", "nr", ["ifes"]],
-    ["2026-10-04", "Bosnia and Herz.", "Presidency and House of Representatives", "", "nr", ["ifes"]],
+    ["2026-09-18", "Russia", "State Duma", "United Russia took 349 of 450 seats in the vote of 18–20 September, by the election commission's final count; some protocols, among them from occupied Ukraine, had not been published.", "held", ["meduza"]],
+    ["2026-09-23", "Morocco", "Chamber of Representatives", "PAM came first with 97 of 395 seats; the RNI, its senior partner in the governing coalition, fell from 102 to 66 and the Islamist PJD won 54. Turnout was 38%.", "won", ["ajmar"]],
+    ["2026-10-03", "Latvia", "Parliament", "The United List of Prime Minister Andris Kulbergs won 41 of 100 seats; turnout, 51.5%, was the lowest on record.", "held", ["osw"]],
+    ["2026-10-04", "Bosnia and Herz.", "Presidency and House of Representatives", "On preliminary results Denis Bećirović and Željka Cvijanović kept the Bosniak and Serb seats of the presidency; Darijana Filipović of the HDZ took the Croat seat, ending Željko Komšić's four terms.", "won", ["bsig"]],
     ["2026-10-25", "Brazil", "President, runoff", "Lula was re-elected with just over 51%; Flávio Bolsonaro did not recognise the result.", "held", ["ajbra"]],
     ["2026-10-25", "Serbia", "National Assembly", "A student-led opposition movement defeated Aleksandar Vučić's party; he conceded.", "new", ["axios"]],
     ["2026-10-27", "Israel", "Knesset", "Netanyahu's bloc 53, the opposition 48, Arab-led lists 19; no bloc has the 61 needed.", "hung", ["ajisr"]],
-    ["2026-11-01", "Bulgaria", "President, second round", "", "nr", ["ifes"]],
+    ["2026-11-01", "Bulgaria", "President, second round", "Iliana Iotova, acting president and backed by Rumen Radev, won with 57.58% to Andrey Gyurov's 39.47%.", "held", ["starbg"]],
     ["2026-11-03", "United States of America", "House and a third of the Senate", "AP's count on 25 Nov: House — Democrats 259 won, Republicans 173, 3 given to neither; Senate — Democrats 56 in total, Republicans 44.", "won", ["ap"]],
     ["2026-11-07", "New Zealand", "House of Representatives", "No clear winner on the preliminary count; the final tally is due on 27 November.", "hung", ["opb"]]
   ],
