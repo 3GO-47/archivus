@@ -134,6 +134,38 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
   .or .pane h4.or-h { letter-spacing: .2em; white-space: normal; text-align: center; } .or-loomwrap { padding: 10px 8px 8px; } #rd-loom { min-height: 360px; }
 }
 @media (max-width: 560px) { .or-defs { grid-template-columns: 1fr; } .or-tbl td:nth-child(5), .or-tbl th:nth-child(5) { display: none; } .or-ch.or-panel { padding: 10px 9px 7px; } .or-top:not(.slim) { flex-direction: column; align-items: flex-start; } }
+/* ---- v17: a statement and what it rests on ---- */
+.or-top.tight { gap: 18px; padding: 0 2px; } .or-top.tight .or-eye { width: 62px; height: 62px; }
+.or-top.tight .or-title { font-size: clamp(19px, 1.85vw, 27px); margin: 4px 0 5px; } .or .pane .or-top.tight .lead { font-size: 14.5px; line-height: 1.5; max-width: 150ch; margin: 0; }
+.or-top.tight.split { justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 10px 24px; } .or-top.tight.split .chips { margin: 0 0 2px; }
+.or-md { display: grid; grid-template-columns: minmax(340px, 30%) minmax(0, 1fr); gap: 18px; align-items: start; }
+.or-md .or-syn { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 0; }
+.or-md .or-syn button { padding: 11px 14px 9px 58px; gap: 5px; border-top-width: 1px; border-top-color: var(--line) !important; border-left: 3px solid var(--c); }
+.or-md .or-syn button:hover { transform: none; box-shadow: 0 0 0 1px var(--gold-dim); }
+.or-md .or-syn button.on { border-color: var(--gold) !important; border-left-color: var(--c) !important; background: linear-gradient(90deg, rgba(201,162,39,.14), rgba(201,162,39,.03)), var(--obsidian-2); box-shadow: inset 0 0 26px rgba(201,162,39,.08); }
+.or-md .or-syn .num { top: 12px; width: 56px; font-size: 20px; color: var(--c); }
+.or-md .or-syn b { font-size: 16.5px; line-height: 1.3; } .or-md .or-syn button > span.tx { font: 12.5px/1.52 var(--sans); color: #b9b4a4; }
+.or-md .or-syn em { margin-top: 1px; padding-top: 2px; gap: 8px; } .or-md .or-syn em .sg { position: static; color: var(--c); display: inline-flex; opacity: 1; } .or-md .or-syn em .sg .or-ic { width: 14px; height: 14px; }
+.or-md .or-syn em u { margin-left: auto; text-decoration: none; color: #8792ad; letter-spacing: .12em; } .or-md .or-syn button.on em u, .or-md .or-syn button:hover em u { color: var(--gold-bright); }
+.or-ev { display: flex; flex-direction: column; gap: 14px; min-width: 0; border: 1px solid var(--gold-dim); border-radius: 9px; padding: 16px 18px 14px; background: linear-gradient(180deg, rgba(201,162,39,.055), rgba(201,162,39,0) 190px), var(--obsidian); }
+.or-evh { display: flex; gap: 18px; align-items: flex-start; } .or-evh .or-emb { width: 58px; height: 58px; } .or-evh .or-emb .or-ic { width: 26px; height: 26px; }
+.or .pane .or-evh h3 { font: 400 22px/1.3 Georgia, "Times New Roman", serif; letter-spacing: 0; text-transform: none; color: #f4efe0; margin: 5px 0 6px; } .or .pane .or-evh p { font: 14px/1.6 var(--sans); color: #cfc9b8; margin: 0; max-width: 120ch; }
+.or-cols2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; align-items: start; } .or-cols2 > div { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.or-cols2 ul, .or-cols2 ol { margin: 8px 0 0; padding-left: 22px; } .or-cols2 li { font: 13.5px/1.62 var(--sans); color: #d2ccbb; margin-bottom: 8px; } .or-cols2 ul li::marker { color: var(--gold-dim); }
+.or-cols2 ol.or-facts li::marker { color: var(--gold); font: 600 12px var(--mono); }
+.or-cols2 .or-ded { list-style: none; padding: 0; } .or .pane .or-cols2 p.srcs { margin: 10px 0 4px; padding-top: 9px; border-top: 1px solid var(--line-faint); }
+.or-facts li, .or-ded li, .or-ch { transition: background-color .2s, box-shadow .2s; } .or-facts li, .or-ded li { border-radius: 4px; }
+.or-facts li { padding: 2px 7px; margin-left: -7px; }
+.or-ded li[data-d] { cursor: pointer; padding: 7px 9px 8px 13px; margin-bottom: 9px; }
+.or-rest { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 6px; margin-top: 8px; } .or-rest > span { font: 600 9px var(--display); letter-spacing: .18em; text-transform: uppercase; color: #8792ad; margin-right: 3px; }
+.or-rest button { background: rgba(201,162,39,.07); border: 1px solid var(--gold-dim); border-radius: 11px; color: var(--gold-bright); cursor: pointer; padding: 2px 9px 3px; font: 500 11px var(--display); letter-spacing: .02em; }
+.or-rest button:hover, .or-rest button:focus-visible { background: rgba(201,162,39,.2); border-color: var(--gold); outline: 0; }
+.or-rest em { font: italic 12.5px/1.45 Georgia, "Times New Roman", serif; color: #a8a494; flex: 1 1 100%; }
+.or-facts li.hot, .or-ded li.hot { background: rgba(201,162,39,.09); } .or-ch.hot { box-shadow: 0 0 0 1px var(--gold-dim); }
+.or-facts li.lit, .or-ded li.lit { background: rgba(201,162,39,.17); box-shadow: 0 0 0 1px var(--gold); } .or-ch.lit { box-shadow: 0 0 0 2px var(--gold), 0 0 26px rgba(232,196,85,.25); }
+.or .grid2.md { grid-template-columns: 300px minmax(0, 1fr); }
+@media (max-width: 1100px) { .or-md { grid-template-columns: 1fr; } .or-md .or-syn { position: static; } }
+@media (max-width: 860px) { .or-cols2 { grid-template-columns: 1fr; } .or .grid2.md { grid-template-columns: 1fr; } .or-ev { padding: 12px 10px; } .or-evh .or-emb { display: none; } .or-top.tight .or-eye { width: 48px; height: 48px; } }
 </style>
 <link rel="stylesheet" href="src/themes.css"><!-- generated: the three colourways (tools/build-themes.js) -->
 </head>

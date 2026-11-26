@@ -113,6 +113,24 @@ The rule reaches the page three ways. `tools/build-themes.js` reads the four sha
 
 **To update it:** edit `src/data/conflicts.js` (the header explains every field), set `meta.asOf`, then `node tools/validate-conflicts.js` and `node tools/build-mobile.js --zip`. The validator refuses a figure without a source, a map name that is not on the map, or a designation without the list in the card's sources.
 
+## A statement and what it rests on (v17)
+
+The owner, of the Oracle: "needs to be more intuitive and do a better job with the space… too much wasted space and no easy way to get from a statement made in the oracle to its substantiation." And of the Coups: "why is there no map of the red and green seizures?"
+
+**The Oracle's Reading is now statements beside their evidence.** The eight deductions stand in a column on the left. Choose one and everything it rests on is beside it, in place: the figures, the charts, the numbered facts with their sources, the graded deductions that follow, the case against, what to watch. The loom and the ledger follow below, unchanged. The link `oracle.html#v=reading&r=war` opens a statement directly; the search box finds statements too.
+
+**Every deduction says what it rests on.** In any dossier (the Reading's evidence, or a line in the Lines) the facts are numbered, and each graded deduction carries a row: *Rests on · fact 3 · fact 5 · chart · Armed conflicts*. Press one and it lights and comes into view; press the deduction and everything it rests on lights; hovering a fact shows which deductions lean on it. Where a deduction rests on something that is not a figure on the page, the row says so in words, and where it rests on a dated expectation it links to the Horizon.
+
+That mapping is data, written by hand: `window.ARCHIVUS_ORACLE.rests` at the foot of `src/data/oracle.js`, one row per deduction (`[facts, charts, note, horizon id]`). `tools/validate-oracle.js` refuses a deduction with no row, an index that does not exist, or one that rests on nothing and says nothing about it. When a line's `shows` or `deduce` is edited, its rows must be edited with it.
+
+**Space.** The Reading's and the Horizon's mastheads are a third of their old height (the Horizon's filter sits beside its title); the Lines' list is 300px, not a third of the page; the four boxes of a dossier are two independent columns, so a short box no longer leaves a hole beside a long one. One function, `dossier()` in `src/oracle-app.js`, draws the evidence for both views.
+
+**The seizure map (the Coups).** The Red Seizures and the Green Seizures each open on a new first section, *The map*: every country where a Marxist or an Islamist seizure in the roll took place, on one map. Solid is a seizure that held, paler one that was brief, palest one that failed; a country where both creeds seized carries the other's outline. A year control ("up to 1917 / 1949 / 1979 / 1991 / today") shows each family spreading. A third layer, off until asked for, marks governments that claim a socialist or communist, or a religious, ideology today (V-Dem, through the Realms; `tools/build-claims.js` writes the two short lists to `src/data/coups-claims.js`). Click a country for its cases.
+
+The map is labelled as what it is: where a creed took or tried to take a state. A seizure is not an alliance, a creed that held power once may not hold it now, and V-Dem's "religious" covers every faith, not only Islam. The cases, the preconditions and the other ledger are the next three sections, as before; `#v=red&s=cases` opens the cases.
+
+Tests in the project: `tools/tests/oracle.js` (25 checks), `tools/tests/seizures.js` (12), `tools/tests/trim.js`.
+
 ## The trim (v16, reworked in v16.2)
 
 The owner asked for the whole of Archivus to be made less cluttered — **reorganised, not cut**. v16.0 got that wrong in three places (it took the Wheel out of the Archive's switch, hid seven tabs behind a small switch under new names, and hid the War Room's blurb); v16.2 put all of it back in a reorganised place. **Nothing is hidden or removed.** The rule for any later change: a thing may be grouped, made smaller, or folded behind a control that names it — never taken out of reach.
@@ -150,6 +168,14 @@ The grouping is written in each page itself: `<button role="tab" data-v="red" da
 - **The guide is folded, not gone.** The right-hand panel used to open with a "how to read this" card on every view. It now stands folded as a strip at the right edge, labelled *Guide*. A click on the strip or on the **Guide** button opens it (the choice is remembered), and it opens by itself when something is selected. Engines are told to redraw (a `resize` event) when the panel changes width. An engine marks its guide card with the class `intro`.
 - **Chip rows are tucked.** The Bloodline's 22 houses and the Pantheons' 20 domains open from one button that names and counts them.
 - **Less ornament.** The brass corners and deep shadows of v15 are kept for chart panels only; the ✦ is gone from small headings.
+
+**4 · The two busiest first screens, regrouped (v16.3).** Every control is where it was or beside it.
+
+- **The Archive's bar.** The views (Chronicle, Atlas, Wheel, and the Astrolabe beside them) are the same engraved tabs every other instrument has, instead of a row of boxes. One boxed control is left per job — Filters, Search, the "In view" panel — and the rest (Tours, the window's Oracle, export, Reset, the dice) are quiet text. Nine boxes became three.
+- **The Chronicle's lanes.** Climate / Environment is the last lane, after Myth & Cult (`src/data/themes.js`; the order there is the order of lanes, rings, orbits and filters everywhere).
+- **The War Room's map.** The layer switches ("what to show") sit beside the theatres ("where to look") in one row at the foot of the map, so the top holds the date alone. This happens only when the map is wide enough for both (a container query on `#map-wrap`, 1245px; group labels appear from 1390px); on a narrower map the layers stay at the top right as before.
+
+These two screens are dense because of what they show (628 records; a war on a given day). Nothing in them was folded or removed, so the count of things on screen is unchanged; what changed is how many of them shout.
 
 What it costs: when the panel opens for a selection (or closes), the drawing redraws to the narrower stage, so what you clicked moves — about 150px on the Doctrines' compass at 1600px wide. Zoom and scroll positions are kept.
 
@@ -391,4 +417,6 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 - *The illumination (v15)* — every instrument drawn to the Oracle's standard by one shared layer: a masthead on every view, light under every chart, framed panels, engraved headings.
 - *The trim (v16, reworked v16.2)* — five doors in the header instead of thirteen links; tabs grouped (every view keeps its tab); the guide panels folded to a labelled strip. Reorganised, nothing removed: v16.0's removal of the Wheel from the Archive's switch and its hidden tabs were undone in v16.2.
 
-Current state: **v16.2** — thirteen instruments behind five doors, three colourways, all datasets validated. Live: v16.2 (deployed 2026-11-25).
+- *A statement and what it rests on (v17)* — the Oracle's Reading as statements beside their evidence; every deduction tied to the facts and charts it rests on; a map of the red and green seizures in the Coups.
+
+Current state: **v17.0** — thirteen instruments behind five doors, three colourways, all datasets validated. Live: v17.0 (deployed 2026-11-25).

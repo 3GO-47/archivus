@@ -6,9 +6,11 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v16.2** — deployed 2026-11-25. Everything v16.0 took out of plain sight is back, reorganised: the Wheel is in the Archive's switch again; every tab is in its strip again, with related views grouped beside their parent; the War Room's blurb is back; the guide panels fold to a labelled strip instead of disappearing. Header menus wait a moment before opening on hover. No data file changed.
+**Live version: v17.0** — deployed 2026-11-25 in four commits. The Oracle's Reading is now statements beside their evidence, and every deduction says which facts and charts it rests on. The Coups' two studies open on a map of the red and green seizures. Also in this release (v16.3): the Archive's bar regrouped, Climate the last lane, the War Room's layer switches beside its theatres on wide screens.
 
-**Before that: v16.0** — deployed 2026-11-25 (UTC). The trim: five doors in the header (Oracle, Record, Power, War, Myth) instead of thirteen links; tabs folded so 40 views are reached from 30 places; the right-hand guide panels shut until asked for. Nothing was deleted and every old link still works. No data file changed.
+**Before that: v16.2** — deployed 2026-11-25. Everything v16.0 took out of plain sight is back, reorganised: the Wheel is in the Archive's switch again; every tab is in its strip again, with related views grouped beside their parent; the War Room's blurb is back; the guide panels fold to a labelled strip instead of disappearing. Header menus wait a moment before opening on hover. No data file changed.
+
+**Earlier: v16.0** — deployed 2026-11-25 (UTC). The trim: five doors in the header (Oracle, Record, Power, War, Myth) instead of thirteen links; tabs folded so 40 views are reached from 30 places; the right-hand guide panels shut until asked for. Nothing was deleted and every old link still works. No data file changed.
 
 **Earlier: v15.0** — deployed 2026-11-24 in three commits (styles and header, pocket builds, docs). The illumination: every instrument drawn to the Oracle's standard by one shared layer. No data file and no engine changed.
 
