@@ -17,6 +17,15 @@ body.rl { --free: #49c9b8; --part: #c9a227; --not: #a23b33; --up: #49c9b8; --dow
 .rl-leg i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
 .rl-leg span { display: inline-block; margin-right: 12px; white-space: nowrap; }
 .rl-leg small { display: block; font: 10px/1.5 var(--mono); color: #66708c; margin-top: 4px; white-space: normal; }
+/* a legend as one strip along the foot of a map: it covers sea, not a continent. Its notes and sources open on hover or focus. */
+.rl-leg.strip { left: 8px; right: 8px; bottom: 6px; max-width: none; padding: 4px 10px 5px; line-height: 1.55; }
+.rl-leg.strip b { display: inline; margin: 0 10px 0 0; font-size: 10.5px; }
+.rl-leg.strip .lg-h { display: inline !important; margin: 0 8px 0 4px !important; }
+.rl-leg.strip small { display: none; max-width: 760px; }
+.rl-leg.strip:hover small, .rl-leg.strip:focus small, .rl-leg.strip:focus-within small { display: block; }
+.rl-leg.strip:has(small)::after { content: "notes ▴"; float: right; font: 9.5px var(--mono); letter-spacing: .08em; color: var(--gold); opacity: .8; margin-top: 2px; }
+.rl-leg.strip:hover::after, .rl-leg.strip:focus::after { content: "" !important; }
+@media (min-width: 861px) { .rl-map:has(> .rl-leg.strip) > svg { height: calc(100% - 36px); } }   /* the map ends above its legend, so the strip covers nothing */
 .rl-grad { height: 9px; border-radius: 2px; margin: 4px 0 2px; min-width: 220px; }
 .rl-gradk { display: flex; justify-content: space-between; font: 9.5px var(--mono); color: #8d96af; }
 .rl-tip { pointer-events: none; padding: 6px 9px; font: 12px var(--sans); color: var(--paper); z-index: 5; max-width: 280px; }
