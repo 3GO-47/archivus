@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVUS — Total War</title>
+<meta name="description" content="Every war on one string: thirty-three centuries of war on one line of time, each war sized by its dead with the range the estimates span, from Kadesh to the wars being fought today.">
+<meta name="color-scheme" content="dark">
+<script src="src/theme.js"></script><!-- the colourway, set before anything paints -->
+<meta name="theme-color" content="#0a0c12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0c12'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c9a227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e8c455'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+<link rel="stylesheet" href="src/wars.css">
+<link rel="stylesheet" href="src/doctrines.css">
+<link rel="stylesheet" href="src/realms.css">
+<script>/* cross-page view transitions: opt in on http(s) only — file:// has nothing to transition to (see src/nav.js) */
+if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.head.appendChild(document.createElement("style")).textContent = "@view-transition{navigation:auto}";
+  var archivusVT = function (e) { var t = e.viewTransition; if (t) { t.ready.catch(function () {}); t.finished.catch(function () {}); } };
+  addEventListener("pageswap", archivusVT); addEventListener("pagereveal", archivusVT);
+}</script>
+<style>
+/* ---------- TOTAL WAR (v19). Page shell, tabs, side panel and chips come from the shared sheets. ---------- */
+.tw .chipbtn small { font: 10px var(--mono); color: #8d96af; margin-left: 6px; }
+#ts-box { flex: 1; min-height: 0; position: relative; display: flex; } #ts-wrap { flex: 1; min-width: 0; min-height: 0; overflow-x: auto; overflow-y: hidden; position: relative; background: var(--obsidian); scrollbar-color: var(--gold-dim) transparent; }
+.ts-in { position: relative; } .ts-in svg { display: block; }
+.ts-lane { fill: rgba(255,255,255,.012); } .ts-lane.odd { fill: rgba(255,255,255,.035); }
+.ts-labs { position: absolute; left: 0; top: 0; width: 150px; height: 100%; pointer-events: none; }
+.ts-ln { position: absolute; left: 0; width: 144px; display: flex; flex-direction: column; justify-content: center; padding: 0 8px 0 12px; background: linear-gradient(90deg, var(--obsidian) 78%, transparent); border-right: 0; }
+.ts-ln b { font: 600 10.5px var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); line-height: 1.25; } .ts-ln i { font: normal 10px var(--mono); color: #8d96af; } .ts-ln.dens b { color: #8d96af; }
+.ts-tk { stroke: #262c3b; stroke-width: 1; stroke-dasharray: 2 4; } .ts-tx { font: 9.5px var(--mono); fill: #8d96af; text-anchor: middle; } .ts-tx.now { fill: #e8c455; }
+.ts-now { stroke: #c9a227; stroke-width: 1; opacity: .7; }
+.ts-thread { fill: none; stroke: #e8c455; stroke-width: 1; opacity: .24; }
+.ts-w { cursor: pointer; } .ts-w .b { fill: var(--c); } .ts-w .hi { fill: var(--c); opacity: .22; } .ts-w.more .b { opacity: .75; }
+.ts-w.open .b { stroke: #f1ecdc; stroke-width: 1; stroke-dasharray: 3 2; } .ts-w.proj .b { fill: none; stroke: #e8c455; stroke-width: 1.4; stroke-dasharray: 4 3; }
+.ts-w:hover .b, .ts-w.sel .b { stroke: #f1ecdc; stroke-width: 1.6; stroke-dasharray: none; } .ts-w.sel .hi { opacity: .4; }
+.ts-w.bt path { fill: #0a0c12; stroke: #c9a227; stroke-width: 1.2; } .ts-w.bt:hover path, .ts-w.bt.sel path { fill: #e8c455; }
+.ts-lb { font: 500 10.5px var(--display); fill: #cfc9b8; pointer-events: none; paint-order: stroke; stroke: #0a0c12; stroke-width: 3px; stroke-linejoin: round; } .ts-lb.sel { fill: #f1ecdc; font-weight: 700; } .ts-lb.in { fill: #0a0c12; stroke: none; font-weight: 700; } .ts-lb.proj { fill: #e8c455; }
+.ts-dens { fill: rgba(224,80,47,.3); stroke: #e0502f; stroke-width: 1; }
+/* the toll */
+#tt-list { columns: 2; column-gap: 26px; } .tt-r { break-inside: avoid; display: grid; grid-template-columns: 26px minmax(150px, 1.1fr) minmax(0, 1.6fr) 76px; align-items: center; gap: 0 10px; width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line-faint); color: var(--paper); cursor: pointer; padding: 5px 6px; text-align: left; }
+.tt-r:hover { background: rgba(201,162,39,.06); } .tt-r.sel { background: rgba(201,162,39,.14); box-shadow: inset 2px 0 0 var(--gold); }
+.tt-r .k { font: 11px var(--mono); color: #8d96af; text-align: right; } .tt-r .nm { font: 500 13px/1.25 var(--display); min-width: 0; } .tt-r .nm small { display: block; font: 10px var(--mono); color: #8d96af; } .tt-r.open .nm small::after { content: " · being fought"; color: #e8c455; }
+.tt-r .bw, .tw-toll .bw { position: relative; height: 12px; background: rgba(255,255,255,.035); border-radius: 2px; } .tt-r .bw i, .tw-toll .bw i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--c); } .tt-r .bw .hi, .tw-toll .bw .hi { opacity: .3; } .tt-r .bw .lo, .tw-toll .bw .lo { box-shadow: 0 0 8px -2px var(--c); }
+.bw u.sec { position: absolute; top: -3px; bottom: -3px; min-width: 2px; margin-left: -1px; background: #e8c455; border-radius: 1px; box-shadow: 0 0 6px rgba(232,196,85,.7); text-decoration: none; } .bw u.sec.rng { background: none; border: 1.5px solid #e8c455; border-top-width: 0; border-bottom-width: 0; box-shadow: none; margin-left: 0; } .bw u.sec.rng::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px solid #e8c455; }
+u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455; vertical-align: -2px; margin: 0 3px 0 1px; text-decoration: none; }
+.tw-sec { margin: 0 0 10px; padding: 8px 11px 9px; border: 1px solid var(--line); border-left: 3px solid #e8c455; border-radius: 4px; background: var(--obsidian-2); } .tw-sec b { display: block; font: 600 10px var(--engraved); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-bright); margin-bottom: 3px; } .tw-sec p { margin: 0 0 5px; font: 13px/1.45 var(--display); color: var(--paper); } .tw-sec a { font: 10.5px/1.4 var(--mono); color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); } .tw-one { margin: -4px 0 10px; }
+.tt-r .v { font: 600 12px var(--mono); color: var(--paper); text-align: right; white-space: nowrap; } .tt-r .v small { font-weight: 400; color: #8d96af; margin-left: 2px; }
+/* the centuries */
+#tc-chart { flex: 0 0 auto; height: 250px; display: flex; align-items: stretch; gap: 3px; padding: 4px 4px 34px; position: relative; border: 1px solid var(--line); border-radius: 6px; background: var(--obsidian-2); }
+.tc-c { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; cursor: pointer; } .tc-c:not([data-i]) { cursor: default; }
+.tc-c i { display: block; width: 100%; max-width: 34px; background: linear-gradient(180deg, #ff2e55, #e0502f 60%, #7a2a1c); border-radius: 2px 2px 0 0; min-height: 1px; box-shadow: 0 0 10px -3px #ff2e55; } .tc-c:hover i, .tc-c.sel i { outline: 1px solid #f1ecdc; }
+.tc-c .v { font: 10px var(--mono); color: var(--paper); margin-bottom: 2px; } .tc-c b { position: absolute; bottom: -16px; font: 600 10.5px var(--mono); color: var(--gold); } .tc-c small { position: absolute; bottom: -28px; font: 9.5px var(--mono); color: #8d96af; }
+.tc-ax { position: absolute; left: 6px; right: 6px; top: 6px; display: flex; justify-content: space-between; font: 9px var(--display); letter-spacing: .18em; text-transform: uppercase; color: #8d96af; pointer-events: none; }
+.tw-tblw { flex: 1; min-height: 0; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--obsidian-2); }
+.tw-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; } .tw-tbl th { position: sticky; top: 0; background: var(--obsidian-3); font: 9.5px var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--gold-dim); }
+.tw-tbl td { padding: 5px 10px; border-bottom: 1px solid var(--line-faint); color: #cfc9b8; } .tw-tbl .num { text-align: right; font-family: var(--mono); } .tw-tbl td small { color: #8d96af; font: 10.5px var(--mono); margin-left: 6px; } .tw-tbl tr[data-i] { cursor: pointer; } .tw-tbl tr[data-i]:hover td { background: rgba(201,162,39,.06); }
+/* cards */
+.tw-toll { margin: 8px 0 10px; padding: 9px 11px; background: var(--obsidian-2); border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 4px; } .tw-toll b { font: 700 19px var(--engraved); color: var(--paper); } .tw-toll span { font: 11px var(--mono); color: #8d96af; margin-left: 8px; } .tw-toll .bw { margin: 7px 0 5px; height: 9px; } .tw-toll small { font: 10.5px/1.5 var(--mono); color: #8d96af; } .tw-toll a, .tw .wr-note a, .tw .mth a { color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); }
+.tw .dth { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 4px 0 8px; } .tw .dth div { background: var(--obsidian-2); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; } .tw .dth span { display: block; font: 9px var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); } .tw .dth b { font: 600 13px var(--mono); color: var(--paper); }
+.tw .srcs a { display: block; font: 12px/1.45 var(--sans); color: var(--paper-dim); text-decoration: none; padding: 5px 0; border-bottom: 1px solid var(--line-faint); } .tw .srcs a:hover { color: var(--gold-bright); } .tw a.lnk { text-decoration: none; } .tw a.lnk.go { color: var(--gold-bright); }
+.tw .mth p { font-size: 13px; line-height: 1.6; color: #cfc9b8; max-width: 78ch; margin: 0; } .tw .wr-note b { color: var(--paper); }
+@media (max-width: 1100px) { #tt-list { columns: 1; } }
+@media (max-width: 860px) { #ts-wrap { min-height: 62dvh; } .tt-r { grid-template-columns: 22px minmax(0, 1fr) 70px; } .tt-r .bw { grid-column: 2 / -1; grid-row: 2; margin-top: 3px; height: 8px; } #tc-chart { height: 210px; gap: 1px; } .tc-c .v { display: none; } .tc-c b { font-size: 8.5px; } .tc-c small { display: none; } .tw-tblw { max-height: 70dvh; flex: none; } }
+</style>
+<link rel="stylesheet" href="src/themes.css"><!-- generated: the three colourways (tools/build-themes.js) -->
+</head>
+<body class="wr dc rl tw">
+  <!-- the frame: one header on every page, in place before first paint (see src/nav.js) -->
+  <script src="src/nav.js"></script>
+  <header id="masthead">
+    <div class="sigil" aria-hidden="true"></div>
+    <div class="masthead-text">
+      <h1>ARCHIVUS · TOTAL WAR</h1>
+      <p class="tagline">every war on one string — thirty-three centuries, from Kadesh to the wars being fought today</p>
+    </div>
+    <a id="tx-link" href="index.html">⟵ The Archive</a>
+  </header>
+  <nav id="wr-bar" aria-label="Views">
+    <div id="wr-tabs" role="tablist">
+      <button role="tab" data-v="string" title="Every war on one line of time, by the part of the world it was fought in">The String</button>
+      <button role="tab" data-v="toll" title="The wars ranked by their dead, with the range the estimates span">The Toll</button>
+      <button role="tab" data-v="centuries" data-kin="toll" title="The same dead, century by century">The Centuries</button>
+      <button role="tab" class="minor" data-v="method" title="Where the rows come from, and how far to trust a death toll">Method &amp; sources</button>
+    </div>
+    <div id="dc-find"><input id="dc-q" type="search" placeholder="Find a war…  ( / )" autocomplete="off" aria-label="Find a war"></div>
+  </nav>
+  <main id="dc-main">
+    <div id="dc-stage">
+      <section id="v-string" class="wr-view dc-view">
+        <div class="dc-bar"><div class="chips" id="ts-zoom" role="group" aria-label="Stretch time"></div><span class="wr-note" id="ts-n"></span></div>
+        <div id="ts-box" data-stage><div id="ts-wrap" aria-label="The string of wars"></div><div id="ts-labs" class="ts-labs"></div></div>
+      </section>
+      <section id="v-toll" class="wr-view dc-view" hidden>
+        <div class="dc-bar"><span class="wr-note" id="tt-n"></span></div>
+        <div class="pane"><div id="tt-list"></div></div>
+      </section>
+      <section id="v-centuries" class="wr-view dc-view" hidden>
+        <div class="dc-bar"><span class="wr-note" id="tc-n"></span></div>
+        <div class="pane"><div id="tc-chart"></div><div class="tw-tblw" id="tc-table"></div></div>
+      </section>
+      <section id="v-method" class="wr-view dc-view" hidden><div class="pane mth" id="tm-pane"></div></section>
+    </div>
+    <aside id="dc-side" aria-live="polite"></aside>
+  </main>
+  <noscript><p style="padding:24px">Total War needs JavaScript. The data is readable in <code>src/data/totalwar.js</code>.</p></noscript>
+  <script src="src/data/events.js"></script><script src="src/data/events2.js"></script><script src="src/data/geo.js"></script><script src="src/data/uncertainty.js"></script><script src="src/data/events3.js"></script><script src="src/data/events4.js"></script>
+  <script src="src/data/events5.js"></script><script src="src/data/events6.js"></script>
+  <script src="src/data/conflicts.js"></script>
+  <script src="src/data/totalwar.js"></script>
+  <script src="src/realms-kit.js"></script>
+  <script src="src/totalwar-app.js"></script>
+</body>
+</html>

@@ -6,7 +6,9 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v18.1** — deployed 2026-11-25 (v18.0 in four commits, then v18.1 the same day: every 2026 election now has its result, and the sanctions lens shows EU and UN regimes in full). A fourteenth instrument, the Situation (the present on one map, under War); the Conflicts reworked around its map; the three Myth instruments linked to each other.
+**Live version: v19.1** — deployed 2026-11-27. Two more instruments under War: Total War (every war on one string, by its dead, by century; twelve tolls checked against a second source) and World War III (a projection, every line graded and sourced). The War Room's campaigns have a rail of the phases.
+
+**Before that: v18.1** — deployed 2026-11-25 (v18.0 in four commits, then v18.1 the same day: every 2026 election now has its result, and the sanctions lens shows EU and UN regimes in full). A fourteenth instrument, the Situation (the present on one map, under War); the Conflicts reworked around its map; the three Myth instruments linked to each other.
 
 **Before that: v17.0** — deployed 2026-11-25 in four commits. The Oracle's Reading is now statements beside their evidence, and every deduction says which facts and charts it rests on. The Coups' two studies open on a map of the red and green seizures. Also in this release (v16.3): the Archive's bar regrouped, Climate the last lane, the War Room's layer switches beside its theatres on wide screens.
 

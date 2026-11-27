@@ -3,7 +3,7 @@
 
 **Live: https://3go-47.github.io/archivus/**
 
-Archivus is a self-contained instrument for exploring the whole arc of human history — fourteen linked instruments over one hand-curated, fully-sourced archive of 628 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus. **v8.0** adds the War Room (both World Wars on an animated map), a navigation rail shared by every page, and a legibility pass over the Archive:
+Archivus is a self-contained instrument for exploring the whole arc of human history — sixteen linked instruments over one hand-curated, fully-sourced archive of 628 events, from the Lion-Man of 38,000 BCE to the 2117 transit of Venus. **v8.0** adds the War Room (both World Wars on an animated map), a navigation rail shared by every page, and a legibility pass over the Archive:
 
 | Instrument | File | What it holds |
 |---|---|---|
@@ -54,7 +54,7 @@ Mouse: scroll = zoom (about the cursor; in the Wheel, about the pointer's angle;
 
 ## The frame (v10)
 
-Fourteen pages, one instrument. `src/nav.js` is the first thing in every `<body>` and gives each page the same header — brand, the fourteen instruments, search — in place before first paint, so nothing moves between pages except a gold marker that glides from the instrument you left to the one you entered. Page changes cross-fade (native cross-document view transitions on http(s) in browsers that have them, with the hovered page prerendered; a hand-made fade on `file://` and elsewhere). Each instrument reopens where you left it: view, selection and time window are remembered for the session. The first time you enter an instrument a title card passes; after that, nothing interrupts.
+Sixteen pages, one instrument. `src/nav.js` is the first thing in every `<body>` and gives each page the same header — brand, the sixteen instruments, search — in place before first paint, so nothing moves between pages except a gold marker that glides from the instrument you left to the one you entered. Page changes cross-fade (native cross-document view transitions on http(s) in browsers that have them, with the hovered page prerendered; a hand-made fade on `file://` and elsewhere). Each instrument reopens where you left it: view, selection and time window are remembered for the session. The first time you enter an instrument a title card passes; after that, nothing interrupts.
 
 ## Seen at a glance (v11)
 
@@ -113,11 +113,42 @@ The rule reaches the page three ways. `tools/build-themes.js` reads the four sha
 
 **To update it:** edit `src/data/conflicts.js` (the header explains every field), set `meta.asOf`, then `node tools/validate-conflicts.js` and `node tools/build-mobile.js --zip`. The validator refuses a figure without a source, a map name that is not on the map, or a designation without the list in the card's sources.
 
+## War, whole and projected (v19)
+
+Asked for on 2026-11-27: *"refine the war tab then build a projected WW3 tab"*, and, while that was being built, *"id also be interested in a total war tab that strings all wars together."* "The war tab" was read as the War Room and the War door of the header. War now holds five instruments in order of time: **Total War · War Room · Conflicts · Situation · World War III**.
+
+**1 · Total War (`totalwar.html`, fifteenth instrument, first under War).** Every war the Archive holds on one string, from Kadesh (c. 1274 BCE) to the wars still being fought.
+- **The String.** 116 wars as bars on eight lanes (across continents, Europe, West Asia & North Africa, Central & South Asia, East Asia, South-East Asia, Africa, the Americas), eleven battles as diamonds, and a gold thread through them in order of starting. Width is duration; colour and weight are the dead (10 million and over, 1 million and over, under). A halo behind a bar is the high estimate. Open wars end in a dotted edge at today; the projection sits beyond it, dashed. Under the string, a strip of how many wars were under way at once. The time axis is stretched where the record is crowded (`meta.warp`), and the chips stretch it 2× and 4×. Arrow keys walk the string.
+- **The Toll.** The 76 wars the list puts at about half a million dead or more, ranked, low and high estimate both drawn on a square-root scale.
+- **The Centuries.** The same dead spread across 34 centuries (13th BCE to 21st), with a table of each century's wars and its deadliest. The note says what the shape is worth: fewer wars before 1500 means fewer written down, not fewer fought.
+- **A war's card** gives the range with its source, the Chronicle's entry, the Conflicts' card or the War Room where there is one, what else was being fought in the same years, and the wars before and after it on the string.
+- Data: `src/data/totalwar.js` (76 sized wars, 24 more from the Chronicle, 11 battles; schema at its head). The rest is read live from `events*.js` and `conflicts.js`, so a war added to either appears on the string. Engine: `src/totalwar-app.js`. Deep links: `totalwar.html#v=string&i=ww2&z=4`, `#v=toll`, `#v=centuries`.
+- **Second sources (v19.1).** Twelve of the 76 sized wars carry a figure from a second source that was opened and read (Britannica, the World History Encyclopedia, the International Rescue Committee, the Fondation Napoléon, the US National Park Service, and the War Room's own). Each is a gold mark on the Toll and a block on the war's card with its link; three count soldiers only and say so. `second` and `sought` in `src/data/totalwar.js` hold them.
+- **What it will not do.** The other 64 tolls are one compilation's ranges (Wikipedia's list of wars by death toll, read 27 Nov 2026) and their cards say so. That includes the oldest and largest after the two world wars (the Mongol conquests, the Three Kingdoms, the fall of the Ming, An Lushan), which are reconstructions from census gaps. Before about 1500 the figures are closer to tradition than to count. The page says so in Method.
+
+**2 · World War III — a projection (`ww3.html`, sixteenth instrument, last under War).** Not a prediction and not a scenario of the Archive's own: what published wargames, treaties, intelligence assessments, expert surveys and forecasts say, arranged so it can be seen.
+- **Every line carries a grade and a source.** *Already true* (it has happened), *Bound by treaty* (a text obliges it), *Assessed* (a named study, service or survey says so), *Open* (nobody knows, and the page says what the question is). The test suite refuses a line that is not *Open* and has no source.
+- **The Board.** The two camps as obligations draw them: the American treaty system (bound by treaty; armed and backed without one) and the alignment of China, Russia, Iran and North Korea (and those bound to one of them). Five places it could start, sized by how often the experts who expect a world war name them (Taiwan and the China seas 43%, NATO's eastern edge 25%, the Gulf 13%, then Korea and India–Pakistan). Choose one and the countries it would not draw in step back; the card gives the chain line by line, who is drawn in, and what has been worked out about it. Click a country for what binds it.
+- **The Road.** Six rungs: the standing peace (the only one that is the present), the spark, the widening, general war, the threshold, after.
+- **The Balance.** Military spending, warheads and standing forces, camp against camp, and a table of what binds each country, with the treaty and the source on every row.
+- **The Cost.** The two world wars as fought and two nuclear exchanges as modelled, on one logarithmic scale and marked apart; and what a war for Taiwan is priced to cost each economy in its first year.
+- **The Odds.** Six readings (forecasters, experts, the public, the Doomsday Clock), then what points toward it and what points away at equal length, then three statements of the Archive's own, each graded.
+- Data: `src/data/ww3.js`. Engine: `src/ww3-app.js`. It reads the blocs, arsenals and straits from the Situation and the wars from the Conflicts, so it does not keep a second copy of either. Deep links: `ww3.html#v=board&k=taiwan`, `#c=Japan`, `#v=odds`.
+- **What it will not do.** It is dated 27 November 2026 and does not update itself. The camps are drawn from obligations, which is not how a war would necessarily divide; the note above the map says so. The CSIS study's own page was opened in v19.1 (24 runs; "dozens of ships, hundreds of aircraft, and tens of thousands of servicemembers" for the United States and its allies) but the per-country losses still come from Radio Free Asia's report of it; the famine study is now cited from its abstract; the force sizes come through a magazine's compilation of official figures.
+- **The legend (v19.1)** is one strip along the foot of the map, so it no longer covers South America.
+
+**3 · The War Room, refined.**
+- **The Campaigns** have a rail beside the text on wide screens: every phase with one mark per battle or turning point, coloured by who won it. Click a phase to jump to it; the rail follows the reader.
+- **The Cost** is one page: the tiles and the deaths by country no longer sit on separate pages.
+- **Causes & aftermath** ends in three ways on: this war among all wars (Total War), the wars being fought now (the Conflicts), and the projection.
+
+**Tests:** `node tools/tests/war.js` (31 checks; add `mobile` to test the single-file builds).
+
 ## The present tense (v18)
 
 Asked for on 2026-11-25: *"review the war and myth tabs. id love to see you enhance all 3 tabs under Myth and then specifically under war, i want the conflicts tab to be revamped and i want a new tabs digesting all current geopolitical events visually."*
 
-**1 · The Situation (`situation.html`, fourteenth instrument, third under War).** The world as it stood on 25 November 2026, on one map.
+**1 · The Situation (`situation.html`, the fourteenth instrument to be added, under War).** The world as it stood on 25 November 2026, on one map.
 
 - **The Board.** Five lenses repaint the map: *Wars* (read from the Conflicts, never copied), *Blocs* (NATO, CSTO, SCO, BRICS with its partner countries, the Alliance of Sahel States, the EU; pick one to see it whole), *Sanctions* (the US Treasury's country programmes with the EU's and the UN's regimes from the EU's own sanctions map, painted by how many of the three sanction a country), *Ballots* (who voted in 2026 and whether power changed; a dashed outline where a vote is ahead) and *Arsenals* (SIPRI's nine nuclear states, ring = every warhead, disc = deployed). On every lens: a dot for each dated event of the last ninety days, coloured by kind and pulsing if it is under ten days old, and a diamond for each of six straits, coloured by its state.
 - **The wire, under the map.** One row a kind (war, diplomacy, ballots, sanctions, straits, power), one mark a dispatch, placed by its date. Click a mark, a dot, a diamond, a ring or a country: the card beside the map gives the statement and, directly under it, the source it rests on.
@@ -338,7 +369,7 @@ All data lives in `src/data/` as window-global script files (no fetch, so `file:
 
 **To add a doctrine:** append a node to `doctrines.js` with its family, coordinates, origin, `d`, `c`, `u` and `fr`; it appears on the Compass, Lineage, Atlas and Library at once. Placements are editorial conventions — keep the critics' case beside every doctrine. Validate with `node tools/validate-doctrines.js` (`--urls` lists every citation).
 
-**After any change:** `node tools/build-mobile.js --zip` regenerates the search index and rebuilds the fourteen single-file `mobile/` builds and `exports/archivus-site.zip`. Sourcing standards and the research trail live in `research/`.
+**After any change:** `node tools/build-mobile.js --zip` regenerates the search index and rebuilds the sixteen single-file `mobile/` builds and `exports/archivus-site.zip`. Sourcing standards and the research trail live in `research/`.
 
 ## Epistemics
 
@@ -355,12 +386,14 @@ archivus/
 ├── index.html            the Archive (Chronicle · Atlas · Wheel)
 ├── astrolabe.html        the Astrolabe
 ├── codex.html            the Codex
-├── wars.html             the War Room (v8)
+├── totalwar.html         Total War (v19): every war on one string
+├── wars.html             the War Room (v8; refined in v19)
 ├── doctrines.html        the Doctrines (v9)
 ├── realms.html           the Realms (v11)
 ├── coups.html            the Coups (v11)
 ├── conflicts.html        the Conflicts (v13; the map reworked in v18)
 ├── situation.html        the Situation (v18): the world as it stands
+├── ww3.html              World War III (v19): a projection, graded and sourced
 ├── oracle.html           the Oracle (v14): what the whole record points to
 ├── lineage.html          the Bloodline
 ├── pantheons.html        the Pantheons
@@ -381,13 +414,15 @@ archivus/
 │   ├── coups-app.js      Coups engine (roll, record, the two studies, patterns)
 │   ├── conflicts-app.js  Conflicts engine (map, ladder, toll, belligerents, method)
 │   ├── situation-app.js  Situation engine (board and its five lenses, wire, blocs, ballots, method)
+│   ├── totalwar-app.js   Total War engine (string, toll, centuries, method)
+│   ├── ww3-app.js        World War III engine (board, road, balance, cost, odds, method)
 │   ├── oracle-app.js     Oracle engine (facts, broken-axis charts, reading, lines, horizon, method)
 │   ├── realms-kit.js     shared by all three: world map, year slider, tooltips, hash state
 │   ├── realms.css        theme for both (builds on doctrines.css)
 │   ├── *-app.js          one renderer per instrument
 │   ├── styles.css        the observatory theme (shared)
 │   └── data/             all datasets (see schema above)
-├── mobile/               single-file builds of all fourteen pages
+├── mobile/               single-file builds of all sixteen pages
 ├── tools/                build-mobile.js · build-index.js · build-themes.js · build-realms.py · build-oracle.js · validate-oracle.js · validate-wars.js · validate-doctrines.js · validate-conflicts.js · validate-realms.js
 ├── exports/              archivus-site.zip (deploy-ready) · archivus-v7.2-backup.zip
 └── research/             sources, notes, provenance, expansion plans · data/ (Freedom House scores as captured)
@@ -456,4 +491,8 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 
 - *v18.1* — the Situation's gaps closed: results for the eight votes that had none, five more dispatches for the autumn's elections, and the EU's and UN's sanctions regimes in full beside the American ones.
 
-Current state: **v18.1** — fourteen instruments behind five doors, three colourways, all datasets validated. Live: v18.1 (deployed 2026-11-25).
+- *War, whole and projected (v19)* — two more instruments under War: Total War (every war on one string, ranked by its dead, and by century) and World War III (a projection built only from published wargames, treaties, assessments and forecasts, every line graded and sourced). The War Room's campaigns gain a rail of the phases, its cost is one page, and its causes lead on to both.
+
+- *v19.1* — second sources for twelve of Total War's tolls, marked in gold; two of World War III's studies cited at source; the board's legend made a strip.
+
+Current state: **v19.1** — sixteen instruments behind five doors, three colourways, all datasets validated. Live: v19.1 (deployed 2026-11-27).
