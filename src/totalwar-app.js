@@ -2,6 +2,8 @@
    ARCHIVUS — TOTAL WAR (v19)
    Every war the Archive knows, on one string: thirty-three centuries from Kadesh to the wars
    being fought today, and the one that is only projected.
+     · the Map        — every war where it was fought, lit in the years it was fought: drag the
+                        year or press Play, and thirty-three centuries pass in about a minute (v19.3)
      · the String     — a bar a war, laid on its years and its part of the world, sized by its dead,
                         with one thread run through them all in the order they began
      · the Toll       — the wars ranked by their dead, each with the range the estimates span
@@ -10,7 +12,7 @@
    Data: src/data/totalwar.js (the sized wars), the Chronicle's own events (the rest),
    src/data/conflicts.js (the wars under way). Nothing is copied: a war that exists elsewhere
    in the Archive is read from there and links back to it.
-   Deep links:  totalwar.html#v=string&i=thirtyyears&z=2     #v=toll     #v=centuries
+   Deep links:  totalwar.html#v=map&y=1242     #v=map&i=ww2     #v=string&i=thirtyyears&z=2     #v=toll     #v=centuries
    ============================================================ */
 (function () {
   "use strict";
@@ -38,16 +40,119 @@
 
   /* the most wars under way in any one year, counted by the year (the strip below the string is drawn by the pixel, so its own maximum moves with the width) */
   const PEAK = { n: 0, y: T0 }; for (let y = T0; y <= Math.floor(NOW); y++) { let n = 0; WARS.forEach(r => { if (r.a <= y && r.e >= y) n++; }); if (n >= PEAK.n) { PEAK.n = n; PEAK.y = y; } }
-  const st = { v: "string", i: null, z: 1, f: null }, built = {};
+  const st = { v: "map", i: null, z: 1, f: null, y: null }, built = {};   /* y: the year the map shows; null = every war at once */
   let tabs = null;
-  function sync(skip) { if (!skip) K.hash.write({ v: st.v, i: st.i, z: st.z > 1 ? st.z : null, f: st.v === "toll" ? st.f : null }); tabs.paint(); renderSide(); render(); }
+  const inSpan = (r, y) => r.kind === "battle" ? Math.abs(y - r.a) <= 1 : r.a <= y + .5 && r.e >= y - .5;
+  function sync(skip) {
+    if (st.v !== "map" && play.on) stop();
+    const r = st.i && BY[st.i]; if (st.v === "map" && r && r.kind !== "proj" && st.y != null && !play.on && !inSpan(r, st.y)) st.y = Math.min(NOW, (r.a + r.e) / 2);   /* a war chosen on the map brings its years with it */
+    if (!skip) K.hash.write({ v: st.v, i: st.i, z: st.z > 1 ? st.z : null, f: st.v === "toll" ? st.f : null, y: st.v === "map" && st.y != null ? Math.round(st.y) : null });
+    tabs.paint(); renderSide(); render(); }
   function go(v) { if (tabs.ids.indexOf(v) >= 0) { st.v = v; sync(); } }
   function pick(id) { st.i = st.i === id ? null : id; sync(); }
-  function render() { if (st.v === "string") drawString(); else if (st.v === "toll") drawToll(); else if (st.v === "centuries") drawCent(); else drawMethod(); }
+  function render() { if (st.v === "map") drawMap(); else if (st.v === "string") drawString(); else if (st.v === "toll") drawToll(); else if (st.v === "centuries") drawCent(); else drawMethod(); }
 
   /* ---- the time axis: piecewise, so the crowded centuries get the room ---- */
   const WP = TW.warp;
   const fx = y => { y = Math.max(T0, Math.min(T1, y)); for (let i = 1; i < WP.length; i++) if (y <= WP[i][0]) return WP[i - 1][1] + (y - WP[i - 1][0]) / (WP[i][0] - WP[i - 1][0]) * (WP[i][1] - WP[i - 1][1]); return 1; };
+
+  /* ---------------- the map ----------------
+     One year drives it. Every war is a disc where it was fought (several discs for several fronts), sized by its
+     dead. In the year shown a war being fought burns; one that has ended is an ember; one not yet begun is absent.
+     With no year chosen every war is shown at once. Time runs on the string's own stretched axis, so the crowded
+     centuries get the seconds as well as the room. */
+  const FN = fx(NOW), fxInv = u => { u = Math.max(0, Math.min(FN, u)); for (let i = 1; i < WP.length; i++) if (u <= WP[i][1]) return WP[i - 1][0] + (u - WP[i - 1][1]) / (WP[i][1] - WP[i - 1][1]) * (WP[i][0] - WP[i - 1][0]); return NOW; };
+  const GEO = window.ARCHIVUS_GEO || {}, WHERE = TW.where || {};
+  const ptsOf = r => WHERE[r.id] || (r.ev && GEO[r.ev] ? [[GEO[r.ev][0], GEO[r.ev][1]]] : null) || (function () { const c = r.cf && CF.list.filter(x => x.id === r.cf)[0]; return c && c.at ? [[c.at[0], c.at[1]]] : null; })();
+  const ON_MAP = R.filter(r => r.kind !== "proj" && ptsOf(r));
+  const rad = r => r.gm == null ? (r.kind === "battle" ? 3.4 : 4) : 6 + 30 * Math.sqrt(r.gm / SIZED[0].gm);
+  const deadBy = y => SIZED.reduce((a, r) => a + r.gm * Math.max(0, Math.min(1, (y - r.a) / Math.max(1, r.e - r.a))), 0), DEAD_ALL = SIZED.reduce((a, r) => a + r.gm, 0);
+  const play = { on: false, raf: 0, last: 0, fast: false };
+  let tmap = null, tmarks = [], thread = null, sideKey = "";
+  const MX = lon => lon + 180, MY = lat => 90 - lat;
+  function placeMarks() { if (!tmap) return; const s = tmap.scale(), a = s.toFixed(4), b = (s / tmap.SY).toFixed(4); for (let i = 0; i < tmarks.length; i++) { const t = "translate(" + tmarks[i].x + " " + tmarks[i].y + ") scale(" + a + " " + b + ")"; tmarks[i].g.setAttribute("transform", t); if (tmarks[i].gl) tmarks[i].gl.setAttribute("transform", t); } }
+  function stop() { play.on = false; cancelAnimationFrame(play.raf); }
+  function tick(now) {
+    if (!play.on) return; const dt = Math.min(.1, (now - play.last) / 1000); play.last = now;
+    const u = fx(st.y) + dt * FN / (play.fast ? 32 : 70); st.y = fxInv(u);
+    if (u >= FN) { st.y = NOW; stop(); return sync(); }
+    frame(); play.raf = requestAnimationFrame(tick);
+  }
+  function start() { if (st.y == null || st.y >= NOW - .5) st.y = R[0].a - 6; st.i = null; play.on = true; play.last = performance.now(); sync(); play.raf = requestAnimationFrame(tick); }
+  function setYear(y, keep) { stop(); st.y = y == null ? null : Math.max(T0, Math.min(NOW, y)); if (!keep) st.i = null; sync(); }
+  function drawMap() {
+    if (!built.map) { built.map = 1;
+      const ident = {}; (window.ARCHIVUS_COUNTRIES || []).forEach(c => { ident[c.n] = c.n; });
+      tmap = K.worldMap($("tm"), { map: ident, tip: K.tip($("tm-tip"), $("tm-wrap")), onView: placeMarks,
+        tipFor: (iso, name) => { if (name.charAt(0) !== "@") return null; const r = BY[name.slice(1).split("|")[0]], pl = name.split("|")[1]; return "<b>" + esc(r.n) + "</b><small>" + (pl ? esc(pl) + " · " : "") + span(r) + (r.lo != null ? " · " + tollT(r) + " dead" : "") + "</small>"; },
+        onPick: (name, t) => { const m = t && t.closest && t.closest(".tm-w"); if (m) { stop(); pick(m.dataset.i); } else if (st.i) { st.i = null; sync(); } } });
+      thread = K.svgEl("g", { class: "tm-th" }); tmap.over.appendChild(thread);
+      /* small wars drawn last, so they stay on top of the large and can be picked */
+      ON_MAP.slice().sort((a, b) => rad(b) - rad(a)).forEach(r => ptsOf(r).forEach((pt, k) => {
+        const g = K.svgEl("g", { class: "tm-w" + (r.kind === "battle" ? " bt" : ""), "data-i": r.id, "data-n": "@" + r.id + (pt[2] ? "|" + pt[2] : ""), style: "--c:" + tone(r) });
+        g.appendChild(K.svgEl(r.kind === "battle" ? "path" : "circle", r.kind === "battle" ? { class: "d", d: "M0 -5L5 0L0 5L-5 0Z" } : { class: "d", r: 4 }));
+        const m = { g, r, k, x: MX(pt[1]).toFixed(2), y: MY(pt[0]).toFixed(2), R: rad(r) * (k ? .62 : 1), lab: null, key: "" };
+        if (!k) { m.gl = K.svgEl("g", { class: "tm-l" }); m.lab = K.svgEl("text", { class: "lb", y: 3.5 }, r.n); m.gl.appendChild(m.lab); }
+        tmarks.push(m); tmap.over.appendChild(g);
+      }));
+      tmarks.forEach(m => { if (m.gl) tmap.over.appendChild(m.gl); });   /* names go above every disc */
+      $("tm-zi").onclick = () => tmap.zoomBy(1 / 1.6); $("tm-zo").onclick = () => tmap.zoomBy(1.6); $("tm-zr").onclick = () => tmap.reset();
+      $("tm-ctl").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; const a = b.dataset.a;
+        if (a === "play") { if (play.on) { stop(); sync(); } else start(); } else if (a === "all") setYear(null, true); else if (a === "fast") { play.fast = !play.fast; drawCtl(); } });
+      const sc = $("tm-scrub"), at = e => { const b = sc.getBoundingClientRect(); return fxInv(Math.max(0, Math.min(1, (e.clientX - b.left - 14) / (b.width - 28))) * FN); };
+      let drag = false;
+      sc.addEventListener("pointerdown", e => { const t = e.target.closest("[data-y]"); if (t) return setYear(+t.dataset.y); drag = true; try { sc.setPointerCapture(e.pointerId); } catch (_) {} stop(); st.y = at(e); st.i = null; frame(); });
+      sc.addEventListener("pointermove", e => { if (drag) { st.y = at(e); frame(); } });
+      const end = () => { if (drag) { drag = false; sync(); } }; sc.addEventListener("pointerup", end); sc.addEventListener("pointercancel", end);
+      sc.addEventListener("keydown", e => { const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (!d) return; e.preventDefault(); e.stopPropagation(); setYear(fxInv(fx(st.y == null ? NOW : st.y) + d * FN / 120)); });
+      const lg = '<b>The dead</b><span><i style="background:#ff2e55"></i>10 million and over</span><span><i style="background:#e0502f"></i>1 million and over</span><span><i style="background:#ee8f3a"></i>under a million</span><span><i style="background:#8d96af"></i>not sized</span><span class="lg-h">In the year shown</span><span><svg viewBox="-8 -8 16 16"><circle r="6" fill="rgba(224,80,47,.5)" stroke="#e0502f" stroke-width="1.6"/></svg>being fought</span><span><svg viewBox="-8 -8 16 16"><circle r="2.4" fill="#e0502f" opacity=".7"/></svg>over</span><span><svg viewBox="-8 -8 16 16"><path d="M-7 3L7 -3" stroke="#e8c455" stroke-width="1.6"/></svg>the thread, in the order wars began</span>'
+        + "<small>A war fought on several fronts has several discs. Discs are sized by the dead (the middle of the range), and the running count spreads each war's dead evenly over its years. Places are set by hand to about a degree: they are positions for a map, not findings. " + srcA("list") + "</small>";
+      $("tm-leg").innerHTML = $("tm-leg2").innerHTML = lg;
+      /* the track under the map: how many wars were under way, on the stretched axis */
+      const N = 260, cnt = []; let mx = 1; for (let i = 0; i <= N; i++) { const y = fxInv(i / N * FN); let n = 0; WARS.forEach(r => { if (r.a <= y && r.e >= y) n++; }); cnt.push(n); mx = Math.max(mx, n); }
+      $("tm-dens").innerHTML = '<path d="M0 30' + cnt.map((n, i) => "L" + (i / N * 1000).toFixed(1) + " " + (30 - n / mx * 28).toFixed(1)).join("") + 'L1000 30Z"/>';
+      $("tm-ticks").innerHTML = [-1200, -500, 1, 500, 1000, 1500, 1800, 1900, 2000].map(y => '<button data-y="' + y + '" style="left:' + (fx(y) / FN * 100).toFixed(2) + '%" title="Go to ' + yr(y) + '">' + (y < 0 ? -y + " BCE" : y === 1 ? "1 CE" : y) + "</button>").join("");
+    }
+    drawCtl(); frame(); placeMarks();
+  }
+  function drawCtl() {
+    $("tm-ctl").innerHTML = '<button class="chipbtn go' + (play.on ? " on" : "") + '" data-a="play" title="Space">' + (play.on ? "❚❚ Pause" : st.y != null && st.y < NOW - .5 ? "▶ Play on" : "▶ Play all " + (Math.round(NOW) - R[0].a).toLocaleString("en") + " years") + '</button><button class="chipbtn' + (play.fast ? " on" : "") + '" data-a="fast" title="Play twice as fast">2×</button><button class="chipbtn' + (st.y == null ? " on" : "") + '" data-a="all" title="Every war in the record at once">All at once</button>';
+    $("tm-n").innerHTML = ON_MAP.length + " wars and battles placed where they were fought. Drag the year, press Play, or click a disc.";
+  }
+  function frame() {
+    const y = st.y, all = y == null, s = tmap.scale(), act = [];
+    const kf = Math.max(.42, Math.min(1, $("tm-wrap").clientWidth / 1000)), kk = "|" + kf.toFixed(2);   /* a small map gets small discs */
+    for (let i = 0; i < tmarks.length; i++) { const m = tmarks[i], r = m.r;
+      const state = all ? "all" : inSpan(r, y) ? "on" : r.e < y ? "em" : "off", sel = st.i === r.id, key = state + (sel ? "s" : "") + kk;
+      if (state === "on" && !m.k) act.push(m);
+      if (key === m.key) continue; m.key = key;
+      m.g.setAttribute("class", "tm-w " + state + (r.kind === "battle" ? " bt" : "") + (sel ? " sel" : "")); m.g.style.display = state === "off" && !sel ? "none" : "";
+      const rr = state === "on" ? Math.max(3, m.R * kf) : state === "all" ? Math.max(2.4, m.R * .62 * kf) : r.gm >= 1 ? 2.6 : 1.9, d = m.g.firstChild;
+      if (r.kind === "battle") d.setAttribute("transform", "scale(" + (state === "on" ? 1.5 : .6) + ")"); else d.setAttribute("r", rr.toFixed(1));
+      if (m.lab) { m.lab.setAttribute("x", (rr + 5).toFixed(1)); m.lab.setAttribute("class", "lb" + (state === "em" || state === "off" ? " dim" : "")); }
+    }
+    /* names: the largest first, each only where it does not sit on one already placed */
+    const boxes = [], want = all ? tmarks.filter(m => !m.k && m.r.gm >= 7) : act;
+    tmarks.forEach(m => { if (m.lab) m.lab.style.display = "none"; });
+    want.slice().sort((a, b) => (st.i === b.r.id) - (st.i === a.r.id) || (b.r.gm || 0) - (a.r.gm || 0)).forEach(m => {
+      if (!all && m.r.gm == null && st.i !== m.r.id && want.length > 9) return;
+      const x0 = +m.x, y0 = +m.y * tmap.SY - 7 * s, w = (m.r.n.length * 6.1 + 34) * s, h = 13 * s, b = [x0, y0, x0 + w, y0 + h];
+      if (st.i !== m.r.id && boxes.some(o => o[0] < b[2] && o[2] > b[0] && o[1] < b[3] && o[3] > b[1])) return;
+      boxes.push(b); m.lab.style.display = "";
+    });
+    const sel = st.i && BY[st.i]; if (sel) tmarks.forEach(m => { if (m.r === sel && m.lab) m.lab.style.display = ""; });
+    /* the thread: the last wars to begin, joined in the order they began, fading as they recede */
+    let th = "";
+    if (!all) { const beg = WARS.filter(r => r.a <= y && ptsOf(r)).slice(-8); for (let i = 1; i < beg.length; i++) { const a = ptsOf(beg[i - 1])[0], b = ptsOf(beg[i])[0]; th += '<line x1="' + MX(a[1]) + '" y1="' + MY(a[0]) + '" x2="' + MX(b[1]) + '" y2="' + MY(b[0]) + '" style="opacity:' + (.05 + .45 * i / beg.length).toFixed(2) + '"/>'; } }
+    thread.innerHTML = th;
+    /* the read-out and the track */
+    const n = all ? WARS.length : WARS.filter(r => inSpan(r, y)).length, dead = all ? DEAD_ALL : deadBy(y);
+    $("tm-now").innerHTML = "<b>" + (all ? "All of it" : yr(Math.round(y)) + (y >= 0 ? " <i>CE</i>" : "")) + "</b><span>" + (all ? WARS.length + " wars, " + yr(R[0].a) + " to now" : n + (n === 1 ? " war" : " wars") + " under way") + "</span><span>" + (all ? "about " + Math.round(DEAD_ALL) + " million dead in the " + SIZED.length + " that are sized" : "about " + (dead >= 10 ? Math.round(dead) : dead.toFixed(1)) + " million dead so far, of " + Math.round(DEAD_ALL)) + "</span>";
+    const p = all ? 100 : fx(y) / FN * 100; $("tm-h").style.left = "calc(14px + (100% - 28px) * " + (p / 100).toFixed(4) + ")"; $("tm-done").style.width = "calc((100% - 28px) * " + (p / 100).toFixed(4) + ")";
+    $("tm-scrub").setAttribute("aria-valuenow", all ? Math.round(NOW) : Math.round(y)); $("tm-scrub").setAttribute("aria-valuetext", all ? "every war at once" : yr(Math.round(y)));
+    /* while it plays, the panel follows the wars under way */
+    if (play.on) { const k = act.map(m => m.r.id).join(); if (k !== sideKey) { sideKey = k; renderSide(); } }
+  }
 
   /* ---------------- the string ---------------- */
   function drawString() {
@@ -166,10 +271,13 @@
     /* what else was being fought while this was */
     const mean = R.filter(q => q !== r && q.kind !== "battle" && q.kind !== "proj" && q.a <= r.e && q.e >= r.a).sort((a, b) => (b.gm || 0) - (a.gm || 0)).slice(0, 6);
     if (mean.length && r.kind !== "battle") h += '<div class="sd-k">Fought in the same years</div>' + mean.map(q => '<button class="rel" data-i="' + q.id + '" style="border-left-color:' + tone(q) + '">' + esc(q.n) + "<i>" + span(q) + (q.lo != null ? " · " + tollT(q) : "") + "</i></button>").join("");
-    return h + '<div class="sd-links">' + (st.v !== "string" ? '<button class="lnk" data-go="string">On the string ⟶</button>' : "") + (prev ? '<button class="lnk" data-i="' + prev.id + '" title="' + esc(prev.n) + '">◂ before</button>' : "") + (next ? '<button class="lnk" data-i="' + next.id + '" title="' + esc(next.n) + '">after ▸</button>' : "") + "</div>";
+    return h + '<div class="sd-links">' + (st.v !== "map" && ptsOf(r) ? '<button class="lnk" data-go="map">On the map ⟶</button>' : "") + (st.v !== "string" ? '<button class="lnk" data-go="string">On the string ⟶</button>' : "") + (prev ? '<button class="lnk" data-i="' + prev.id + '" title="' + esc(prev.n) + '">◂ before</button>' : "") + (next ? '<button class="lnk" data-i="' + next.id + '" title="' + esc(next.n) + '">after ▸</button>' : "") + "</div>";
   }
   function intro() {
-    const T = { string: ["THE STRING", "Every war the Archive knows on one line of time, by the part of the world it was fought in. A bar's length is its years, its thickness its dead; the pale halo is the high estimate. The gold thread runs through them in the order they began. Click a war; stretch time with the buttons above."],
+    if (st.v === "map" && st.y != null) { const y = st.y, act = WARS.filter(r => inSpan(r, y)).sort((a, b) => (b.gm || 0) - (a.gm || 0)), bt = R.filter(r => r.kind === "battle" && inSpan(r, y));
+      return '<div class="sd-k">In ' + yr(Math.round(y)) + "</div><p>" + (act.length ? act.length + (act.length === 1 ? " war" : " wars") + " of the record under way." : "No war of the record is under way: a gap in the record more than a peace.") + '</p><div class="dth"><div><span>Under way</span><b>' + act.length + "</b></div><div><span>Dead so far</span><b>~" + (deadBy(y) >= 10 ? Math.round(deadBy(y)) : deadBy(y).toFixed(1)) + "m</b></div></div>"
+        + (act.length || bt.length ? '<div class="sd-k">Being fought</div>' + bt.concat(act).slice(0, 14).map(q => '<button class="rel" data-i="' + q.id + '" style="border-left-color:' + tone(q) + '">' + esc(q.n) + "<i>" + span(q) + (q.lo != null ? " · " + tollT(q) : "") + "</i></button>").join("") : ""); }
+    const T = { map: ["THE MAP", "Every war the Archive knows, where it was fought. A disc is a front or a centre of the fighting, sized by the war's dead. Press Play and thirty-three centuries pass in about a minute: a war burns in its years and leaves an ember. Drag the year along the track under the map, or click a disc."], string: ["THE STRING", "Every war the Archive knows on one line of time, by the part of the world it was fought in. A bar's length is its years, its thickness its dead; the pale halo is the high estimate. The gold thread runs through them in the order they began. Click a war; stretch time with the buttons above."],
                 toll: ["THE TOLL", "The wars ranked by their dead. The gap between the bright bar and the pale one is what is not known."],
                 centuries: ["THE CENTURIES", "The same dead, century by century, with each century's deadliest war."], method: ["METHOD", "Where the rows come from and how far to trust a death toll."] }[st.v];
     return '<div class="sd-k">' + T[0] + "</div><p>" + T[1] + '</p><div class="dth"><div><span>Wars</span><b>' + WARS.length + "</b></div><div><span>Years covered</span><b>" + (Math.round(NOW) - R[0].a).toLocaleString("en") + "</b></div><div><span>Dead, sized wars</span><b>~" + Math.round(SIZED.reduce((a, r) => a + r.gm, 0)) + "m</b></div><div><span>Being fought now</span><b>" + R.filter(r => r.open && r.kind !== "proj").length + "</b></div></div>"
@@ -184,13 +292,14 @@
   /* ---------------- boot ---------------- */
   function applyHash() {
     if (location.hash === K.hash.self && built.boot) return;
-    const q = K.hash.read(); if (q.v && tabs.ids.indexOf(q.v) >= 0) st.v = q.v; st.i = BY[q.i] ? q.i : null; st.z = [1, 2, 4].indexOf(+q.z) >= 0 ? +q.z : 1; st.f = q.f === "two" || q.f === "one" ? q.f : null; built.boot = 1; sync(true);
+    const q = K.hash.read(); if (q.v && tabs.ids.indexOf(q.v) >= 0) st.v = q.v; st.i = BY[q.i] ? q.i : null; st.z = [1, 2, 4].indexOf(+q.z) >= 0 ? +q.z : 1; st.f = q.f === "two" || q.f === "one" ? q.f : null; stop(); st.y = q.y != null && q.y !== "" && isFinite(+q.y) ? Math.max(T0, Math.min(NOW, +q.y)) : null; built.boot = 1; sync(true);
   }
   tabs = K.tabs(() => st.v, go);
-  $("dc-side").addEventListener("click", e => { if (e.target.closest("a")) return; if (e.target.closest(".sd-x")) { st.i = null; return sync(); } const g = e.target.closest("[data-go]"); if (g) { st.v = g.dataset.go; return sync(); } const b = e.target.closest("[data-i]"); if (b) { st.i = b.dataset.i; sync(); } });
+  $("dc-side").addEventListener("click", e => { if (e.target.closest("a")) return; if (e.target.closest(".sd-x")) { st.i = null; return sync(); } const g = e.target.closest("[data-go]"); if (g) { st.v = g.dataset.go; const r = st.i && BY[st.i]; if (st.v === "map" && r) st.y = Math.min(NOW, (r.a + r.e) / 2); return sync(); } const b = e.target.closest("[data-i]"); if (b) { stop(); st.i = b.dataset.i; sync(); } });
   document.addEventListener("keydown", e => { if (e.target.closest("input, textarea") || e.ctrlKey || e.metaKey || e.altKey) return; if (e.key === "Escape" && st.i) { st.i = null; return sync(); }
+    if (e.key === " " && st.v === "map" && !e.target.closest("button, a, [role=tab]")) { e.preventDefault(); if (play.on) { stop(); sync(); } else start(); return; }
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (d && st.i) { const n = R[BY[st.i].ix + d]; if (n) { st.i = n.id; sync(); } } });               /* ← → walk the string */
-  K.finder($("dc-q"), q => R.filter(r => r.n.toLowerCase().indexOf(q) >= 0).slice(0, 12).map(r => ({ label: r.n, sub: span(r) + (r.lo != null ? " · " + tollT(r) : ""), id: r.id })), h => { if (st.v === "method") st.v = "string"; st.i = h.id; sync(); });
+  K.finder($("dc-q"), q => R.filter(r => r.n.toLowerCase().indexOf(q) >= 0).slice(0, 12).map(r => ({ label: r.n, sub: span(r) + (r.lo != null ? " · " + tollT(r) : ""), id: r.id })), h => { if (st.v === "method") st.v = "map"; stop(); st.i = h.id; sync(); });
   let rt = 0; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { renderSide(); render(); }, 140); });
   window.addEventListener("hashchange", applyHash);
   applyHash();
