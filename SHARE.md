@@ -6,7 +6,9 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v19.1** — deployed 2026-11-27. Two more instruments under War: Total War (every war on one string, by its dead, by century; twelve tolls checked against a second source) and World War III (a projection, every line graded and sourced). The War Room's campaigns have a rail of the phases.
+**Live version: v19.2** — deployed 2026-11-27. Every one of Total War's 76 tolls taken to a second source (53 found, 23 marked as the list's figure only); World War III read at source; legend strips on the three War maps.
+
+**Before that: v19.1** — deployed 2026-11-27. Two more instruments under War: Total War (every war on one string, by its dead, by century; twelve tolls checked against a second source) and World War III (a projection, every line graded and sourced). The War Room's campaigns have a rail of the phases.
 
 **Before that: v18.1** — deployed 2026-11-25 (v18.0 in four commits, then v18.1 the same day: every 2026 election now has its result, and the sanctions lens shows EU and UN regimes in full). A fourteenth instrument, the Situation (the present on one map, under War); the Conflicts reworked around its map; the three Myth instruments linked to each other.
 

@@ -71,8 +71,6 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 .fa ul { margin: 0; padding-left: 18px; } .fa li { font-size: 13px; line-height: 1.55; color: #cfc9b8; margin-bottom: 7px; } .read { margin-top: 12px; }
 .w3 .mth p { font-size: 13px; line-height: 1.6; color: #cfc9b8; max-width: 78ch; margin: 0; } .w3 .wr-note .gr { margin-left: 4px; }
 #wb-leg2 { display: none; }
-/* the legend as one strip along the foot of the map, so it covers sea and not South America */
-#wb-leg { left: 8px; right: 8px; bottom: 6px; max-width: none; padding: 4px 10px 5px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 4px; line-height: 1.5; } #wb-leg b { display: inline; margin: 0 8px 0 0; font-size: 10.5px; } #wb-leg small { display: none; }
 @media (max-width: 1400px) { #rd-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } #bl-pane { grid-template-columns: 1fr 1fr; } .gauges { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 860px) { .w3-k:not(.sel) text { display: none; } #rd-cols, #bl-pane, .w3 .grid2.even { grid-template-columns: 1fr; } .gauges { grid-template-columns: 1fr 1fr; } .gg p { min-height: 0; } #wb-leg { display: none; } #wb-leg2 { display: block; position: static; max-width: none; margin: 8px 12px; } #wb-road .rs { min-width: 170px; } .mr { grid-template-columns: 92px minmax(0, 1fr) 50px; } }
 </style>
@@ -107,7 +105,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
         <div class="rl-map" id="wb-wrap">
           <svg id="wb" role="img" aria-label="World map of the two camps and the places a war between them could start"></svg>
           <div class="rl-zoom"><button class="chipbtn" id="wb-zi" title="Zoom in">+</button><button class="chipbtn" id="wb-zo" title="Zoom out">−</button><button class="chipbtn" id="wb-zr" title="Reset the view">⟲</button></div>
-          <div id="wb-leg" class="plate rl-leg"></div>
+          <div id="wb-leg" class="plate rl-leg strip" tabindex="0" aria-label="Legend; focus it for its notes and sources"></div>
           <div id="wb-tip" class="plate rl-tip" hidden></div>
         </div>
         <div id="wb-leg2" class="plate rl-leg"></div>

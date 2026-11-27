@@ -151,7 +151,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
         <div class="rl-map" id="mp-wrap">
           <svg id="mp" role="img" aria-label="World map of current conflicts by severity, with armed groups"></svg>
           <div class="rl-zoom"><button class="chipbtn" id="mp-zi" title="Zoom in">+</button><button class="chipbtn" id="mp-zo" title="Zoom out">−</button><button class="chipbtn" id="mp-zr" title="Reset the view">⟲</button></div>
-          <div id="mp-leg" class="plate rl-leg"></div>
+          <div id="mp-leg" class="plate rl-leg strip" tabindex="0" aria-label="Legend; focus it for its notes and sources"></div>
           <div id="mp-tip" class="plate rl-tip" hidden></div>
         </div>
         <div id="mp-leg2" class="plate rl-leg"></div><!-- the legend again, below the map on a phone -->
