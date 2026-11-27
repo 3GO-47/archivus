@@ -118,6 +118,7 @@ The rule reaches the page three ways. `tools/build-themes.js` reads the four sha
 Asked for on 2026-11-27: *"refine the war tab then build a projected WW3 tab"*, and, while that was being built, *"id also be interested in a total war tab that strings all wars together."* "The war tab" was read as the War Room and the War door of the header. War now holds five instruments in order of time: **Total War · War Room · Conflicts · Situation · World War III**.
 
 **1 · Total War (`totalwar.html`, fifteenth instrument, first under War).** Every war the Archive holds on one string, from Kadesh (c. 1274 BCE) to the wars still being fought.
+- **The Map (v19.3, the first view).** Asked for on 2026-11-27: *"why is there no map and visualization for total war like ww1 and ww2??"* Every war is a disc where it was fought, several discs for a war on several fronts, sized by its dead. One year drives it: a war being fought burns, one that has ended is an ember, one not yet begun is absent. **Play** runs all 3,301 years in about seventy seconds on the string's own stretched axis (Space pauses, 2× halves it); the track under the map shows how many wars were under way and drags to any year; the read-out gives the year, the wars under way and the dead so far. A gold thread joins the last wars to begin, in the order they began. With no year chosen the map shows every war at once. Click a disc for the war's card; a card anywhere in Total War leads back to the map in that war's own years. Places are in `where` in `src/data/totalwar.js` (set by hand to about a degree: positions for a map, not findings); the Chronicle's wars use its gazetteer and the wars under way use the Conflicts'. Deep links: `totalwar.html#v=map&y=1242`, `#v=map&i=ww2`.
 - **The String.** 116 wars as bars on eight lanes (across continents, Europe, West Asia & North Africa, Central & South Asia, East Asia, South-East Asia, Africa, the Americas), eleven battles as diamonds, and a gold thread through them in order of starting. Width is duration; colour and weight are the dead (10 million and over, 1 million and over, under). A halo behind a bar is the high estimate. Open wars end in a dotted edge at today; the projection sits beyond it, dashed. Under the string, a strip of how many wars were under way at once. The time axis is stretched where the record is crowded (`meta.warp`), and the chips stretch it 2× and 4×. Arrow keys walk the string.
 - **The Toll.** The 76 wars the list puts at about half a million dead or more, ranked, low and high estimate both drawn on a square-root scale.
 - **The Centuries.** The same dead spread across 34 centuries (13th BCE to 21st), with a table of each century's wars and its deadliest. The note says what the shape is worth: fewer wars before 1500 means fewer written down, not fewer fought.
@@ -144,7 +145,7 @@ Asked for on 2026-11-27: *"refine the war tab then build a projected WW3 tab"*, 
 - **The Cost** is one page: the tiles and the deaths by country no longer sit on separate pages.
 - **Causes & aftermath** ends in three ways on: this war among all wars (Total War), the wars being fought now (the Conflicts), and the projection.
 
-**Tests:** `node tools/tests/war.js` (36 checks; add `mobile` to test the single-file builds).
+**Tests:** `node tools/tests/war.js` (47 checks; add `mobile` to test the single-file builds).
 
 ## The present tense (v18)
 
@@ -499,4 +500,6 @@ Development notes for every stage (v0.1 seed → v2.0 perfection pass) are prese
 
 - *v19.2* — every one of Total War's 76 tolls taken to a second source (53 found, 23 marked as the list's figure only); World War III's studies read at source and its force sizes refreshed; the legends of all three War maps made strips that cover no land.
 
-Current state: **v19.2** — sixteen instruments behind five doors, three colourways, all datasets validated. Live: v19.2 (deployed 2026-11-27).
+- *v19.3* — Total War gains the Map: every war where it was fought, played through thirty-three centuries.
+
+Current state: **v19.3** — sixteen instruments behind five doors, three colourways, all datasets validated. Live: v19.3 (deployed 2026-11-27).

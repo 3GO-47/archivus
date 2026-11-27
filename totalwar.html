@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ARCHIVUS — Total War</title>
-<meta name="description" content="Every war on one string: thirty-three centuries of war on one line of time, each war sized by its dead with the range the estimates span, from Kadesh to the wars being fought today.">
+<meta name="description" content="Every war on one map and one string: press Play and watch thirty-three centuries of war where it was fought; thirty-three centuries of war on one line of time, each war sized by its dead with the range the estimates span, from Kadesh to the wars being fought today.">
 <meta name="color-scheme" content="dark">
 <script src="src/theme.js"></script><!-- the colourway, set before anything paints -->
 <meta name="theme-color" content="#0a0c12">
@@ -46,6 +46,24 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 .tt-r .bw, .tw-toll .bw { position: relative; height: 12px; background: rgba(255,255,255,.035); border-radius: 2px; } .tt-r .bw i, .tw-toll .bw i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--c); } .tt-r .bw .hi, .tw-toll .bw .hi { opacity: .3; } .tt-r .bw .lo, .tw-toll .bw .lo { box-shadow: 0 0 8px -2px var(--c); }
 .bw u.sec { position: absolute; top: -3px; bottom: -3px; min-width: 2px; margin-left: -1px; background: #e8c455; border-radius: 1px; box-shadow: 0 0 6px rgba(232,196,85,.7); text-decoration: none; } .bw u.sec.rng { background: none; border: 1.5px solid #e8c455; border-top-width: 0; border-bottom-width: 0; box-shadow: none; margin-left: 0; } .bw u.sec.rng::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px solid #e8c455; }
 u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455; vertical-align: -2px; margin: 0 3px 0 1px; text-decoration: none; }
+/* ---- the map (v19.3) ---- */
+.tm-w { cursor: pointer; } .tm-w .d { fill: var(--c); stroke: var(--c); vector-effect: non-scaling-stroke; }
+.tm-w.on .d { fill-opacity: .42; stroke-width: 1.6; filter: drop-shadow(0 0 5px var(--c)); } .tm-w.all .d { fill-opacity: .26; stroke-width: 1.1; stroke-opacity: .9; }
+.tm-w.em .d { fill-opacity: .62; stroke: none; } .tm-w.em { opacity: .6; } .tm-w.sel .d { stroke: #ffffff; stroke-width: 2.2; fill-opacity: .6; } .tm-w.sel { opacity: 1; }
+.tm-l .lb { font: 600 10.5px var(--display); fill: #f0e7d0; paint-order: stroke; stroke: #05060a; stroke-width: 3px; stroke-linejoin: round; pointer-events: none; letter-spacing: .02em; } .tm-l .lb.dim { fill: #a9b1c6; }
+.tm-th line { stroke: #e8c455; stroke-width: 1.2; vector-effect: non-scaling-stroke; stroke-linecap: round; pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) { .tm-w.on:not(.bt) .d { animation: tm-burn 2.4s ease-in-out infinite; } @keyframes tm-burn { 50% { fill-opacity: .62; } } }
+#tm-now { position: absolute; left: 14px; top: 10px; pointer-events: none; display: flex; flex-direction: column; gap: 1px; text-shadow: 0 0 8px #05060a, 0 0 2px #05060a; }
+#tm-now b { font: 600 34px/1.05 var(--engraved); letter-spacing: .06em; color: var(--gold-bright); } #tm-now b i { font: normal 13px var(--mono); letter-spacing: .1em; color: var(--gold); margin-left: 2px; }
+#tm-now span { font: 11px var(--mono); color: var(--paper-dim); } #tm-leg2 { display: none; }
+#tm-scrub { position: relative; height: 58px; flex: none; border-top: 1px solid var(--line); background: var(--obsidian-2); cursor: ew-resize; touch-action: none; user-select: none; -webkit-user-select: none; outline-offset: -2px; }
+#tm-dens { position: absolute; left: 14px; top: 6px; width: calc(100% - 28px); height: 30px; } #tm-dens path { fill: rgba(224,80,47,.34); stroke: #e0502f; stroke-width: 1; vector-effect: non-scaling-stroke; }
+#tm-done { position: absolute; left: 14px; top: 6px; height: 30px; background: rgba(232,196,85,.1); border-right: 0; pointer-events: none; }
+#tm-h { position: absolute; top: 2px; height: 38px; width: 2px; margin-left: -1px; background: #e8c455; box-shadow: 0 0 8px rgba(232,196,85,.8); pointer-events: none; } #tm-h::after { content: ""; position: absolute; left: -5px; top: -2px; width: 12px; height: 12px; border-radius: 50%; background: #e8c455; border: 2px solid #05060a; box-sizing: border-box; }
+#tm-ticks { position: absolute; left: 14px; right: 14px; bottom: 3px; height: 16px; } #tm-ticks button { position: absolute; transform: translateX(-50%); background: none; border: 0; padding: 1px 4px; font: 9.5px var(--mono); color: #8d96af; cursor: pointer; white-space: nowrap; } #tm-ticks button:hover { color: var(--gold-bright); }
+.tw .rl-leg svg { width: 14px; height: 14px; display: inline-block; vertical-align: -3px; margin-right: 5px; }
+#tm-ctl .go { border-color: var(--gold); color: var(--gold-bright); }
+@media (max-width: 860px) { #tm-leg { display: none; } #tm-leg2 { display: block; position: static; max-width: none; margin: 8px 12px 0; } #tm-now b { font-size: 24px; } #tm-ticks button:nth-child(even) { display: none; } #tm-n { display: none; } }
 .tt-r.off { display: none; } .tt-r.one .bw .lo { background: none; border: 1px dotted var(--c); box-shadow: none; box-sizing: border-box; } .tt-r.one .bw .hi { opacity: .14; }
 .tw-sec a { display: block; margin-top: 3px; } .tw-sec.none { border-left-color: #6b7285; border-left-style: dotted; } .tw-sec.none b { color: #a9b1c6; } .tw-sec.none p { font-size: 12.5px; color: var(--paper-dim); margin: 0; }
 .tw-sec { margin: 0 0 10px; padding: 8px 11px 9px; border: 1px solid var(--line); border-left: 3px solid #e8c455; border-radius: 4px; background: var(--obsidian-2); } .tw-sec b { display: block; font: 600 10px var(--engraved); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-bright); margin-bottom: 3px; } .tw-sec p { margin: 0 0 5px; font: 13px/1.45 var(--display); color: var(--paper); } .tw-sec a { font: 10.5px/1.4 var(--mono); color: var(--gold); text-decoration: none; border-bottom: 1px dotted var(--gold-dim); } .tw-one { margin: -4px 0 10px; }
@@ -82,7 +100,8 @@ u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455
   </header>
   <nav id="wr-bar" aria-label="Views">
     <div id="wr-tabs" role="tablist">
-      <button role="tab" data-v="string" title="Every war on one line of time, by the part of the world it was fought in">The String</button>
+      <button role="tab" data-v="map" title="Every war where it was fought, in the years it was fought: press Play">The Map</button>
+      <button role="tab" data-v="string" data-kin="map" title="Every war on one line of time, by the part of the world it was fought in">The String</button>
       <button role="tab" data-v="toll" title="The wars ranked by their dead, with the range the estimates span">The Toll</button>
       <button role="tab" data-v="centuries" data-kin="toll" title="The same dead, century by century">The Centuries</button>
       <button role="tab" class="minor" data-v="method" title="Where the rows come from, and how far to trust a death toll">Method &amp; sources</button>
@@ -91,7 +110,19 @@ u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455
   </nav>
   <main id="dc-main">
     <div id="dc-stage">
-      <section id="v-string" class="wr-view dc-view">
+      <section id="v-map" class="wr-view dc-view">
+        <div class="dc-bar"><div class="chips" id="tm-ctl" role="group" aria-label="Playback"></div><span class="wr-note" id="tm-n"></span></div>
+        <div class="rl-map" id="tm-wrap">
+          <svg id="tm" role="img" aria-label="World map of every war in the record, placed where it was fought"></svg>
+          <div id="tm-now"></div>
+          <div class="rl-zoom"><button class="chipbtn" id="tm-zi" title="Zoom in">+</button><button class="chipbtn" id="tm-zo" title="Zoom out">−</button><button class="chipbtn" id="tm-zr" title="Reset the view">⟲</button></div>
+          <div id="tm-leg" class="plate rl-leg strip" tabindex="0" aria-label="Legend; focus it for its notes and sources"></div>
+          <div id="tm-tip" class="plate rl-tip" hidden></div>
+        </div>
+        <div id="tm-scrub" role="slider" tabindex="0" aria-label="The year the map shows" aria-valuemin="-1300" aria-valuemax="2026"><i id="tm-done"></i><svg id="tm-dens" viewBox="0 0 1000 30" preserveAspectRatio="none" aria-hidden="true"></svg><div id="tm-ticks"></div><i id="tm-h"></i></div>
+        <div id="tm-leg2" class="plate rl-leg"></div>
+      </section>
+      <section id="v-string" class="wr-view dc-view" hidden>
         <div class="dc-bar"><div class="chips" id="ts-zoom" role="group" aria-label="Stretch time"></div><span class="wr-note" id="ts-n"></span></div>
         <div id="ts-box" data-stage><div id="ts-wrap" aria-label="The string of wars"></div><div id="ts-labs" class="ts-labs"></div></div>
       </section>
@@ -108,6 +139,7 @@ u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455
     <aside id="dc-side" aria-live="polite"></aside>
   </main>
   <noscript><p style="padding:24px">Total War needs JavaScript. The data is readable in <code>src/data/totalwar.js</code>.</p></noscript>
+  <script src="assets/world2.js"></script>
   <script src="src/data/events.js"></script><script src="src/data/events2.js"></script><script src="src/data/geo.js"></script><script src="src/data/uncertainty.js"></script><script src="src/data/events3.js"></script><script src="src/data/events4.js"></script>
   <script src="src/data/events5.js"></script><script src="src/data/events6.js"></script>
   <script src="src/data/conflicts.js"></script>

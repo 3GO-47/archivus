@@ -6,7 +6,9 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v19.2** — deployed 2026-11-27. Every one of Total War's 76 tolls taken to a second source (53 found, 23 marked as the list's figure only); World War III read at source; legend strips on the three War maps.
+**Live version: v19.3** — deployed 2026-11-27. Total War opens on a map: every war where it was fought, with a year track and Play.
+
+**Before that: v19.2** — deployed 2026-11-27. Every one of Total War's 76 tolls taken to a second source (53 found, 23 marked as the list's figure only); World War III read at source; legend strips on the three War maps.
 
 **Before that: v19.1** — deployed 2026-11-27. Two more instruments under War: Total War (every war on one string, by its dead, by century; twelve tolls checked against a second source) and World War III (a projection, every line graded and sourced). The War Room's campaigns have a rail of the phases.
 
