@@ -29,6 +29,13 @@ window.ARCHIVUS_WW3 = {
     yougov:  ["YouGov — Many Europeans and Americans think World War 3 is imminent", "https://yougov.com/en-gb/articles/52113-many-europeans-and-americans-think-world-war-3-is-imminent", "2025-05-06"],
     clock:   ["Bulletin of the Atomic Scientists — It is 85 seconds to midnight (press release)", "https://thebulletin.org/2026/01/press-release-it-is-85-seconds-to-midnight/", "2026-01-27"],
     csis:    ["CSIS — The First Battle of the Next War: Wargaming a Chinese Invasion of Taiwan", "https://www.csis.org/analysis/first-battle-next-war-wargaming-chinese-invasion-taiwan", "2023-01"],
+    csisfull:["CSIS — The First Battle of the Next War, the full report (165 pages; its text read in the copy of the PDF hosted by Poder Naval)", "https://www.naval.com.br/blog/wp-content/uploads/2023/01/Wargaming-a-chinese-invasion-of-Taiwan.pdf", "2023-01"],
+    plana:   ["Princeton University, Program on Science and Global Security — Plan A", "https://sgs.princeton.edu/the-lab/plan", "2019-09"],
+    bbgown:  ["Bloomberg — The $10 Trillion Fight: Modeling a US-China War Over Taiwan (the opening of the article; the rest is behind a paywall)", "https://www.bloomberg.com/news/articles/2026-02-10/the-10-trillion-fight-modeling-a-us-china-war-over-taiwan", "2026-02-10"],
+    ddisown: ["Danish Defence Intelligence Service — Assessment of the threat from Russia (unclassified)", "https://www.fe-ddis.dk/globalassets/fe/dokumenter/2026/trusselsvurderinger/-assessment-of-the-threat-from-russia-.pdf", "2026-09-24"],
+    crsend:  ["US Congressional Research Service — FY2026 NDAA: Active Component End-Strength (IN12651)", "https://www.everycrsreport.com/reports/IN12651.html", "2026-02-06"],
+    rokwp:   ["The Korea Times — South Korea's 2022 Defense White Paper on the North's forces", "https://www.koreatimes.co.kr/foreignaffairs/northkorea/20230216/n-korea-labeled-enemy-again-in-s-koreas-defense-white-paper", "2023-02-16"],
+    rudecree:["Kurs — Putin increases the size of the Russian army for the fourth time in a year (decree of 28 September 2026)", "https://kurs.com.ua/en/novost/1481730-putin-vchetverte-za-rik-zbilshiv-chiselnist-rosiiskoyi-armiyi", "2026-09-28"],
     rfacsis: ["Radio Free Asia — Chinese invasion of Taiwan would fail, but at a high cost for all, CSIS says", "https://www.rfa.org/english/news/southchinasea/csis-taiwan-01102023061038.html", "2023-01-10"],
     bbg:     ["Bloomberg Economics, carried by Insurance Journal — The $10 trillion fight: modeling a US–China war over Taiwan", "https://www.insurancejournal.com/news/international/2026/02/12/857770.htm", "2026-02-12"],
     sgs:     ["Arms Control Association — Plan A: How a Nuclear War Could Progress (Princeton's Program on Science and Global Security)", "https://www.armscontrol.org/act/2020-07/features/plan-how-nuclear-war-could-progress", "2020-07"],
@@ -90,11 +97,12 @@ window.ARCHIVUS_WW3 = {
       pulls: ["Taiwan", "China", "United States of America", "Japan", "Philippines", "Australia", "New Zealand", "South Korea", "Russia", "North Korea"],
       figs: [
         ["The wargame", "24 runs of a Chinese invasion set in 2026; in most the invasion is defeated and Taiwan's economy is left shattered", "csis"],
-        ["United States and its allies, in the study's own summary", "dozens of ships, hundreds of aircraft and tens of thousands of servicemembers", "csis"],
-        ["United States, in most runs", "two aircraft carriers, 10 to 20 large surface combatants, about 3,200 troops", "rfacsis"],
-        ["Japan", "about a hundred aircraft and dozens of ships", "rfacsis"],
-        ["China", "about 10,000 troops killed, 155 combat aircraft, 138 major ships; tens of thousands taken prisoner", "rfacsis"],
-        ["The world economy, first year", "$10.6 trillion, 9.6% of world output: more than the pandemic or the crisis of 2007–09", "bbg"],
+        ["United States and its allies, in the study's own summary", "dozens of ships, hundreds of aircraft and tens of thousands of servicemembers lost", "csis"],
+        ["Taiwan", "its army takes about 3,500 casualties, a third of them killed; 26 warships and roughly half its air force are lost", "csisfull"],
+        ["United States, in the base case", "two aircraft carriers, 10 to 20 large surface combatants, 270 combat aircraft, about 3,200 killed in action in three weeks", "csisfull"],
+        ["Japan", "112 combat aircraft and 26 ships", "csisfull"],
+        ["China", "155 combat aircraft and 138 major ships; about 7,000 casualties ashore and roughly 15,000 men lost at sea, a third of the first and half of the second assumed killed; most of the 30,000 or more left on the island taken prisoner", "csisfull"],
+        ["The world economy, first year", "$10.6 trillion, 9.6% of world output: more than the pandemic or the crisis of 2007–09", "bbgown"],
         ["Who loses most", "Taiwan −40%, South Korea −23%, Japan −14.7%, China −11%, the EU −10.9%, the United States −6.6%", "bbg"],
         ["Why", "losing Taiwan's output would cut the world's supply of leading-edge logic chips by 62%", "bbg"]
       ] },
@@ -104,7 +112,7 @@ window.ARCHIVUS_WW3 = {
       chain: [
         ["is", "Russia's war in Ukraine is in its fifth year of full-scale fighting. Talks in Abu Dhabi and Moscow in November 2026 produced a prisoner exchange and no ceasefire.", ["ajukr17"]],
         ["assessed", "Germany's chief of defence: Russia could be capable of attacking NATO by 2029, 'or even earlier'.", ["breuer"]],
-        ["assessed", "Denmark's intelligence service, 24 September 2026: an invasion of a NATO country is highly unlikely; the risk of a limited attack on a state bordering Russia is low but growing. Estonia's service sees no intention to attack this year or next.", ["ddis", "breuer"]],
+        ["assessed", "Denmark's intelligence service, 24 September 2026: an invasion of a NATO country is highly unlikely; the risk of a limited attack on a NATO state bordering Russia is 'low but growing', and it could come within months. Estonia's service sees no intention to attack this year or next.", ["ddisown", "ddis", "breuer"]],
         ["bound", "An armed attack on one NATO member is treated as an attack on all 32.", ["dp", "nato"]],
         ["bound", "Russia and North Korea owe each other military aid 'without delay' if either is invaded; North Korean troops have already fought for Russia in Ukraine. Belarus sits in Russia's treaty organisation.", ["kt", "cnas", "csto"]],
         ["open", "Whether the alliance holds. Nearly 44% of the experts surveyed expect NATO no longer to exist in its present form by 2036.", ["acgf"]],
@@ -114,8 +122,8 @@ window.ARCHIVUS_WW3 = {
       figs: [
         ["Bound by Article 5", "32 states, among them three nuclear powers", "nato"],
         ["When Russia could be ready", "by 2029, or earlier (Germany's chief of defence)", "breuer"],
-        ["The other view", "invasion of a NATO country 'highly unlikely' (Danish intelligence, Sept 2026)", "ddis"],
-        ["If it went nuclear", "more than 90 million dead and injured in the first few hours, before fallout", "sgs"]
+        ["The other view", "invasion of a NATO country 'highly unlikely' (Danish intelligence, Sept 2026)", "ddisown"],
+        ["If it went nuclear", "more than 90 million dead and injured in the first few hours, before fallout", "plana"]
       ] },
     { id: "gulf", n: "The Gulf", at: [26.6, 54.6], focus: "Iran", cf: "iran", pct: 13,
       share: "Named by 13% of the experts who expect a world war (the Middle East).",
@@ -174,12 +182,12 @@ window.ARCHIVUS_WW3 = {
       ["assessed", "The other does not: China, Russia, Iran and North Korea are 'an adaptive network of opportunistic cooperation, not a formal alliance', each held back by its own priorities.", ["cnas"]],
       ["assessed", "Whether today's web of alliances is a conveyor belt to war, as before 1914, or a brake on it is argued both ways; the fullest study concludes it is, on balance, more stabilising than not.", ["tertrais"]]]],
     ["General war", "projected", [
-      ["assessed", "The first three weeks at sea and in the air, in the one war that has been gamed in public: two American carriers and up to twenty large warships; 138 Chinese ships and 155 aircraft.", ["rfacsis"]],
-      ["assessed", "The world economy loses 9.6% in the first year of a war for Taiwan, about $10.6 trillion.", ["bbg"]],
+      ["assessed", "The first three weeks at sea and in the air, in the one war that has been gamed in public: two American carriers and up to twenty large warships; 138 Chinese ships and 155 aircraft.", ["csisfull", "rfacsis"]],
+      ["assessed", "The world economy loses 9.6% in the first year of a war for Taiwan, about $10.6 trillion.", ["bbgown", "bbg"]],
       ["is", "The camps as they are armed today: the treaty system spends about three times what the alignment does; the two hold almost the same number of nuclear warheads.", ["milex", "sipri"]]]],
     ["The threshold", "projected", [
       ["assessed", "Princeton's simulation: a conventional war in Europe turns nuclear in three steps, warning shots, strikes on forces, strikes on cities.", ["sgs"]],
-      ["assessed", "More than 90 million people dead and injured within the first few hours, before fallout and the collapse of medicine.", ["sgs"]],
+      ["assessed", "More than 90 million people dead and injured within the first few hours, before fallout and the collapse of medicine.", ["plana", "sgs"]],
       ["assessed", "Of the public in five European countries and the United States, 68 to 76% expect that a third world war would be nuclear.", ["yougov"]],
       ["assessed", "Fifteen per cent of the experts expect Russia to use a nuclear weapon within ten years; 22% expect someone to.", ["acgf"]]]],
     ["After", "projected", [
@@ -200,9 +208,9 @@ window.ARCHIVUS_WW3 = {
       Aq: [["Israel", 90]],
       B: [["Russia", 5420, "1,796 deployed"], ["China", 620, "34 deployed"], ["North Korea", 60]],
       note: "Outside both camps: India 190, Pakistan 170. Total inventory, including retired warheads awaiting dismantlement." },
-    men: { t: "The five largest standing forces", unit: "million on active duty", s: ["armies"],
-      rows: [["China", 2.0, "B", "approximately two million"], ["Russia", 1.5, "B", "1,502,640 by decree of March 2026"], ["India", 1.45, "", "1.43 to 1.48 million; in neither camp"], ["United States", 1.32, "A", "roughly 1.32 million"], ["North Korea", 1.29, "B", "1.28 to 1.3 million"]],
-      note: "Figures as one compilation gives them, from the US Congressional Research Service, the IISS and Russian decrees. Numbers of men measure the least about a war fought with ships, missiles and drones." }
+    men: { t: "The five largest standing forces", unit: "million on active duty", s: ["rudecree", "crsend", "rokwp", "armies"],
+      rows: [["China", 2.0, "B", "approximately two million, as the compilation gives it"], ["Russia", 1.55, "B", "1,550,500 servicemen by decree of 28 September 2026, the fourth rise in a year"], ["India", 1.45, "", "1.43 to 1.48 million, as the compilation gives it; in neither camp"], ["United States", 1.30, "A", "1,302,800 authorised for fiscal 2026"], ["North Korea", 1.28, "B", "about 1.28 million, in South Korea's Defense White Paper"]],
+      note: "Russia's figure is from its decree, the United States' from the Congressional Research Service, North Korea's from Seoul's white paper; China's and India's are as one compilation gives them from the IISS. Numbers of men measure the least about a war fought with ships, missiles and drones." }
   },
 
   /* ---------------- the cost: wars fought and wars modelled, on one scale ---------------- */
@@ -210,7 +218,7 @@ window.ARCHIVUS_WW3 = {
     dead: [
       ["World War I", 15, 22, "fought", "1914 – 1918 · dead", ["wlist"]],
       ["World War II", 70, 85, "fought", "1939 – 1945 · dead", ["wlist"]],
-      ["A US–Russia nuclear war, first hours", 90, 90, "model", "dead and injured, before fallout · Princeton's Plan A", ["sgs"]],
+      ["A US–Russia nuclear war, first hours", 90, 90, "model", "dead and injured, before fallout · Princeton's Plan A", ["plana", "sgs"]],
       ["A US–Russia nuclear war, the famine after", 5000, 5000, "model", "more than five billion dead of hunger · Nature Food, 2022", ["nfood", "rutgers"]]
     ],
     deadNote: "Millions of people, on a logarithmic scale: each step along is ten times the last. The first two were counted afterwards; the last two are models and have never been tested.",
@@ -237,7 +245,7 @@ window.ARCHIVUS_WW3 = {
     ],
     no: [
       ["The alignment is not an alliance. When the United States and Israel struck Iran in 2026, none of its partners fought for it.", ["cnas"]],
-      ["Denmark's intelligence service calls an invasion of a NATO country highly unlikely; Estonia's sees no intention to attack this year or next.", ["ddis", "breuer"]],
+      ["Denmark's intelligence service calls an invasion of a NATO country highly unlikely; Estonia's sees no intention to attack this year or next.", ["ddisown", "ddis", "breuer"]],
       ["In November 2026 the American, Chinese and Russian presidents met as three and agreed to hold talks on nuclear risk.", ["rfa"]],
       ["The economists who priced a war for Taiwan give war a low probability and call 'heightened tensions' the most likely course.", ["bbg"]],
       ["The fullest study of today's alliances concludes that they are, on balance, more stabilising than destabilising.", ["tertrais"]],
