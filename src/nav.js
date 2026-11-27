@@ -40,6 +40,8 @@
       icon: I('<circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="3.2"/><path d="M8 1.8v12.4M1.8 8h12.4"/>') },
     { id: "codex", href: "codex.html", label: "Codex", tip: "The same records as a book you can read",
       icon: I('<path d="M8 3.6C6.4 2.6 4 2.4 2 3v9.6c2-.6 4.4-.4 6 .6 1.6-1 4-1.2 6-.6V3c-2-.6-4.4-.4-6 .6zM8 3.6v9.6"/>') },
+    { id: "totalwar", href: "totalwar.html", label: "Total War", tip: "Every war on one string: thirty-three centuries, sized by their dead",
+      icon: I('<path d="M1.5 11C3.5 4 6 12 8 8S12.5 4 14.5 9"/><circle cx="3.6" cy="8.2" r="1.1" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="12.3" cy="6.3" r="1.1" fill="currentColor"/>') },
     { id: "wars", href: "wars.html", label: "War Room", tip: "The two World Wars, day by day",
       icon: I('<path d="M2.5 2.5l8.2 8.2M13.5 2.5l-8.2 8.2M9.2 12.2l3-3M6.8 12.2l-3-3M11.6 11.6l1.9 1.9M4.4 11.6l-1.9 1.9"/>') },
     { id: "doctrines", href: "doctrines.html", label: "Doctrines", tip: "Every ideology: where it began, what it holds, what it begat",
@@ -52,6 +54,8 @@
       icon: I('<circle cx="8" cy="8" r="5.2"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><path d="M8 1.2v3M8 11.8v3M1.2 8h3M11.8 8h3"/>') },
     { id: "situation", href: "situation.html", label: "Situation", tip: "The world as it stands: wars, blocs, sanctions, ballots and the last ninety days",
       icon: I('<circle cx="8" cy="8" r="6.2"/><path d="M8 8L12.2 4.6"/><circle cx="8" cy="8" r="1.1" fill="currentColor"/><circle cx="11.2" cy="10.6" r=".9" fill="currentColor"/><circle cx="4.6" cy="6" r=".9" fill="currentColor"/>') },
+    { id: "ww3", href: "ww3.html", label: "World War III", tip: "A projection, not a prediction: who is bound to whom, where it could start, what it would cost",
+      icon: I('<circle cx="8" cy="8" r="6.2" stroke-dasharray="2.2 1.8"/><path d="M8 4.4V8L10.6 9.6"/><circle cx="8" cy="8" r=".9" fill="currentColor"/>') },
     { id: "lineage", href: "lineage.html", label: "Bloodline", tip: "The family tree, from the gods of Sumer to the lines of the Messiah",
       icon: I('<path d="M8 2v4M8 6H4v3M8 6h4v3M4 9v2M12 9v2"/><circle cx="8" cy="2.4" r="1" fill="currentColor"/><circle cx="4" cy="12.4" r="1.3"/><circle cx="12" cy="12.4" r="1.3"/>') },
     { id: "pantheons", href: "pantheons.html", label: "Pantheons", tip: "Seven divine family trees and the roads between them",
@@ -69,7 +73,7 @@
     { solo: "oracle" },
     { id: "record", label: "Record", tip: "All recorded history, three ways", items: ["archive", "astrolabe", "codex"], more: ["trial"] },
     { id: "power", label: "Power", tip: "Who rules, how, and how it changes hands", items: ["realms", "coups", "doctrines"] },
-    { id: "war", label: "War", tip: "The world wars, the wars under way now, and the world as it stands", items: ["wars", "conflicts", "situation"] },
+    { id: "war", label: "War", tip: "Every war on one string, the two world wars, the wars under way, the world as it stands, and the third war projected", items: ["totalwar", "wars", "conflicts", "situation", "ww3"] },
     { id: "myth", label: "Myth", tip: "Gods, bloodlines and the knowledge they are said to have taught", items: ["lineage", "pantheons", "transmissions"] }
   ];
   const FILES = ITEMS.map(it => it.href);
@@ -253,8 +257,8 @@
 
   /* ───────────── search everything ───────────── */
   const KINDS = { go: ["Instrument", "#e8c455"], ev: ["Record", "#c9a227"], "do": ["Doctrine", "#e5484d"], th: ["Forerunner", "#d8c690"], ba: ["Battle", "#ff7a66"],
-    le: ["Leader", "#5b9be0"], bl: ["Bloodline", "#b48ef0"], gd: ["God", "#5bc8dd"], tx: ["Transmission", "#62c073"], cn: ["Country", "#49c9b8"], cu: ["Seizure", "#e08a3c"], cf: ["Conflict", "#e0502f"], st: ["Dispatch", "#e8c455"], or: ["Reading", "#e8c455"] };
-  const WHERE = { ev: "The Archive", "do": "Doctrines", th: "Doctrines", ba: "War Room", le: "War Room", bl: "Bloodline", gd: "Pantheons", tx: "Transmissions", cn: "Realms", cu: "Coups", cf: "Conflicts", st: "Situation", or: "Oracle" };
+    le: ["Leader", "#5b9be0"], bl: ["Bloodline", "#b48ef0"], gd: ["God", "#5bc8dd"], tx: ["Transmission", "#62c073"], cn: ["Country", "#49c9b8"], cu: ["Seizure", "#e08a3c"], cf: ["Conflict", "#e0502f"], st: ["Dispatch", "#e8c455"], tw: ["War", "#ff2e55"], w3: ["Projection", "#b48ef0"], or: ["Reading", "#e8c455"] };
+  const WHERE = { ev: "The Archive", "do": "Doctrines", th: "Doctrines", ba: "War Room", le: "War Room", bl: "Bloodline", gd: "Pantheons", tx: "Transmissions", cn: "Realms", cu: "Coups", cf: "Conflicts", st: "Situation", tw: "Total War", w3: "World War III", or: "Oracle" };
   const norm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const rec = r => ({ l: r[0], k: r[1], h: r[2], s: r[3] || "", w: r[4] || 0, nl: norm(r[0]), ns: norm(r[3] || "") });
   const GO = ITEMS.map(it => rec([it.label.replace(/<[^>]+>/g, ""), "go", it.href, it.tip, 9]));
@@ -429,7 +433,7 @@
     const dress = () => {
       document.querySelectorAll(LIT).forEach(s => s.classList.add("lux"));
       document.querySelectorAll(".wr-view:not([hidden])").forEach(sec => { const pane = sec.querySelector(".pane"), at = pane || sec;
-        if (at.querySelector(":scope > .vw-top") || (!pane && (!rl || sec.querySelector(".rl-map, #mp")))) return;     /* a map keeps the whole stage; a view with no pane is dressed at its own head */
+        if (at.querySelector(":scope > .vw-top") || (!pane && (!rl || sec.querySelector(".rl-map, #mp, [data-stage]")))) return;     /* a map keeps the whole stage; a view with no pane is dressed at its own head */
         const tb = tabs.find(b => "v-" + b.dataset.v === sec.id); if (!tb) return;
         const up = tb.dataset.kin && tabs.find(b => b.dataset.v === tb.dataset.kin);            /* a grouped view names the tab it stands beside */
         at.insertAdjacentHTML("afterbegin", hero(page + (up ? " · " + up.textContent.trim() : ""), tb.dataset.label || tb.textContent.trim(), (tb.title || "").replace(/\s*\(\d\)\s*$/, "")).replace('class="vw-top"', pane ? 'class="vw-top"' : 'class="vw-top sec"')); });

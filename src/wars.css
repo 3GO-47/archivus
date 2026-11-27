@@ -319,3 +319,15 @@ body.wr { height: 100dvh; display: flex; flex-direction: column; overflow: hidde
   .cp-b { padding-left: 14px; }
   .cost { grid-template-columns: 92px minmax(0, 1fr); }
 }
+
+/* ---------- v19: the War Room refined. The cost on one page; a rail of the phases beside the campaigns; where the string goes next. ---------- */
+.wr-h3 { font-family: var(--engraved); font-weight: 600; font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-bright); margin: 22px 0 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+.ph-grid { display: grid; grid-template-columns: minmax(0, 1040px) minmax(260px, 380px); gap: 34px; align-items: start; }
+.ph-rail { position: sticky; top: 8px; background: var(--obsidian-2); border: 1px solid var(--line); border-radius: 6px; padding: 12px 12px 10px; }
+.ph-r { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 0 9px; width: 100%; text-align: left; background: none; border: 0; border-left: 2px solid var(--line); color: var(--paper); cursor: pointer; padding: 6px 8px; margin-bottom: 2px; }
+.ph-r:hover { background: rgba(201,162,39,.07); } .ph-r.now { border-left-color: var(--gold-bright); background: rgba(201,162,39,.1); }
+.ph-r i { grid-row: 1 / 4; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--gold-dim); color: var(--gold); display: grid; place-items: center; font: normal 600 11.5px var(--mono); } .ph-r.now i { border-color: var(--gold-bright); color: var(--gold-bright); box-shadow: 0 0 10px -2px var(--gold-bright); }
+.ph-r b { font: 600 13px/1.3 var(--display); } .ph-r small { font: 10px var(--mono); color: #7d87a1; } .ph-r .pips { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 4px; }
+.ph-rail u { display: inline-block; width: 7px; height: 7px; border-radius: 1px; background: #5a637b; text-decoration: none; } .ph-rail u.A { background: var(--A); } .ph-rail u.B { background: var(--B); } .ph-rail .wr-note { margin: 8px 0 6px; } .ph-rail .lnk, .wr-next .lnk { text-decoration: none; }
+.wr-next { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; } .wr-next .sd-k { margin: 0 6px 0 0; }
+@media (max-width: 1320px) { .ph-grid { display: block; } .ph-rail { display: none; } }

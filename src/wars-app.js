@@ -823,24 +823,31 @@
   function buildCampaigns() {
     const W = state.W, P = state.P, box = $("v-campaigns");
     let h = '<h2 class="wr-h">' + esc(W.name) + ' — phase by phase</h2><p class="wr-sub">' + esc(W.blurb) + " " + P.phases.length + " phases, " + P.items.length + " battles and turning points. Open any row; <i>Show on the map</i> flies the War Room to that day and place.</p>";
+    let rail = "";
+    h += '<div class="ph-grid"><div class="ph-col">';
     P.phases.forEach((p, i) => {
       const its = P.items.filter(it => (it.ts >= p.ts && it.ts < p.te) || (i === 0 && it.ts < p.ts) || (i === P.phases.length - 1 && it.ts >= p.te));
+      const nA = its.filter(it => it.w === "A").length, nB = its.filter(it => it.w === "B").length;
+      rail += '<button class="ph-r" data-jump="' + i + '"><i>' + (i + 1) + "</i><b>" + esc(p.n) + "</b><small>" + fmtShort(p.ts) + " – " + fmtShort(p.te) + '</small><span class="pips" title="' + nA + " to the " + esc(W.sides.A.short) + ", " + nB + " to the " + esc(W.sides.B.short) + ", " + (its.length - nA - nB) + ' other">' + its.map(it => '<u class="' + (it.w === "A" || it.w === "B" ? it.w : "o") + '"></u>').join("") + "</span></button>";
       h += '<section class="ph" data-ph="' + i + '"><div class="ph-n">' + (i + 1) + " · " + esc(p.n) + '</div><div class="ph-d">' + fmtDate(p.ts) + " – " + fmtDate(p.te) + ' · <button class="lnk" data-t="' + (p.ts + 1) + '" style="padding:1px 7px;font-size:10px">set the date here</button></div><p class="ph-p">' + esc(p.d) + "</p>" +
         its.map(it => '<details class="cp" id="cp-' + it.id + '"><summary><span class="d">' + fmtShort(it.ts) + '</span><svg viewBox="-10 -10 20 20" width="16" height="16" class="it k-' + it.k + " w-" + (it.w === "A" || it.w === "B" ? it.w : "0") + '">' + SHAPES[it.k] + '</svg><span class="n">' + esc(it.n) + '</span><span class="w">' +
           (it.w === "A" || it.w === "B" ? '<span class="tag ' + it.w + '">' + esc(W.sides[it.w].short) + "</span>" : '<span class="tag">' + KIND[it.k] + "</span>") + '</span></summary><div class="cp-b">' +
           (it.te > it.ts ? '<div class="sd-d">' + fmtDate(it.ts) + " – " + fmtDate(it.te) + "</div>" : "") + esc(it.d) + (it.f ? '<div class="sd-f">' + esc(it.f) + "</div>" : "") +
           '<div class="sd-links"><button class="lnk" data-show="' + it.id + '">Show on the map ⟶</button><a href="' + it.u + '" target="_blank" rel="noopener">Source ↗</a>' + archiveLink(it) + "</div></div></details>").join("") + "</section>";
     });
+    h += '</div><aside class="ph-rail"><div class="sd-k">The war in ' + P.phases.length + " phases</div>" + rail + '<p class="wr-note">Each mark is a battle or turning point: <u class="A"></u> ' + esc(W.sides.A.short) + ' · <u class="B"></u> ' + esc(W.sides.B.short) + ' · <u class="o"></u> neither.</p>'
+      + '<div class="sd-links"><a class="lnk" href="totalwar.html#v=string&i=' + state.W.id + '">This war among all wars ⟶</a></div></aside></div>';
     box.innerHTML = h;
+    box.querySelectorAll(".ph-r").forEach(b => b.addEventListener("click", () => { const s = box.querySelector('.ph[data-ph="' + b.dataset.jump + '"]'); if (s) s.scrollIntoView({ block: "start", behavior: "smooth" }); }));
     updateCampaigns();
   }
-  function updateCampaigns() { const pi = phaseAt(state.t); document.querySelectorAll("#v-campaigns .ph").forEach((s, i) => s.classList.toggle("now", i === pi)); }
+  function updateCampaigns() { const pi = phaseAt(state.t); document.querySelectorAll("#v-campaigns .ph").forEach((s, i) => s.classList.toggle("now", i === pi)); document.querySelectorAll("#v-campaigns .ph-r").forEach((s, i) => s.classList.toggle("now", i === pi)); }
 
   function buildCost() {
     const W = state.W, P = state.P, C = W.cost, box = $("v-cost");
     const days = num(Math.round(P.we - P.ws) + 1);
     let h = '<h2 class="wr-h">The cost</h2><div class="tiles">' + W.stats.map(s => '<div class="tile"><div class="v">' + esc(s.v === "@days" ? days : s.v) + '</div><div class="l">' + esc(s.l) + "</div>" + (s.s ? '<div class="s">' + esc(s.s) + "</div>" : "") + "</div>").join("") + "</div>" +
-      '<h2 class="wr-h">' + esc(C.title) + "</h2>";
+      '<h3 class="wr-h3">' + esc(C.title) + "</h3>";            /* v19: not a page break — the tiles and the chart are read together */
     const key = (c, label) => '<span><i style="background:' + c + '"></i>' + label + "</span>";
     if (C.mode === "mob") {
       const rows = C.rows.slice().sort((a, b) => b.mil - a.mil), max = rows[0].mil;
@@ -861,7 +868,8 @@
     const col = (title, arr) => '<div><h3>' + title + "</h3>" + arr.map(c => '<div class="why-i"><b>' + esc(c.t) + "</b><p>" + esc(c.d) + (c.ref ? ' <a href="index.html#e=' + c.ref + '&v=chronicle">in the Chronicle ⟶</a>' : "") + "</p></div>").join("") + "</div>";
     box.innerHTML = '<h2 class="wr-h">' + esc(W.name) + ' — why it happened, what it changed</h2><p class="wr-sub">' + esc(W.blurb) + '</p><div class="why">' + col("Causes", W.causes) + col("Aftermath", W.aftermath) + col("How it was fought", W.tech) + "</div>" +
       '<div class="wr-src"><div class="sd-k">Sources for this instrument</div>' + W.sources.map(s => '<a href="' + s.u + '" target="_blank" rel="noopener">' + esc(s.n) + "</a>").join("<br>") +
-      '<p class="wr-note" style="margin-top:10px">' + esc(W.mapNote) + " Every battle and event record carries its own source link.</p></div>";
+      '<p class="wr-note" style="margin-top:10px">' + esc(W.mapNote) + " Every battle and event record carries its own source link.</p></div>" +
+      '<div class="wr-next"><div class="sd-k">Before it, and after</div><a class="lnk" href="totalwar.html#v=string&i=' + state.W.id + '">This war on the string of all wars ⟶</a><a class="lnk" href="conflicts.html">The wars under way now ⟶</a><a class="lnk" href="ww3.html">A third, projected ⟶</a></div>';
   }
 
   /* ============================================================
