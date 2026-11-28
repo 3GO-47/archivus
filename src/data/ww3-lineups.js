@@ -39,6 +39,13 @@ window.ARCHIVUS_WW3_LINEUPS = {
     at24:   ["SIPRI — Trends in International Arms Transfers, 2024 (fact sheet)", "https://www.sipri.org/sites/default/files/2025-03/fs_2503_at_2024.pdf", "2020–24: Pakistan 81% from China. India 36% from Russia (72% in 2010–14), 33% France, 13% Israel. Poland 45% United States, 42% South Korea. Taiwan 98% and Japan 97% from the United States"],
     saupak: ["Al Jazeera — Saudi Arabia signs mutual defence pact with nuclear-armed Pakistan (17 September 2025)", "https://aljazeera.com/news/2025/9/17/saudi-arabia-signs-mutual-defence-pact-with-nuclear-armed-pakistan", "'any aggression against either country shall be considered an aggression against both'; a Saudi official: relations with India 'more robust than ever'"]
   },
+  /* v21 · military spending in 2025, US$ billion, for the countries of `order` that are among SIPRI's forty largest spenders (source key
+     `milex`, in ww3.js). A country with no entry is below the fortieth place ($6.4 billion) or is one SIPRI does not estimate (North Korea,
+     the United Arab Emirates, Syria, Yemen): the sums the page prints are therefore floors, and say so. "e" marks SIPRI's own estimates. */
+  spend: { "United States of America": 954, "China": 336, "Russia": 190, "Germany": 114, "India": 92.1, "United Kingdom": 89.0, "Ukraine": 84.1, "Saudi Arabia": 83.2, "France": 68.0, "Japan": 62.2,
+    "Israel": 48.3, "Italy": 48.1, "South Korea": 47.8, "Poland": 46.8, "Canada": 37.5, "Australia": 35.3, "Turkey": 30.0, "Brazil": 23.9, "Taiwan": 18.2, "Norway": 17.0, "Sweden": 16.5,
+    "Indonesia": 15.0, "Pakistan": 11.9, "Vietnam": 10.5, "Finland": 8.1, "Iran": 7.4, "Iraq": 6.4 },
+  spendMeta: { src: "milex", floor: 6.4, none: ["North Korea", "United Arab Emirates", "Syria", "Yemen"], est: ["China", "Russia", "Ukraine", "Saudi Arabia"] },
   roles: { G1: "A principal, first side", G2: "A principal, second side", F1: "Fights", F2: "Fights", B1: "Backs, does not fight", B2: "Backs, does not fight", H: "Hedges", O: "Stays out" },
   firm: { b: ["Bound", "a treaty text obliges it"], i: ["Already so", "it has already done this in this quarrel"], p: ["Presumed", "no text obliges it; the record points this way"], o: ["Open", "it could go either way"] },
   order: ["United States of America", "Canada", "United Kingdom", "France", "Germany", "Italy", "Poland", "Estonia", "Latvia", "Lithuania", "Finland", "Sweden", "Norway", "Hungary", "Turkey", "Ukraine", "Belarus", "Russia", "Kazakhstan",
