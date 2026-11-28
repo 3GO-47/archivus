@@ -200,6 +200,8 @@
       },
       zoomBy(f) { zoom(f, null, true); },
       reset() { tween(Object.assign({}, HOME)); },
+      /* fly to a region: centre (map units, y already stretched) and width */
+      view(cx, cy, w) { const h = w * HOME.h / HOME.w; tween({ x: cx - w / 2, y: cy - h / 2, w, h }); },
       scale() { const b = svg.getBoundingClientRect(); return Math.max(view.w / (b.width || 1), view.h / (b.height || 1)); }
     };
   };

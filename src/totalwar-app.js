@@ -40,17 +40,19 @@
 
   /* the most wars under way in any one year, counted by the year (the strip below the string is drawn by the pixel, so its own maximum moves with the width) */
   const PEAK = { n: 0, y: T0 }; for (let y = T0; y <= Math.floor(NOW); y++) { let n = 0; WARS.forEach(r => { if (r.a <= y && r.e >= y) n++; }); if (n >= PEAK.n) { PEAK.n = n; PEAK.y = y; } }
-  const st = { v: "map", i: null, z: 1, f: null, y: null }, built = {};   /* y: the year the map shows; null = every war at once */
+  const st = { v: "land", i: null, z: 1, f: null, y: null, q: null, p: null, c: null, la: { arrows: 1, names: 1, wars: 1 } }, built = {};   /* y: the year the Map shows (null = every war at once); q: the year the Conquests show (null = the opening year) */
   let tabs = null;
   const inSpan = (r, y) => r.kind === "battle" ? Math.abs(y - r.a) <= 1 : r.a <= y + .5 && r.e >= y - .5;
   function sync(skip) {
-    if (st.v !== "map" && play.on) stop();
-    const r = st.i && BY[st.i]; if (st.v === "map" && r && r.kind !== "proj" && st.y != null && !play.on && !inSpan(r, st.y)) st.y = Math.min(NOW, (r.a + r.e) / 2);   /* a war chosen on the map brings its years with it */
-    if (!skip) K.hash.write({ v: st.v, i: st.i, z: st.z > 1 ? st.z : null, f: st.v === "toll" ? st.f : null, y: st.v === "map" && st.y != null ? Math.round(st.y) : null });
+    if (play.on && st.v !== play.view) stop();
+    const r = st.i && BY[st.i];
+    if (st.v === "map" && r && r.kind !== "proj" && st.y != null && !play.on && !inSpan(r, st.y)) st.y = Math.min(NOW, (r.a + r.e) / 2);   /* a war chosen on the map brings its years with it */
+    if (!skip) K.hash.write({ v: st.v, i: st.i, z: st.z > 1 ? st.z : null, f: st.v === "toll" ? st.f : null, y: st.v === "map" && st.y != null ? Math.round(st.y) : null,
+      q: st.v === "land" && st.q != null ? Math.round(st.q) : null, p: st.v === "land" ? st.p : null, c: st.v === "land" ? st.c : null });
     tabs.paint(); renderSide(); render(); }
   function go(v) { if (tabs.ids.indexOf(v) >= 0) { st.v = v; sync(); } }
   function pick(id) { st.i = st.i === id ? null : id; sync(); }
-  function render() { if (st.v === "map") drawMap(); else if (st.v === "string") drawString(); else if (st.v === "toll") drawToll(); else if (st.v === "centuries") drawCent(); else drawMethod(); }
+  function render() { if (st.v === "land") drawLand(); else if (st.v === "map") drawMap(); else if (st.v === "string") drawString(); else if (st.v === "toll") drawToll(); else if (st.v === "centuries") drawCent(); else drawMethod(); }
 
   /* ---- the time axis: piecewise, so the crowded centuries get the room ---- */
   const WP = TW.warp;
@@ -67,19 +69,21 @@
   const ON_MAP = R.filter(r => r.kind !== "proj" && ptsOf(r));
   const rad = r => r.gm == null ? (r.kind === "battle" ? 3.4 : 4) : 6 + 30 * Math.sqrt(r.gm / SIZED[0].gm);
   const deadBy = y => SIZED.reduce((a, r) => a + r.gm * Math.max(0, Math.min(1, (y - r.a) / Math.max(1, r.e - r.a))), 0), DEAD_ALL = SIZED.reduce((a, r) => a + r.gm, 0);
-  const play = { on: false, raf: 0, last: 0, fast: false };
+  const play = { on: false, raf: 0, last: 0, speed: 1, view: "map" }, YK = () => st.v === "land" ? "q" : "y";
+  const SPEEDS = [[.5, "½×"], [1, "1×"], [2, "2×"]], speedChips = cls => SPEEDS.map(x => '<button class="' + cls + (play.speed === x[0] ? " on" : "") + '" data-a="sp" data-s="' + x[0] + '" title="Play at ' + x[1].replace("×", "") + ' times the pace">' + x[1] + "</button>").join("");
   let tmap = null, tmarks = [], thread = null, sideKey = "";
   const MX = lon => lon + 180, MY = lat => 90 - lat;
   function placeMarks() { if (!tmap) return; const s = tmap.scale(), a = s.toFixed(4), b = (s / tmap.SY).toFixed(4); for (let i = 0; i < tmarks.length; i++) { const t = "translate(" + tmarks[i].x + " " + tmarks[i].y + ") scale(" + a + " " + b + ")"; tmarks[i].g.setAttribute("transform", t); if (tmarks[i].gl) tmarks[i].gl.setAttribute("transform", t); } }
   function stop() { play.on = false; cancelAnimationFrame(play.raf); }
   function tick(now) {
-    if (!play.on) return; const dt = Math.min(.1, (now - play.last) / 1000); play.last = now;
-    const u = fx(st.y) + dt * FN / (play.fast ? 32 : 70); st.y = fxInv(u);
-    if (u >= FN) { st.y = NOW; stop(); return sync(); }
+    if (!play.on) return; const dt = Math.min(.1, (now - play.last) / 1000), k = YK(); play.last = now;
+    const u = fx(st[k]) + dt * FN / 70 * play.speed; st[k] = fxInv(u);   /* 1× = the whole record in seventy seconds */
+    if (u >= FN) { st[k] = NOW; stop(); return sync(); }
     frame(); play.raf = requestAnimationFrame(tick);
   }
-  function start() { if (st.y == null || st.y >= NOW - .5) st.y = R[0].a - 6; st.i = null; play.on = true; play.last = performance.now(); sync(); play.raf = requestAnimationFrame(tick); }
-  function setYear(y, keep) { stop(); st.y = y == null ? null : Math.max(T0, Math.min(NOW, y)); if (!keep) st.i = null; sync(); }
+  function start() { const k = YK(); if (st[k] == null || st[k] >= NOW - .5) st[k] = R[0].a - 6; st.i = null; play.on = true; play.view = st.v; play.last = performance.now(); sync(); play.raf = requestAnimationFrame(tick); }
+  function setYear(y, keep) { stop(); st[YK()] = y == null ? null : Math.max(T0, Math.min(NOW, y)); if (!keep) st.i = null; sync(); }
+  function frame() { if (st.v === "land") frameLand(); else frameMap(); }
   function drawMap() {
     if (!built.map) { built.map = 1;
       const ident = {}; (window.ARCHIVUS_COUNTRIES || []).forEach(c => { ident[c.n] = c.n; });
@@ -98,7 +102,7 @@
       tmarks.forEach(m => { if (m.gl) tmap.over.appendChild(m.gl); });   /* names go above every disc */
       $("tm-zi").onclick = () => tmap.zoomBy(1 / 1.6); $("tm-zo").onclick = () => tmap.zoomBy(1.6); $("tm-zr").onclick = () => tmap.reset();
       $("tm-ctl").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; const a = b.dataset.a;
-        if (a === "play") { if (play.on) { stop(); sync(); } else start(); } else if (a === "all") setYear(null, true); else if (a === "fast") { play.fast = !play.fast; drawCtl(); } });
+        if (a === "play") { if (play.on) { stop(); sync(); } else start(); } else if (a === "all") setYear(null, true); else if (a === "sp") { play.speed = +b.dataset.s; drawCtl(); } });
       const sc = $("tm-scrub"), at = e => { const b = sc.getBoundingClientRect(); return fxInv(Math.max(0, Math.min(1, (e.clientX - b.left - 14) / (b.width - 28))) * FN); };
       let drag = false;
       sc.addEventListener("pointerdown", e => { const t = e.target.closest("[data-y]"); if (t) return setYear(+t.dataset.y); drag = true; try { sc.setPointerCapture(e.pointerId); } catch (_) {} stop(); st.y = at(e); st.i = null; frame(); });
@@ -113,13 +117,13 @@
       $("tm-dens").innerHTML = '<path d="M0 30' + cnt.map((n, i) => "L" + (i / N * 1000).toFixed(1) + " " + (30 - n / mx * 28).toFixed(1)).join("") + 'L1000 30Z"/>';
       $("tm-ticks").innerHTML = [-1200, -500, 1, 500, 1000, 1500, 1800, 1900, 2000].map(y => '<button data-y="' + y + '" style="left:' + (fx(y) / FN * 100).toFixed(2) + '%" title="Go to ' + yr(y) + '">' + (y < 0 ? -y + " BCE" : y === 1 ? "1 CE" : y) + "</button>").join("");
     }
-    drawCtl(); frame(); placeMarks();
+    drawCtl(); frameMap(); placeMarks();
   }
   function drawCtl() {
-    $("tm-ctl").innerHTML = '<button class="chipbtn go' + (play.on ? " on" : "") + '" data-a="play" title="Space">' + (play.on ? "❚❚ Pause" : st.y != null && st.y < NOW - .5 ? "▶ Play on" : "▶ Play all " + (Math.round(NOW) - R[0].a).toLocaleString("en") + " years") + '</button><button class="chipbtn' + (play.fast ? " on" : "") + '" data-a="fast" title="Play twice as fast">2×</button><button class="chipbtn' + (st.y == null ? " on" : "") + '" data-a="all" title="Every war in the record at once">All at once</button>';
+    $("tm-ctl").innerHTML = '<button class="chipbtn go' + (play.on ? " on" : "") + '" data-a="play" title="Space">' + (play.on ? "❚❚ Pause" : st.y != null && st.y < NOW - .5 ? "▶ Play on" : "▶ Play all " + (Math.round(NOW) - R[0].a).toLocaleString("en") + " years") + '</button>' + speedChips("chipbtn") + '<button class="chipbtn' + (st.y == null ? " on" : "") + '" data-a="all" title="Every war in the record at once">All at once</button>';
     $("tm-n").innerHTML = ON_MAP.length + " wars and battles placed where they were fought. Drag the year, press Play, or click a disc.";
   }
-  function frame() {
+  function frameMap() {
     const y = st.y, all = y == null, s = tmap.scale(), act = [];
     const kf = Math.max(.42, Math.min(1, $("tm-wrap").clientWidth / 1000)), kk = "|" + kf.toFixed(2);   /* a small map gets small discs */
     for (let i = 0; i < tmarks.length; i++) { const m = tmarks[i], r = m.r;
@@ -152,6 +156,126 @@
     $("tm-scrub").setAttribute("aria-valuenow", all ? Math.round(NOW) : Math.round(y)); $("tm-scrub").setAttribute("aria-valuetext", all ? "every war at once" : yr(Math.round(y)));
     /* while it plays, the panel follows the wars under way */
     if (play.on) { const k = act.map(m => m.r.id).join(); if (k !== sideKey) { sideKey = k; renderSide(); } }
+  }
+
+  /* ---------------- the conquests ----------------
+     The War Room's map, for all of it: today's countries painted by the power that held them in the year
+     shown. Solid = held; hatched = held in part, or through a vassal or an occupation. A land that has just
+     changed hands flashes, and an arrow runs to it from the power that took it. Data: src/data/conquests.js. */
+  const CQ = window.ARCHIVUS_CONQUESTS || { powers: [], holds: {}, raids: [], meta: {} }, ERAS = (window.ARCHIVUS_ERAS || []).filter(e => e.end > T0 && e.start < NOW);
+  const PW = {}, HOLD = {}, GRAB = []; CQ.powers.forEach(p => { PW[p[0]] = { id: p[0], n: p[1], c: p[2], at: p[3], lands: [] }; });
+  Object.keys(CQ.holds).forEach(pid => CQ.holds[pid].split(";").forEach(h => { const m = /^(~?)([^:]+):(-?\d+):(-?\d+)(?:@(\w+))?$/.exec(h); if (!m || !PW[pid]) return;
+    const o = { p: pid, c: m[2], a: +m[3], e: +m[4], part: !!m[1], war: m[5] || null }; (HOLD[o.c] = HOLD[o.c] || []).push(o); PW[pid].lands.push(o); GRAB.push(o); }));
+  Object.keys(HOLD).forEach(c => HOLD[c].sort((a, b) => a.a - b.a)); GRAB.sort((a, b) => a.a - b.a || (a.p < b.p ? -1 : 1));
+  const ownerAt = (c, y) => { const h = HOLD[c]; let best = null; if (h) for (let i = 0; i < h.length; i++) { const o = h[i]; if (o.a > y) break; if (o.e <= y) continue; if (!best || (best.part && !o.part) || (best.part === o.part && o.a >= best.a)) best = o; } return best; };
+  /* grabs gathered by year and power: "1258 · the Mongols take Iraq and Kuwait" */
+  const GG = []; GRAB.forEach(o => { const l = GG[GG.length - 1]; if (l && l.y === o.a && l.p === o.p) l.cs.push(o); else GG.push({ y: o.a, p: o.p, cs: [o] }); });
+  const GY = Array.from(new Set(GG.map(g => g.y))).sort((a, b) => a - b);
+  const Q0 = (CQ.meta.open != null ? CQ.meta.open : 1914), qNow = () => st.q == null ? Q0 : st.q;
+  const recent = (y, a) => y >= a && y - a <= 25 && fx(y) - fx(a) < .012 * FN;         /* just taken: still flashing */
+  const eraOf = y => ERAS.filter(e => y >= e.start && y < e.end)[0] || ERAS[ERAS.length - 1];
+  const list = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+  const mixc = (h, t) => { const a = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)), b = [16, 19, 28]; return "rgb(" + a.map((v, i) => Math.round(v * t + b[i] * (1 - t))).join(",") + ")"; };
+  let lmap = null, lands = [], llabs = [], larrows = null, lwars = null, CEN = {};
+  function placeLand() { if (!lmap) return; const s = lmap.scale(), a = s.toFixed(4), b = (s / lmap.SY).toFixed(4); llabs.forEach(m => m.g.setAttribute("transform", "translate(" + m.x + " " + m.y + ") scale(" + a + " " + b + ")")); if (built.land) frameLand(); }
+  function drawLand() {
+    if (!built.land) {
+      const ident = {}; (window.ARCHIVUS_COUNTRIES || []).forEach(c => { ident[c.n] = c.n; });
+      lmap = K.worldMap($("tq"), { map: ident, tip: K.tip($("tq-tip"), $("tq-wrap")), onView: placeLand,
+        tipFor: (iso, name) => { if (name.charAt(0) === "@") return "<b>" + esc(name.slice(1)) + "</b>"; const y = qNow(), o = ownerAt(name, y), all = (HOLD[name] || []).filter(h => h.a <= y && h.e > y && h !== o);
+          return "<b>" + esc(name) + "</b><small>" + (o ? (o.part ? "held in part by " : "held by ") + esc(PW[o.p].n) + ", " + yr(o.a) + " – " + (o.e >= NOW - 1 ? "now" : yr(o.e)) + (all.length ? "; also " + esc(list(all.map(h => PW[h.p].n))) : "") : "under no empire in " + yr(Math.round(y))) + "</small>"; },
+        onPick: (name, t) => { stop(); const w = t && t.closest && t.closest(".tq-w"), l = t && t.closest && t.closest(".tq-l"); if (w) { st.i = w.dataset.i; return sync(); } if (l) { st.p = st.p === l.dataset.p ? null : l.dataset.p; st.c = st.i = null; return sync(); }
+          if (name && HOLD[name]) { st.c = st.c === name ? null : name; st.p = null; st.i = null; } else { st.c = st.p = st.i = null; } sync(); } });
+      /* one hatch per power, for land held in part */
+      const defs = K.svgEl("defs"); CQ.powers.forEach(p => { const pt = K.svgEl("pattern", { id: "hx-" + p[0], width: 1.5, height: 1.5, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
+        pt.appendChild(K.svgEl("rect", { width: 1.5, height: 1.5, fill: mixc(p[2], .2) })); pt.appendChild(K.svgEl("rect", { width: .62, height: 1.5, fill: mixc(p[2], .8) })); defs.appendChild(pt); });
+      $("tq").insertBefore(defs, $("tq").firstChild);
+      Object.keys(lmap.paths).forEach(n => { let big = null, area = 0; lmap.paths[n].forEach(p => { const b = p.getBBox(); if (b.width * b.height > area) { area = b.width * b.height; big = b; } }); CEN[n] = [big.x + big.width / 2, big.y + big.height / 2]; lands.push({ n, ps: lmap.paths[n], key: "" }); });
+      larrows = K.svgEl("g", { class: "tq-ar" }); lmap.over.appendChild(larrows); lwars = K.svgEl("g", { class: "tq-wr" }); lmap.over.appendChild(lwars);
+      CQ.powers.forEach(p => { const g = K.svgEl("g", { class: "tq-l", "data-p": p[0], "data-n": "@" + p[1] }); g.appendChild(K.svgEl("text", { y: 3.5 }, p[1])); lmap.over.appendChild(g); llabs.push({ g, p: PW[p[0]], x: (p[3][1] + 180).toFixed(2), y: (90 - p[3][0]).toFixed(2), on: false }); });
+      $("tq-zi").onclick = () => lmap.zoomBy(1 / 1.6); $("tq-zo").onclick = () => lmap.zoomBy(1.6);
+      $("tq-tools").addEventListener("click", e => { const b = e.target.closest("[data-layer]"); if (b) { st.la[b.dataset.layer] = st.la[b.dataset.layer] ? 0 : 1; b.classList.toggle("on", !!st.la[b.dataset.layer]); frameLand(); } else if (e.target.closest("#tq-lg")) $("tq-leg").hidden = !$("tq-leg").hidden; });
+      const TH = { world: null, europe: [16, 49, 78], near: [44, 31, 86], asia: [100, 30, 130], africa: [18, 3, 150], americas: [-80, 8, 200] };
+      $("tq-th").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; $("tq-th").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); const t = TH[b.dataset.t]; if (!t) lmap.reset(); else lmap.view(t[0] + 180, (90 - t[1]) * lmap.SY, t[2]); });
+      $("tq-oob").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b) { st.p = st.p === b.dataset.p ? null : b.dataset.p; st.c = st.i = null; sync(); } });
+      $("tq-bar").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; const a = b.dataset.a;
+        if (a === "play") { if (play.on) { stop(); sync(); } else start(); } else if (a === "start") setYear(R[0].a - 6); else if (a === "sp") { play.speed = +b.dataset.s; drawBar(); } else if (a === "back" || a === "fwd") stepGrab(a === "fwd" ? 1 : -1); });
+      const tl = $("tq-tl"), at = e => { const b = tl.getBoundingClientRect(); return fxInv(Math.max(0, Math.min(1, (e.clientX - b.left) / b.width)) * FN); }; let drag = false;
+      tl.addEventListener("pointerdown", e => { drag = true; try { tl.setPointerCapture(e.pointerId); } catch (_) {} stop(); st.q = at(e); st.i = null; frameLand(); });
+      tl.addEventListener("pointermove", e => { if (drag) { st.q = at(e); frameLand(); } });
+      const end = () => { if (drag) { drag = false; sync(); } }; tl.addEventListener("pointerup", end); tl.addEventListener("pointercancel", end);
+      $("tq-bands").innerHTML = ERAS.map((e, k) => { const a = fx(Math.max(T0, e.start)) / FN * 100, b = fx(Math.min(NOW, e.end)) / FN * 100; return '<span class="' + (k % 2 ? "odd" : "") + '" style="left:' + a.toFixed(2) + "%;width:" + (b - a).toFixed(2) + '%" title="' + esc(e.name) + '"><b>' + esc(e.name) + "</b></span>"; }).join("")
+        + [-1000, 1, 500, 1000, 1500, 1800, 1900, 2000].map(y => '<i style="left:' + (fx(y) / FN * 100).toFixed(2) + '%">' + (y < 0 ? -y + " BCE" : y === 1 ? "1 CE" : y) + "</i>").join("");
+      $("tq-leg").innerHTML = '<b>How to read it</b><span><i style="background:#d05a8a"></i>held by a power</span><span><i class="hx"></i>held in part, or through a vassal or an occupation</span><span><i class="gr"></i>just taken</span><span><svg viewBox="-8 -8 16 16"><path d="M-7 4Q0 -6 7 -2" fill="none" stroke="#f0e7d0" stroke-width="1.6"/></svg>the blow that took it</span>'
+        + "<small>Drawn on today's borders, which are the only shapes the map has: a country is painted when a power held it or most of it. Schematic, like the War Room's fronts: the years are the conventional ones, good to a decade before about 1500, and no frontier is claimed. A country ruling only itself is left dark, which is why most of the map is dark today.</small>";
+      built.land = 1;
+    }
+    drawBar(); frameLand(); placeLand();
+  }
+  function stepGrab(d) { const y = qNow(); let t = null; if (d > 0) { for (let i = 0; i < GY.length; i++) if (GY[i] > y + .5) { t = GY[i]; break; } } else for (let i = GY.length - 1; i >= 0; i--) if (GY[i] < y - .5) { t = GY[i]; break; } if (t != null) setYear(t, true); }
+  function drawBar() {
+    $("tq-bar-b").innerHTML = '<button class="tool-btn" data-a="start" title="To the beginning">⏮</button><button class="tool-btn accent" data-a="play" title="Play / pause (Space)">' + (play.on ? "❚❚ Pause" : "▶ Play") + "</button>" + speedChips("tool-btn sp")
+      + '<button class="tool-btn" data-a="back" title="Back to the last land taken (←)">◀</button><button class="tool-btn" data-a="fwd" title="On to the next land taken (→)">▶</button>';
+  }
+  function frameLand() {
+    if (!built.land) return; const y = qNow(), s = lmap.scale(), count = {}, sel = st.p, selC = st.c;
+    for (let i = 0; i < lands.length; i++) { const L = lands[i], o = ownerAt(L.n, y);
+      if (o) count[o.p] = (count[o.p] || 0) + 1;
+      const fresh = o && recent(y, o.a), dim = sel ? !o || o.p !== sel : false, key = (o ? o.p + (o.part ? "~" : "") : "") + (fresh ? "!" : "") + (dim ? "-" : "") + (selC === L.n ? "s" : "");
+      if (key === L.key) continue; L.key = key;
+      const fill = o ? (o.part ? "url(#hx-" + o.p + ")" : mixc(PW[o.p].c, .78)) : "";
+      L.ps.forEach(p => { p.style.fill = fill; p.setAttribute("class", "at-c" + (o ? " on" : "") + (fresh ? " grab" : "") + (dim ? " dim" : "") + (selC === L.n ? " sel" : "")); });
+    }
+    /* the powers' names, the largest first, where there is room */
+    const boxes = [], act = llabs.filter(m => count[m.p.id]).sort((a, b) => (sel === b.p.id) - (sel === a.p.id) || count[b.p.id] - count[a.p.id]);
+    llabs.forEach(m => { m.g.style.display = "none"; });
+    if (st.la.names) act.forEach(m => { const kp = innerWidth <= 860 ? .6 : 1, w = (m.p.n.length * 8.7 + 14) * s * kp, h = 15 * s * kp, x0 = +m.x - w / 2, y0 = +m.y * lmap.SY - h / 2, b = [x0, y0, x0 + w, y0 + h];
+      if (sel !== m.p.id && boxes.some(o => o[0] < b[2] && o[2] > b[0] && o[1] < b[3] && o[3] > b[1])) return; boxes.push(b); m.g.style.display = ""; m.g.setAttribute("class", "tq-l" + (sel && sel !== m.p.id ? " dim" : "")); m.g.firstChild.style.fill = m.p.c; });
+    /* the blows: an arrow from a power to each land it has just taken, and to where it struck and kept nothing */
+    let ar = "";
+    if (st.la.arrows) {
+      const arrow = (p, tx, ty, age, raid, lab) => { const x0 = p.at[1] + 180, y0 = 90 - p.at[0], dx = tx - x0, dy = ty - y0, d = Math.hypot(dx, dy); if (d < 3) return "";
+        const mx = (x0 + tx) / 2 - dy * .16, my = (y0 + ty) / 2 + dx * .16, op = (1 - age * .7).toFixed(2), ang = Math.atan2((ty - my) * lmap.SY, tx - mx) * 180 / Math.PI;
+        return '<path class="' + (raid ? "rd" : "") + '" d="M' + x0.toFixed(1) + " " + y0.toFixed(1) + "Q" + mx.toFixed(1) + " " + my.toFixed(1) + " " + tx.toFixed(1) + " " + ty.toFixed(1) + '" style="stroke:' + p.c + ";opacity:" + op + '"/><g transform="translate(' + tx.toFixed(1) + " " + ty.toFixed(1) + ") scale(" + s.toFixed(4) + " " + (s / lmap.SY).toFixed(4) + ") rotate(" + ang.toFixed(0) + ')" style="opacity:' + op + '"><path class="hd" d="M0 0L-9 -4.5L-9 4.5Z" style="fill:' + p.c + '"/>' + (lab ? '<text class="rl" x="8" y="4" transform="rotate(' + (-ang).toFixed(0) + ')">' + esc(lab) + "</text>" : "") + "</g>"; };
+      GRAB.forEach(o => { if (o.a > y) return; if (!recent(y, o.a) || o.e <= y || !CEN[o.c]) return; if (sel && o.p !== sel) return; ar += arrow(PW[o.p], CEN[o.c][0], CEN[o.c][1], Math.min(1, (y - o.a) / 25), false); });
+      CQ.raids.forEach(r => { if (y >= r[0] && y - r[0] <= 12 && fx(y) - fx(r[0]) < .012 * FN && PW[r[1]] && (!sel || sel === r[1])) ar += arrow(PW[r[1]], r[3] + 180, 90 - r[2], (y - r[0]) / 12, true, r[4]); });
+    }
+    larrows.innerHTML = ar;
+    /* the wars of the string that are being fought in this year: the largest few, named where they were fought */
+    let wr = "";
+    if (st.la.wars) WARS.filter(r => inSpan(r, y) && r.gm >= .5 && ptsOf(r)).sort((a, b) => b.gm - a.gm).slice(0, 5).forEach(r => { const pt = ptsOf(r)[0];
+      wr += '<g class="tq-w' + (st.i === r.id ? " sel" : "") + '" data-i="' + r.id + '" transform="translate(' + (pt[1] + 180).toFixed(1) + " " + (90 - pt[0]).toFixed(1) + ") scale(" + s.toFixed(4) + " " + (s / lmap.SY).toFixed(4) + ')"><path d="M-4 -4L4 4M-4 4L4 -4"/><text x="8" y="3.5">' + esc(r.n) + "</text></g>"; });
+    lwars.innerHTML = wr;
+    /* the plate, the order of battle and the track */
+    const era = eraOf(y), ids = Object.keys(count).sort((a, b) => count[b] - count[a]), n = ids.reduce((a, k) => a + count[k], 0);
+    $("tq-date").innerHTML = yr(Math.round(y)) + (y >= 0 ? " <i>CE</i>" : ""); $("tq-era").textContent = st.q == null && CQ.meta.openNote ? CQ.meta.openNote : era.name;
+    $("tq-cnt").textContent = ids.length ? ids.length + (ids.length === 1 ? " power holds " : " powers hold ") + n + " of today's " + lands.length + " countries" : "No empire on the map";
+    const ok = ids.join() + "|" + (sel || "");
+    if (ok !== frameLand.k) { frameLand.k = ok; $("tq-oob").innerHTML = '<span class="lb">On the map</span>' + (ids.length ? ids.map(k => '<button class="tqp' + (sel === k ? " sel" : "") + '" data-p="' + k + '" style="--c:' + PW[k].c + '">' + esc(PW[k].n) + "<i>" + count[k] + "</i></button>").join("") : '<span class="lb none">no empire holds another people\'s land in this year of the record</span>'); }
+    else ids.forEach(k => { const b = $("tq-oob").querySelector('[data-p="' + k + '"] i'); if (b && b.textContent !== String(count[k])) b.textContent = count[k]; });
+    $("tq-h").style.left = (fx(y) / FN * 100).toFixed(3) + "%"; $("tq-tl").setAttribute("aria-valuenow", Math.round(y)); $("tq-tl").setAttribute("aria-valuetext", yr(Math.round(y)));
+    if (play.on) { const k = era.id + "|" + GG.filter(g => recent(y, g.y)).length + "|" + ids.length; if (k !== sideKey) { sideKey = k; renderSide(); } }
+  }
+  const grabLine = g => "<b>" + esc(PW[g.p].n) + "</b> " + (g.cs.every(o => o.part) ? "pushes into " : "takes ") + esc(list(g.cs.map(o => o.c)));
+  function landSide() {
+    const y = qNow(), era = eraOf(y), k = ERAS.indexOf(era), row = (g, cls) => '<button class="rel gq ' + (cls || "") + '" data-q="' + g.y + '" data-p="' + g.p + '" style="border-left-color:' + PW[g.p].c + '"><span>' + grabLine(g) + "</span><i>" + yr(g.y) + (g.cs[0].war && BY[g.cs[0].war] ? " · " + esc(BY[g.cs[0].war].n) : "") + "</i></button>";
+    if (st.c && HOLD[st.c]) { const o = ownerAt(st.c, y), hs = HOLD[st.c];
+      return X_BTN + '<div class="sd-k">Who has held it</div><div class="sd-t">' + esc(st.c) + '</div><div class="sd-d">' + (o ? (o.part ? "held in part by " : "held by ") + esc(PW[o.p].n) + " in " + yr(Math.round(y)) : "under no empire in " + yr(Math.round(y))) + "</div><p class=\"hint\">" + hs.length + (hs.length === 1 ? " time" : " times") + " in the record this land, on today's borders, has been in an empire's hands. Click a row to go to the year it was taken.</p>"
+        + hs.map(h => '<button class="rel gq' + (h === o ? " now" : "") + '" data-q="' + h.a + '" data-p="' + h.p + '" style="border-left-color:' + PW[h.p].c + '"><span><b>' + esc(PW[h.p].n) + "</b>" + (h.part ? " <u>in part</u>" : "") + "</span><i>" + yr(h.a) + " – " + (h.e >= NOW - 1 ? "now" : yr(h.e)) + " · " + (Math.min(h.e, Math.round(NOW)) - h.a) + " years" + (h.war && BY[h.war] ? " · " + esc(BY[h.war].n) : "") + "</i></button>").join(""); }
+    if (st.p && PW[st.p]) { const P = PW[st.p], ls = P.lands.slice().sort((a, b) => a.a - b.a), a0 = Math.min.apply(null, ls.map(h => h.a)), e0 = Math.max.apply(null, ls.map(h => h.e)); let best = 0, by = a0;
+      for (let t = a0; t <= Math.min(e0, NOW); t += (e0 - a0 > 600 ? 5 : 1)) { let n = 0; Object.keys(HOLD).forEach(c => { const o = ownerAt(c, t); if (o && o.p === P.id) n++; }); if (n > best) { best = n; by = t; } }
+      const wars = Array.from(new Set(ls.map(h => h.war).filter(w => w && BY[w])));
+      return X_BTN + '<div class="sd-k" style="color:' + P.c + '">A power</div><div class="sd-t">' + esc(P.n) + '</div><div class="sd-d">' + yr(a0) + " – " + (e0 >= NOW - 1 ? "now" : yr(e0)) + '</div><div class="dth"><div><span>Lands held in all</span><b>' + new Set(ls.map(h => h.c)).size + "</b></div><div><span>At its widest</span><b>" + best + "</b></div></div>"
+        + '<div class="sd-links"><button class="lnk go" data-q="' + by + '" data-p="' + P.id + '">Its widest, in ' + yr(by) + " ⟶</button></div>"
+        + (wars.length ? '<div class="sd-k">The wars that took them</div>' + wars.map(w => '<button class="rel" data-i="' + w + '" style="border-left-color:' + tone(BY[w]) + '">' + esc(BY[w].n) + "<i>" + span(BY[w]) + (BY[w].lo != null ? " · " + tollT(BY[w]) + " dead" : "") + "</i></button>").join("") : "")
+        + '<div class="sd-k">Every land, in the order it was taken</div>' + ls.map(h => '<button class="rel gq" data-q="' + h.a + '" data-p="' + P.id + '" data-c="' + esc(h.c) + '" style="border-left-color:' + P.c + '"><span>' + esc(h.c) + (h.part ? " <u>in part</u>" : "") + "</span><i>" + yr(h.a) + " – " + (h.e >= NOW - 1 ? "now" : yr(h.e)) + "</i></button>").join(""); }
+    const now = GG.filter(g => recent(y, g.y)), next = GG.filter(g => g.y > y).slice(0, 5), prev = GG.filter(g => g.y <= y && !recent(y, g.y)).slice(-4).reverse(), wars = WARS.filter(r => inSpan(r, y)).sort((a, b) => (b.gm || 0) - (a.gm || 0)).slice(0, 5);
+    const lost = []; GRAB.forEach(o => { if (o.e <= y && y - o.e <= 25 && fx(y) - fx(o.e) < .012 * FN && !ownerAt(o.c, y)) lost.push(o); });
+    return '<div class="sd-k">Era ' + (k + 1) + " of " + ERAS.length + '</div><div class="sd-t">' + esc(era.name) + '</div><div class="sd-d">' + yr(Math.max(T0, era.start)) + " – " + (era.end >= NOW ? "now" : yr(era.end)) + '</div><p class="sd-p">' + esc(era.blurb) + "</p>"
+      + (now.length ? '<div class="sd-k">Being taken now</div>' + now.slice(-8).reverse().map(g => row(g, "now")).join("") : "")
+      + (lost.length ? '<div class="sd-k">Just lost</div><p class="hint lost">' + esc(list(Array.from(new Set(lost.map(o => o.c + " (" + PW[o.p].n.replace(/^The /, "") + ")"))).slice(0, 8))) + "</p>" : "")
+      + (wars.length ? '<div class="sd-k">The wars being fought</div>' + wars.map(q => '<button class="rel" data-i="' + q.id + '" style="border-left-color:' + tone(q) + '">' + esc(q.n) + "<i>" + span(q) + (q.lo != null ? " · " + tollT(q) : "") + "</i></button>").join("") : "")
+      + (next.length ? '<div class="sd-k">Coming</div>' + next.map(g => row(g)).join("") : "") + (prev.length ? '<div class="sd-k">Lately</div>' + prev.map(g => row(g)).join("") : "");
   }
 
   /* ---------------- the string ---------------- */
@@ -246,6 +370,7 @@
   function drawMethod() {
     if (built.mt) return; built.mt = 1;
     $("tm-pane").innerHTML = '<div class="grid2 even"><div class="col scroll"><h4>What this is</h4><p>One string through every war the Archive holds: ' + WARS.length + " wars and " + TW.battles.length + " single battles, from Kadesh in 1274 BCE to the " + R.filter(r => r.open && r.kind !== "proj").length + " wars being fought as this was compiled, and one more that is only projected.</p>"
+      + "<h4>The Conquests</h4><p>A map of who held what: " + CQ.powers.length + " powers and " + GRAB.length + " holdings, painted on today's borders. It is a schematic. An empire that held half of a modern country shows the whole of it, hatched; the dates are the conventional ones, rounded; and only powers that held land beyond their own appear, so it is a map of empire and not of every state. It cites no source of its own: it sets the standard chronology on a map, and a row that is wrong is wrong by a date or a border. A conquest tied to a war in the Toll opens that war.</p>"
       + "<h4>Where the rows come from</h4><p><b>" + SIZED.length + " sized wars</b> are those a reference list of wars by death toll puts at about half a million dead or more; the range shown is that list's own. <b>" + R.filter(r => r.kind === "more").length + " more</b> are wars the Chronicle records that the list does not size; each opens its own record and source. <b>" + R.filter(r => r.kind === "now").length + " wars under way</b> are read from the Conflicts, where every figure is sourced and dated. The last bar, World War III, is not a war: it leads to the projection.</p>"
       + "<h4>How to read a death toll</h4><p>As an order of magnitude. Before 1800 nobody counted: the figures are reconstructions from tax rolls, censuses and chronicles, and most include the famine and disease that war brought. The Three Kingdoms figure is a gap between two censuses. Where the list gives a range the string draws both ends: the bright bar is the low estimate, the pale halo the high. The ranges come from one compilation.</p>"
       + "<h4>Second sources</h4><p>Every one of the " + SIZED.length + " sized wars was taken to a second source. <b>" + Object.keys(SEC).length + "</b> carry what that source says, on the war's card and as a gold mark on the Toll. For the other <b>" + (SIZED.length - Object.keys(SEC).length) + "</b> the pages opened give no figure, or only repeat the list's; their cards say what was opened, and their bars are dotted.</p>"
@@ -271,7 +396,7 @@
     /* what else was being fought while this was */
     const mean = R.filter(q => q !== r && q.kind !== "battle" && q.kind !== "proj" && q.a <= r.e && q.e >= r.a).sort((a, b) => (b.gm || 0) - (a.gm || 0)).slice(0, 6);
     if (mean.length && r.kind !== "battle") h += '<div class="sd-k">Fought in the same years</div>' + mean.map(q => '<button class="rel" data-i="' + q.id + '" style="border-left-color:' + tone(q) + '">' + esc(q.n) + "<i>" + span(q) + (q.lo != null ? " · " + tollT(q) : "") + "</i></button>").join("");
-    return h + '<div class="sd-links">' + (st.v !== "map" && ptsOf(r) ? '<button class="lnk" data-go="map">On the map ⟶</button>' : "") + (st.v !== "string" ? '<button class="lnk" data-go="string">On the string ⟶</button>' : "") + (prev ? '<button class="lnk" data-i="' + prev.id + '" title="' + esc(prev.n) + '">◂ before</button>' : "") + (next ? '<button class="lnk" data-i="' + next.id + '" title="' + esc(next.n) + '">after ▸</button>' : "") + "</div>";
+    return h + '<div class="sd-links">' + (st.v !== "land" && r.kind !== "proj" && r.kind !== "battle" ? '<button class="lnk" data-go="land">The land it changed ⟶</button>' : "") + (st.v !== "map" && ptsOf(r) ? '<button class="lnk" data-go="map">On the map ⟶</button>' : "") + (st.v !== "string" ? '<button class="lnk" data-go="string">On the string ⟶</button>' : "") + (prev ? '<button class="lnk" data-i="' + prev.id + '" title="' + esc(prev.n) + '">◂ before</button>' : "") + (next ? '<button class="lnk" data-i="' + next.id + '" title="' + esc(next.n) + '">after ▸</button>' : "") + "</div>";
   }
   function intro() {
     if (st.v === "map" && st.y != null) { const y = st.y, act = WARS.filter(r => inSpan(r, y)).sort((a, b) => (b.gm || 0) - (a.gm || 0)), bt = R.filter(r => r.kind === "battle" && inSpan(r, y));
@@ -285,21 +410,26 @@
   }
   function renderSide() {
     const side = $("dc-side"), r = st.i && BY[st.i];
-    if (!r && innerWidth <= 860) { side.hidden = true; return; }
-    side.hidden = false; side.innerHTML = '<div class="dc-card' + (r ? "" : " intro") + '">' + (r ? card(r) : intro()) + "</div>"; side.scrollTop = 0;
+    if (!r && innerWidth <= 860 && !(st.v === "land" && (st.c || st.p))) { side.hidden = true; return; }
+    const land = st.v === "land" && !r, keep = land && play.on ? side.scrollTop : 0;
+    side.hidden = false; side.innerHTML = '<div class="dc-card' + (r || land ? "" : " intro") + (land ? " tq-side" : "") + '">' + (r ? card(r) : land ? landSide() : intro()) + "</div>"; side.scrollTop = keep;
   }
 
   /* ---------------- boot ---------------- */
   function applyHash() {
     if (location.hash === K.hash.self && built.boot) return;
-    const q = K.hash.read(); if (q.v && tabs.ids.indexOf(q.v) >= 0) st.v = q.v; st.i = BY[q.i] ? q.i : null; st.z = [1, 2, 4].indexOf(+q.z) >= 0 ? +q.z : 1; st.f = q.f === "two" || q.f === "one" ? q.f : null; stop(); st.y = q.y != null && q.y !== "" && isFinite(+q.y) ? Math.max(T0, Math.min(NOW, +q.y)) : null; built.boot = 1; sync(true);
+    const q = K.hash.read(); if (q.v && tabs.ids.indexOf(q.v) >= 0) st.v = q.v; st.i = BY[q.i] ? q.i : null; st.z = [1, 2, 4].indexOf(+q.z) >= 0 ? +q.z : 1; st.f = q.f === "two" || q.f === "one" ? q.f : null; stop(); st.y = q.y != null && q.y !== "" && isFinite(+q.y) ? Math.max(T0, Math.min(NOW, +q.y)) : null;
+    st.q = q.q != null && q.q !== "" && isFinite(+q.q) ? Math.max(T0, Math.min(NOW, +q.q)) : null; st.p = PW[q.p] ? q.p : null; st.c = q.c && HOLD[q.c] ? q.c : null; built.boot = 1; sync(true);
   }
   tabs = K.tabs(() => st.v, go);
-  $("dc-side").addEventListener("click", e => { if (e.target.closest("a")) return; if (e.target.closest(".sd-x")) { st.i = null; return sync(); } const g = e.target.closest("[data-go]"); if (g) { st.v = g.dataset.go; const r = st.i && BY[st.i]; if (st.v === "map" && r) st.y = Math.min(NOW, (r.a + r.e) / 2); return sync(); } const b = e.target.closest("[data-i]"); if (b) { stop(); st.i = b.dataset.i; sync(); } });
+  $("dc-side").addEventListener("click", e => { if (e.target.closest("a")) return; if (e.target.closest(".sd-x")) { if (st.i) st.i = null; else st.c = st.p = null; return sync(); }
+    const gq = e.target.closest("[data-q]"); if (gq) { stop(); st.q = +gq.dataset.q; st.i = null; return sync(); }   /* a row in the panel is a year to go to */ const g = e.target.closest("[data-go]"); if (g) { st.v = g.dataset.go; const r = st.i && BY[st.i]; if (st.v === "map" && r) st.y = Math.min(NOW, (r.a + r.e) / 2); if (st.v === "land" && r) { st.q = Math.min(NOW, r.a + Math.min(3, (r.e - r.a) / 2)); st.c = st.p = null; } return sync(); } const b = e.target.closest("[data-i]"); if (b) { stop(); st.i = b.dataset.i; sync(); } });
   document.addEventListener("keydown", e => { if (e.target.closest("input, textarea") || e.ctrlKey || e.metaKey || e.altKey) return; if (e.key === "Escape" && st.i) { st.i = null; return sync(); }
-    if (e.key === " " && st.v === "map" && !e.target.closest("button, a, [role=tab]")) { e.preventDefault(); if (play.on) { stop(); sync(); } else start(); return; }
+    if (e.key === "Escape" && st.v === "land" && (st.c || st.p)) { st.c = st.p = null; return sync(); }
+    if (st.v === "land" && !st.i && (e.key === "ArrowRight" || e.key === "ArrowLeft")) { e.preventDefault(); return stepGrab(e.key === "ArrowRight" ? 1 : -1); }
+    if (e.key === " " && (st.v === "map" || st.v === "land") && !e.target.closest("button, a, [role=tab]")) { e.preventDefault(); if (play.on) { stop(); sync(); } else start(); return; }
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (d && st.i) { const n = R[BY[st.i].ix + d]; if (n) { st.i = n.id; sync(); } } });               /* ← → walk the string */
-  K.finder($("dc-q"), q => R.filter(r => r.n.toLowerCase().indexOf(q) >= 0).slice(0, 12).map(r => ({ label: r.n, sub: span(r) + (r.lo != null ? " · " + tollT(r) : ""), id: r.id })), h => { if (st.v === "method") st.v = "map"; stop(); st.i = h.id; sync(); });
+  K.finder($("dc-q"), q => R.filter(r => r.n.toLowerCase().indexOf(q) >= 0).slice(0, 12).map(r => ({ label: r.n, sub: span(r) + (r.lo != null ? " · " + tollT(r) : ""), id: r.id })), h => { if (st.v === "method") st.v = "map"; stop(); st.i = h.id; const r = BY[h.id]; if (st.v === "land" && r) st.q = Math.min(NOW, r.a + Math.min(3, (r.e - r.a) / 2)); sync(); });
   let rt = 0; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { renderSide(); render(); }, 140); });
   window.addEventListener("hashchange", applyHash);
   applyHash();
