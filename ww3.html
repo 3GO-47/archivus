@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ARCHIVUS — World War III, a projection</title>
-<meta name="description" content="A projection, not a prediction: what published wargames, treaties, intelligence assessments and forecasts say about a third world war — who is bound to whom, where it could start, how it would widen, what it would cost and how likely it is thought to be. Every line graded and sourced.">
+<meta name="description" content="A projection, not a prediction: what published wargames, treaties, intelligence assessments and forecasts say about a third world war — who is bound to whom, where it could start, who would stand where, how it would widen, what it would cost and how likely it is thought to be. Every line graded and sourced.">
 <meta name="color-scheme" content="dark">
 <script src="src/theme.js"></script><!-- the colourway, set before anything paints -->
 <meta name="theme-color" content="#0a0c12">
@@ -69,10 +69,38 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 .gg .bb-t { height: 6px; margin-bottom: 6px; } .gg .bb-t i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, #c9a227, #e8c455); } .gg small { font: 10px/1.45 var(--mono); color: #8d96af; display: block; }
 .fa section, .read { background: var(--obsidian-2); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; } .fa .yes { border-top: 3px solid #ff7a66; } .fa .no { border-top: 3px solid #49c9b8; } .fa h4, .read h4 { margin: 0 0 8px; font: 600 14px var(--engraved); letter-spacing: .08em; color: var(--gold-bright); } .read h4 small { font: 10px var(--mono); letter-spacing: 0; color: #8d96af; margin-left: 9px; }
 .fa ul { margin: 0; padding-left: 18px; } .fa li { font-size: 13px; line-height: 1.55; color: #cfc9b8; margin-bottom: 7px; } .read { margin-top: 12px; }
+/* the line-ups (v20): firmness tags, the rows of a line-up in the side panel, the five wars, the counted cards and the table */
+.w3 .fm { font: normal 8.5px var(--display); letter-spacing: .12em; text-transform: uppercase; border-radius: 3px; padding: 1px 5px; border: 1px solid; white-space: nowrap; }
+.w3 .fm-b { color: #e8c455; } .w3 .fm-i { color: #49c9b8; } .w3 .fm-p { color: #8d96af; } .w3 .fm-o { color: #b48ef0; border-style: dashed; }
+.lu-t { display: grid; grid-template-columns: 1fr auto 1fr 1fr; gap: 6px; align-items: center; margin: 8px 0; } .lu-t div { border: 1px solid var(--line); border-top: 2px solid var(--c); border-radius: 4px; padding: 5px 8px; font: 11px/1.5 var(--display); color: #cfc9b8; background: var(--obsidian-2); } .lu-t b { font: 700 15px var(--engraved); color: var(--c); } .lu-t > i { font: italic 11px var(--display); color: #8d96af; }
+.lu-g { margin: 0 0 6px; } .lu-g summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: baseline; font: 10px var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--c); padding: 5px 0 4px; border-bottom: 1px solid var(--c); margin-bottom: 4px; } .lu-g summary::-webkit-details-marker { display: none; } .lu-g summary i { font: normal 600 12px var(--mono); letter-spacing: 0; } .lu-g:not([open]) summary::after { content: "show ▾"; font-size: 9px; color: #8d96af; margin-left: 8px; } .lu-g:not([open]) summary i { margin-left: auto; }
+.lu-r { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 8px; align-items: baseline; width: 100%; text-align: left; background: none; border: 0; border-left: 2px solid var(--c); padding: 4px 0 5px 9px; margin: 0 0 3px; cursor: pointer; color: var(--paper); } .lu-r:hover, .lu-r.on { background: rgba(201,162,39,.07); }
+.lu-r b { font: 600 13px var(--display); } .lu-r span { grid-column: 1 / -1; font: 12px/1.5 var(--sans); color: #b9b3a2; } .lu-r small { grid-column: 1 / -1; font: 9px var(--display); letter-spacing: .16em; text-transform: uppercase; color: var(--gold); } .lu-r.wide b { color: var(--c); }
+.lu-top { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+.lu-s { text-align: left; background: var(--obsidian-2); border: 1px solid var(--line); border-top: 3px solid #ff2e55; border-radius: 6px; padding: 9px 12px 8px; color: var(--paper); cursor: pointer; } .lu-s:hover { border-color: var(--gold-dim); border-top-color: #ff2e55; } .lu-s.on { border-color: var(--gold); border-top-color: #ff2e55; box-shadow: 0 0 0 1px var(--gold-dim) inset; }
+.lu-s small { font: 9px var(--display); letter-spacing: .14em; text-transform: uppercase; color: #8d96af; } .lu-s h4 { margin: 1px 0 2px; font: 600 17px var(--engraved); letter-spacing: .05em; color: var(--paper); } .lu-s .vs { margin: 0 0 8px; font: 600 12.5px/1.35 var(--display); } .lu-s .vs i { font: italic 400 11px var(--display); color: #8d96af; margin: 0 5px; }
+.lu-bar { display: flex; gap: 1px; height: 10px; border-radius: 3px; overflow: hidden; background: rgba(255,255,255,.04); } .lu-bar i { min-width: 2px; }
+.lu-s dl { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px 8px; margin: 9px 0 0; } .lu-s dl div:nth-child(n+4) { grid-column: span 3; display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line-faint); padding-top: 4px; } .lu-s dt { font: 8.5px var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); } .lu-s dd { margin: 0; font: 600 13px var(--mono); color: var(--paper); }
+.lu-read { margin: 0 0 8px; font: 12.8px/1.55 var(--sans); color: #cfc9b8; } .lu-hg { margin: 0 0 10px; padding: 7px 10px; border: 1px solid var(--gold-dim); border-left: 3px solid #e8c455; border-radius: 3px; font: 12.5px/1.5 var(--sans); color: #cfc9b8; background: rgba(232,196,85,.05); } .lu-hg b { display: block; font: 600 12.5px var(--display); color: #e8c455; margin-bottom: 2px; }
+.lu-ins { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: stretch; margin-bottom: 12px; } .lu-i { container-type: inline-size; } .lu-i h4 { margin-bottom: 10px; } .lu-i h4 em { line-height: 1.45; text-transform: none; letter-spacing: 0; }
+.lu-m { margin-bottom: 12px; container-type: inline-size; } .lu-qs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px 18px; } .lm-h .l { display: none; }
+@container (max-width: 1000px) { .lm-2 .lm-h .w { display: none; } .lm-2 .lm-h .l { display: inline; } }
+@container (max-width: 400px) { .lm.mini .lc .w, .lm.mini .lm-h .w { display: none; } .lm.mini .lc .l, .lm.mini .lm-h .l { display: inline; } .lm.mini .lm-h button { letter-spacing: 0; font-size: 8.5px; padding: 4px 0; } .lm.mini .lm-h, .lm.mini .lm-r { grid-template-columns: 92px repeat(5, minmax(0, 1fr)); } } .lu-i .hint { margin: 8px 0 0; } .lu-i .dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
+.mr.fq { grid-template-columns: 96px minmax(0, 1fr) 42px; margin-bottom: 7px; } .mr.fq .lu-bar { height: 12px; }
+.lu-q { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; width: 100%; text-align: left; background: none; border: 0; border-left: 2px dashed #b48ef0; padding: 3px 0 4px 9px; margin: 0 0 5px; cursor: pointer; color: var(--paper); } .lu-q:hover { background: rgba(180,142,240,.07); } .lu-q b { font: 600 12.5px var(--display); } .lu-q small { font: 9px var(--display); letter-spacing: .14em; text-transform: uppercase; color: #b48ef0; } .lu-q span { grid-column: 1 / -1; font: 11.5px/1.45 var(--sans); color: #b9b3a2; }
+.lu-k { font: 9px var(--display); letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin: 8px 0 4px; } .lu-i .chips { display: flex; flex-wrap: wrap; gap: 4px; } .lu-i .chips .chipbtn { padding: 2px 8px; font-size: 11.5px; }
+.lm-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 26px; }
+.lm-h, .lm-r { display: grid; grid-template-columns: minmax(96px, 1.5fr) repeat(5, minmax(0, 1fr)); gap: 3px; align-items: center; } .lm-r { margin-top: 3px; border-radius: 3px; } .lm-r.on { background: rgba(201,162,39,.09); box-shadow: 0 0 0 1px var(--gold-dim); }
+.lm-h button { background: none; border: 0; border-bottom: 2px solid var(--line); color: var(--gold); font: 9.5px var(--display); letter-spacing: .12em; text-transform: uppercase; padding: 4px 2px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .lm-h button.on, .lm-h button:hover { border-bottom-color: var(--gold); color: var(--gold-bright); }
+.lm-r .nm { background: none; border: 0; text-align: left; font: 500 12.5px var(--display); color: var(--paper); padding: 2px 4px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .lm-r .nm:hover { color: var(--gold-bright); }
+.lc { --c: #8d96af; height: 22px; border: 1px solid transparent; border-radius: 3px; background: none; font: 600 10.5px var(--display); letter-spacing: .04em; color: #0a0c12; cursor: pointer; padding: 0 2px; white-space: nowrap; } span.lc.k { display: inline-block; height: auto; padding: 1px 7px; cursor: default; }
+.lc.s1 { --c: #5b9be0; } .lc.s2 { --c: #e0502f; } .lc.rH { --c: #e8c455; } .lc.rG { background: var(--c); font-weight: 800; box-shadow: 0 0 0 1px #f1ecdc inset; } .lc.rF { background: var(--c); } .lc.rB { background: color-mix(in srgb, var(--c) 20%, transparent); border-color: color-mix(in srgb, var(--c) 60%, transparent); color: var(--c); }
+.lc.rH { background: color-mix(in srgb, var(--c) 14%, transparent); border-color: color-mix(in srgb, var(--c) 45%, transparent); border-style: dashed; color: var(--c); } .lc.rO { color: #5a6278; font-weight: 400; } .lc.cl.rO { background: rgba(255,255,255,.04); } .lc:hover { filter: brightness(1.25); border-color: var(--gold); } .lc.on { outline: 2px solid var(--gold-bright); outline-offset: 1px; }
+.lc sup { font: 700 9px var(--mono); margin-left: 2px; vertical-align: 3px; } .lc .l { display: none; } .lm.mini { margin-top: 2px; } .lu-m .hint { margin: 12px 0 0; line-height: 2; } .lu-m .hint b { color: var(--paper); font-family: var(--mono); }
 .w3 .mth p { font-size: 13px; line-height: 1.6; color: #cfc9b8; max-width: 78ch; margin: 0; } .w3 .wr-note .gr { margin-left: 4px; }
 #wb-leg2 { display: none; }
-@media (max-width: 1400px) { #rd-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } #bl-pane { grid-template-columns: 1fr 1fr; } .gauges { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 860px) { .w3-k:not(.sel) text { display: none; } #rd-cols, #bl-pane, .w3 .grid2.even { grid-template-columns: 1fr; } .gauges { grid-template-columns: 1fr 1fr; } .gg p { min-height: 0; } #wb-leg { display: none; } #wb-leg2 { display: block; position: static; max-width: none; margin: 8px 12px; } #wb-road .rs { min-width: 170px; } .mr { grid-template-columns: 92px minmax(0, 1fr) 50px; } }
+@media (max-width: 1400px) { .lu-qs { grid-template-columns: repeat(2, minmax(0, 1fr)); } .lu-top { grid-template-columns: repeat(5, minmax(190px, 1fr)); overflow-x: auto; padding-bottom: 4px; } #rd-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } #bl-pane { grid-template-columns: 1fr 1fr; } .gauges { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 860px) { .lu-ins, .lm-2, .lu-qs { grid-template-columns: 1fr; } .lm-h .w { display: none; } .lm-h .l { display: inline; } .lm-2 .lm + .lm .lm-h { display: none; } .lu-top { grid-template-columns: repeat(5, 220px); } .lc .w { display: none; } .lc .l { display: inline; } .lc.rO .l { display: inline; } .lm-h button { font-size: 8.5px; letter-spacing: .04em; } .lm-h, .lm-r { grid-template-columns: 104px repeat(5, minmax(0, 1fr)); } .w3-k:not(.sel) text { display: none; } #rd-cols, #bl-pane, .w3 .grid2.even { grid-template-columns: 1fr; } .gauges { grid-template-columns: 1fr 1fr; } .gg p { min-height: 0; } #wb-leg { display: none; } #wb-leg2 { display: block; position: static; max-width: none; margin: 8px 12px; } #wb-road .rs { min-width: 170px; } .mr { grid-template-columns: 92px minmax(0, 1fr) 50px; } }
 </style>
 <link rel="stylesheet" href="src/themes.css"><!-- generated: the three colourways (tools/build-themes.js) -->
 </head>
@@ -90,6 +118,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
   <nav id="wr-bar" aria-label="Views">
     <div id="wr-tabs" role="tablist">
       <button role="tab" data-v="board" title="The two camps on the map, what binds each country, and the five places it could start">The Board</button>
+      <button role="tab" data-v="lines" data-kin="board" title="Who stands where under each of the five wars: 44 countries, and what the table shows when it is counted">The Line-ups</button>
       <button role="tab" data-v="road" title="Six rungs from the standing peace to the aftermath">The Road</button>
       <button role="tab" data-v="balance" title="Money, warheads and men, camp against camp">The Balance</button>
       <button role="tab" data-v="cost" data-kin="balance" title="Wars fought and wars modelled on one scale, and the price of a war for Taiwan">The Cost</button>
@@ -111,6 +140,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
         <div id="wb-leg2" class="plate rl-leg"></div>
         <div id="wb-road" aria-label="The road in six rungs"></div>
       </section>
+      <section id="v-lines" class="wr-view dc-view" hidden><div class="dc-bar"><span class="wr-note" id="lu-n"></span></div><div class="pane"><div class="vw-top" style="display:none"></div><!-- this view is dense and names itself in the bar above: no banner (see illuminate() in src/nav.js) --><div id="lu-pane"></div></div></section>
       <section id="v-road" class="wr-view dc-view" hidden><div class="dc-bar"><span class="wr-note" id="rd-n"></span></div><div class="pane"><div id="rd-cols"></div></div></section>
       <section id="v-balance" class="wr-view dc-view" hidden><div class="dc-bar"><span class="wr-note" id="bl-n"></span></div><div class="pane"><div id="bl-pane"></div></div></section>
       <section id="v-cost" class="wr-view dc-view" hidden><div class="dc-bar"><span class="wr-note" id="ct-n"></span></div><div class="pane"><div id="ct-pane"></div></div></section>
@@ -124,6 +154,7 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
   <script src="src/data/conflicts.js"></script>
   <script src="src/data/situation.js"></script>
   <script src="src/data/ww3.js"></script>
+  <script src="src/data/ww3-lineups.js"></script>
   <script src="src/realms-kit.js"></script>
   <script src="src/ww3-app.js"></script>
 </body>

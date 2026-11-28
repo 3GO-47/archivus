@@ -6,7 +6,7 @@ Repo: https://github.com/3GO-47/archivus (branch main, Pages from root).
 Deep links work: /codex.html#e=writing · /astrolabe.html · /mobile/codex.html
 To update the site: commit changes to main (or ask Claude to re-upload changed files).
 
-**Live version: v19.3** — deployed 2026-11-27. Total War opens on a map: every war where it was fought, with a year track and Play.
+**Live version: v20** — deployed 2026-11-27. Total War opens on the Conquests (land held and taken, year by year, like the War Room's maps) and plays at ½×, 1× or 2×; World War III has a presumed line-up for each of its five wars and a Line-ups table. Total War opens on a map: every war where it was fought, with a year track and Play.
 
 **Before that: v19.2** — deployed 2026-11-27. Every one of Total War's 76 tolls taken to a second source (53 found, 23 marked as the list's figure only); World War III read at source; legend strips on the three War maps.
 

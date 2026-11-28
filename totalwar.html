@@ -46,6 +46,27 @@ if (location.protocol !== "file:" && "CSSViewTransitionRule" in window && !match
 .tt-r .bw, .tw-toll .bw { position: relative; height: 12px; background: rgba(255,255,255,.035); border-radius: 2px; } .tt-r .bw i, .tw-toll .bw i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--c); } .tt-r .bw .hi, .tw-toll .bw .hi { opacity: .3; } .tt-r .bw .lo, .tw-toll .bw .lo { box-shadow: 0 0 8px -2px var(--c); }
 .bw u.sec { position: absolute; top: -3px; bottom: -3px; min-width: 2px; margin-left: -1px; background: #e8c455; border-radius: 1px; box-shadow: 0 0 6px rgba(232,196,85,.7); text-decoration: none; } .bw u.sec.rng { background: none; border: 1.5px solid #e8c455; border-top-width: 0; border-bottom-width: 0; box-shadow: none; margin-left: 0; } .bw u.sec.rng::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px solid #e8c455; }
 u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455; vertical-align: -2px; margin: 0 3px 0 1px; text-decoration: none; }
+/* ---- the conquests (v20): the War Room's map, for all of it ---- */
+#tq-oob { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 6px; padding: 7px 12px; border-bottom: 1px solid var(--line); min-height: 38px; flex: none; }
+#tq-oob .lb { font: 600 9.5px var(--engraved); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-right: 4px; } #tq-oob .lb.none { letter-spacing: .04em; text-transform: none; font: 11px var(--mono); color: #8d96af; }
+.tqp { font: 600 11px var(--display); padding: 2px 8px 3px; border: 1px solid var(--c); border-left-width: 9px; background: none; color: var(--paper); border-radius: 3px; cursor: pointer; white-space: nowrap; } .tqp i { font: normal 10px var(--mono); color: #a9b1c6; margin-left: 6px; } .tqp:hover, .tqp.sel { background: rgba(255,255,255,.1); } .tqp.sel { outline: 1px solid var(--c); }
+#tq-wrap .at-c { transition: fill .25s; } #tq-wrap .at-c.on { stroke: #05060a; stroke-width: .6; vector-effect: non-scaling-stroke; cursor: pointer; }
+#tq-wrap .at-c.dim { fill-opacity: .2; } #tq-wrap .at-c.grab { stroke: #fff3c4; stroke-width: 1.8; } #tq-wrap .at-c.sel { stroke: #ffffff; stroke-width: 2.2; }
+@media (prefers-reduced-motion: no-preference) { #tq-wrap .at-c.grab { animation: tq-fl .7s ease-in-out infinite alternate; } @keyframes tq-fl { to { stroke: #e8c455; filter: brightness(1.5); } } }
+.tq-l { cursor: pointer; } .tq-l text { font: 700 10.5px var(--display); letter-spacing: .14em; text-transform: uppercase; text-anchor: middle; paint-order: stroke; stroke: #05060a; stroke-width: 3.2px; stroke-linejoin: round; } .tq-l.dim { opacity: .3; }
+.tq-ar path { fill: none; stroke-width: 2.2; vector-effect: non-scaling-stroke; stroke-linecap: round; pointer-events: none; } .tq-ar path.rd { stroke-dasharray: 5 4; } .tq-ar .hd { stroke: none; } .tq-ar .rl { font: 600 10px var(--display); fill: #f0e7d0; paint-order: stroke; stroke: #05060a; stroke-width: 3px; }
+.tq-w { cursor: pointer; } .tq-w path { stroke: #f0e7d0; stroke-width: 1.8; fill: none; } .tq-w text { font: italic 600 10.5px var(--display); fill: #f0e7d0; paint-order: stroke; stroke: #05060a; stroke-width: 3px; stroke-linejoin: round; } .tq-w.sel path { stroke: #e8c455; stroke-width: 2.6; }
+#tq-plate { position: absolute; left: 12px; top: 12px; padding: 9px 14px 10px; pointer-events: none; } #tq-date { font: 600 32px/1 var(--engraved); letter-spacing: .06em; color: var(--gold-bright); } #tq-date i { font: normal 13px var(--mono); letter-spacing: .1em; color: var(--gold); }
+#tq-era { font: 600 10.5px var(--display); letter-spacing: .2em; text-transform: uppercase; color: var(--paper); margin-top: 6px; } #tq-cnt { font: 10.5px var(--mono); color: var(--paper-dim); margin-top: 2px; }
+#tq-tools { position: absolute; right: 12px; top: 12px; padding: 5px 6px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; } #tq-th { position: absolute; left: 12px; bottom: 12px; padding: 5px 6px; display: flex; gap: 5px; flex-wrap: wrap; }
+#tq-leg { position: absolute; right: 12px; bottom: 12px; left: auto; max-width: 380px; } #tq-leg i.hx { background: repeating-linear-gradient(45deg, #d05a8a 0 3px, #2a1a24 3px 6px); } #tq-leg i.gr { background: none; border: 2px solid #fff3c4; box-sizing: border-box; }
+#tq-bar { display: flex; align-items: center; gap: 12px; padding: 8px 14px 6px; border-top: 1px solid var(--line); background: var(--obsidian-2); flex: none; } #tq-bar-b { display: flex; gap: 5px; flex: none; } #tq-bar .tool-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 32px; padding: 0 10px; white-space: nowrap; } #tq-bar .tool-btn.sp { min-width: 34px; padding: 0 7px; font-family: var(--mono); } #tq-bar .tool-btn.sp.on { border-color: var(--gold); color: var(--gold-bright); }
+#tq-tl { flex: 1; min-width: 0; position: relative; height: 50px; cursor: ew-resize; touch-action: none; user-select: none; -webkit-user-select: none; outline-offset: 2px; }
+#tq-bands { position: absolute; left: 0; right: 0; top: 0; height: 32px; } #tq-bands span { position: absolute; top: 0; bottom: 0; box-sizing: border-box; border-left: 1px solid #3a4152; background: rgba(255,255,255,.035); overflow: hidden; } #tq-bands span.odd { background: rgba(255,255,255,.085); }
+#tq-bands b { display: block; padding: 10px 6px 0; font: 600 8.5px var(--display); letter-spacing: .14em; text-transform: uppercase; color: #a9b1c6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } #tq-bands i { position: absolute; top: 35px; transform: translateX(-50%); font: normal 9.5px var(--mono); color: #8d96af; white-space: nowrap; }
+#tq-h { position: absolute; top: -4px; height: 40px; width: 2px; margin-left: -1px; background: #e8c455; box-shadow: 0 0 8px rgba(232,196,85,.8); pointer-events: none; } #tq-h::after { content: ""; position: absolute; left: -5px; top: -3px; width: 12px; height: 12px; border-radius: 50%; background: #e8c455; border: 2px solid #05060a; box-sizing: border-box; }
+.tq-side .rel.gq span { display: block; } .tq-side .rel.gq span b { font-weight: 600; } .tq-side .rel.gq u { text-decoration: none; font: 9.5px var(--mono); color: #a9b1c6; margin-left: 4px; } .tq-side .rel.gq.now { background: rgba(232,196,85,.09); } .tq-side .hint.lost { margin: 0 0 8px; }
+@media (max-width: 860px) { #tq-plate { padding: 6px 10px; } #tq-date { font-size: 22px; } #tq-wrap { height: auto; } #tq-wrap > svg { display: block; height: 58vw; min-height: 210px; } #tq-plate { position: static; margin: 8px 10px 0; } #tq-wrap .tq-l text { font-size: 7.5px; letter-spacing: .06em; } #tq-wrap .tq-wr text, #tq-wrap .tq-ar text { font-size: 8.5px; } #tq-tools { position: static; border: 0; background: none; padding: 6px 10px 0; justify-content: flex-start; flex-wrap: wrap; } #tq-th { position: static; border: 0; background: none; padding: 6px 10px; flex-wrap: wrap; } #tq-leg { left: 8px; right: 8px; bottom: auto; top: 96px; max-width: none; } #tq-bar { flex-wrap: wrap; gap: 8px; } #tq-tl { flex-basis: 100%; } #tq-bands b { display: none; } #tq-bands i:nth-of-type(even) { display: none; } #tq-oob { max-height: 62px; overflow-y: auto; } }
 /* ---- the map (v19.3) ---- */
 .tm-w { cursor: pointer; } .tm-w .d { fill: var(--c); stroke: var(--c); vector-effect: non-scaling-stroke; }
 .tm-w.on .d { fill-opacity: .42; stroke-width: 1.6; filter: drop-shadow(0 0 5px var(--c)); } .tm-w.all .d { fill-opacity: .26; stroke-width: 1.1; stroke-opacity: .9; }
@@ -100,7 +121,8 @@ u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455
   </header>
   <nav id="wr-bar" aria-label="Views">
     <div id="wr-tabs" role="tablist">
-      <button role="tab" data-v="map" title="Every war where it was fought, in the years it was fought: press Play">The Map</button>
+      <button role="tab" data-v="land" title="Land changing hands: today's countries painted by the power that held them, year by year">The Conquests</button>
+      <button role="tab" data-v="map" data-kin="land" title="Every war where it was fought, in the years it was fought: press Play">The Map</button>
       <button role="tab" data-v="string" data-kin="map" title="Every war on one line of time, by the part of the world it was fought in">The String</button>
       <button role="tab" data-v="toll" title="The wars ranked by their dead, with the range the estimates span">The Toll</button>
       <button role="tab" data-v="centuries" data-kin="toll" title="The same dead, century by century">The Centuries</button>
@@ -110,7 +132,27 @@ u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455
   </nav>
   <main id="dc-main">
     <div id="dc-stage">
-      <section id="v-map" class="wr-view dc-view">
+      <section id="v-land" class="wr-view dc-view">
+        <div id="tq-oob" aria-label="The powers on the map in this year"></div>
+        <div class="rl-map" id="tq-wrap">
+          <svg id="tq" role="img" aria-label="World map of land changing hands: each country painted by the power that held it in the year shown"></svg>
+          <div id="tq-plate" class="plate"><div id="tq-date">—</div><div id="tq-era"></div><div id="tq-cnt"></div></div>
+          <div id="tq-tools" class="plate" role="group" aria-label="Map layers">
+            <button class="chipbtn on" data-layer="arrows" title="An arrow to each land just taken">Blows</button>
+            <button class="chipbtn on" data-layer="names" title="The powers' names">Names</button>
+            <button class="chipbtn on" data-layer="wars" title="The largest wars being fought in this year">Wars</button>
+            <button class="chipbtn" id="tq-lg" title="What the colours mean, and how far to trust them">Legend</button>
+            <button class="chipbtn" id="tq-zi" title="Zoom in">+</button><button class="chipbtn" id="tq-zo" title="Zoom out">−</button>
+          </div>
+          <div id="tq-th" class="plate" role="group" aria-label="Part of the world">
+            <button class="chipbtn on" data-t="world">The World</button><button class="chipbtn" data-t="europe">Europe</button><button class="chipbtn" data-t="near">The Near East</button><button class="chipbtn" data-t="asia">Asia</button><button class="chipbtn" data-t="africa">Africa</button><button class="chipbtn" data-t="americas">The Americas</button>
+          </div>
+          <div id="tq-leg" class="plate rl-leg" hidden></div>
+          <div id="tq-tip" class="plate rl-tip" hidden></div>
+        </div>
+        <div id="tq-bar"><div id="tq-bar-b"></div><div id="tq-tl" role="slider" tabindex="0" aria-label="The year the map shows" aria-valuemin="-1300" aria-valuemax="2026"><div id="tq-bands"></div><i id="tq-h"></i></div></div>
+      </section>
+      <section id="v-map" class="wr-view dc-view" hidden>
         <div class="dc-bar"><div class="chips" id="tm-ctl" role="group" aria-label="Playback"></div><span class="wr-note" id="tm-n"></span></div>
         <div class="rl-map" id="tm-wrap">
           <svg id="tm" role="img" aria-label="World map of every war in the record, placed where it was fought"></svg>
@@ -143,6 +185,8 @@ u.sec.key { display: inline-block; width: 2px; height: 11px; background: #e8c455
   <script src="src/data/events.js"></script><script src="src/data/events2.js"></script><script src="src/data/geo.js"></script><script src="src/data/uncertainty.js"></script><script src="src/data/events3.js"></script><script src="src/data/events4.js"></script>
   <script src="src/data/events5.js"></script><script src="src/data/events6.js"></script>
   <script src="src/data/conflicts.js"></script>
+  <script src="src/data/eras.js"></script>
+  <script src="src/data/conquests.js"></script>
   <script src="src/data/totalwar.js"></script>
   <script src="src/realms-kit.js"></script>
   <script src="src/totalwar-app.js"></script>
