@@ -50,6 +50,14 @@
   const TL = {}; D.sparks.forEach(k => { const L = LS[k.id], t = { by: {}, firm: { b: 0, i: 0, p: 0, o: 0 }, in_: 0, w: [0, 0] };
     LU.order.forEach(n => { const w = L.who[n], r = w[0], a = r.charAt(0); (t.by[r] = t.by[r] || []).push(n); if (a !== "O" && a !== "H") { t.in_++; t.firm[w[2]]++; } if ((a === "F" || a === "G") && NUKE[n]) t.w[sideOf(r) - 1] += NUKE[n][4]; });
     const c = r => (t.by[r] || []).length; t.f = [c("G1") + c("F1"), c("G2") + c("F2")]; t.b = [c("B1"), c("B2")]; t.h = c("H"); t.o = c("O"); TL[k.id] = t; });
+  /* v21 · the weight of a war: what the two fighting sides, their backers and the hedgers spend and hold. `firm` leaves out every row marked open,
+     which is the question the table exists to ask: what is left of a side if the undecided do not come. Sums are floors (see spendMeta). */
+  const SP = LU.spend, money = v => "$" + (v >= 100 ? Math.round(v).toLocaleString("en") : v.toFixed(1).replace(/\.0$/, "")) + "bn", rnd = v => v >= 20 ? String(Math.round(v)) : v.toFixed(1).replace(/\.0$/, ""), ratio = (a, b) => !a || !b ? "" : a >= b ? rnd(a / b) + " to 1" : "1 to " + rnd(b / a), tagThe = k => (/^(Baltic|Gulf)$/.test(LS[k].tag) ? "the " : "") + LS[k].tag;
+  function weigh(k, firm) { const L = LS[k], o = { f: [0, 0], b: [0, 0], h: 0, w: [0, 0], top: [null, null], out: [[], []] };
+    LU.order.forEach(n => { const w = L.who[n], a = w[0].charAt(0), i = sideOf(w[0]) - 1, v = SP[n] || 0; if (a === "H") return void (o.h += v); if (a === "O") return;
+      if (firm && w[2] === "o") { if (a !== "B") o.out[i].push(n); return; }
+      if (a === "B") o.b[i] += v; else { o.f[i] += v; o.w[i] += NUKE[n] ? NUKE[n][4] : 0; if (!o.top[i] || v > (SP[o.top[i]] || 0)) o.top[i] = n; } });
+    return o; }
   const tallyRow = k => { const t = TL[k]; return '<div class="lu-t"><div style="--c:' + C1 + '"><b>' + t.f[0] + "</b> fight<br><b>" + t.b[0] + '</b> back</div><i>against</i><div style="--c:' + C2 + '"><b>' + t.f[1] + "</b> fight" + (t.f[1] === 1 ? "s" : "") + "<br><b>" + t.b[1] + '</b> back</div><div style="--c:' + CH + '"><b>' + t.h + "</b> hedge<br><b>" + t.o + "</b> stay out</div></div>"; };
 
   const st = { v: "board", k: null, c: null, nukes: 0, straits: 1 }, built = {};
@@ -132,7 +140,7 @@
     const card = k => { const L = LS[k.id], t = TL[k.id], cf = CBY[k.cf];
       return '<button class="lu-s' + (st.k === k.id ? " on" : "") + '" data-k="' + k.id + '"><small>' + (cf && cf.lv >= 4 ? "being fought now" : k.pct ? k.pct + "% of experts name it" : "nuclear powers face each other") + "</small><h4>" + esc(L.tag) + '</h4><p class="vs"><b style="color:' + C1 + '">' + esc(cap(L.short[0])) + '</b><i>against</i><b style="color:' + C2 + '">' + esc(cap(L.short[1])) + "</b></p>"
         + '<div class="lu-bar">' + seg(t.f[0], C1, 1) + seg(t.b[0], C1, 0.42) + seg(t.h, CH, 0.75) + seg(t.o, CO, 0.2) + seg(t.b[1], C2, 0.42) + seg(t.f[1], C2, 1) + "</div>"
-        + '<dl><div><dt>Fight</dt><dd><b style="color:' + C1 + '">' + t.f[0] + '</b> · <b style="color:' + C2 + '">' + t.f[1] + '</b></dd></div><div><dt>Back</dt><dd><b style="color:' + C1 + '">' + t.b[0] + '</b> · <b style="color:' + C2 + '">' + t.b[1] + "</b></dd></div><div><dt>Hedge</dt><dd><b style=\"color:" + CH + '">' + t.h + "</b></dd></div><div><dt>Warheads in the fight</dt><dd>" + num(t.w[0]) + " · " + num(t.w[1]) + "</dd></div><div><dt>Bound by treaty</dt><dd>" + t.firm.b + " of " + t.in_ + "</dd></div></dl></button>"; };
+        + '<dl><div><dt>Fight</dt><dd><b style="color:' + C1 + '">' + t.f[0] + '</b> · <b style="color:' + C2 + '">' + t.f[1] + '</b></dd></div><div><dt>Back</dt><dd><b style="color:' + C1 + '">' + t.b[0] + '</b> · <b style="color:' + C2 + '">' + t.b[1] + "</b></dd></div><div><dt>Hedge</dt><dd><b style=\"color:" + CH + '">' + t.h + "</b></dd></div><div><dt>Spending in the fight</dt><dd>" + money(weigh(k.id).f[0]) + " · " + (weigh(k.id).f[1] ? money(weigh(k.id).f[1]) : "no figure") + "</dd></div><div><dt>Warheads in the fight</dt><dd>" + num(t.w[0]) + " · " + num(t.w[1]) + "</dd></div><div><dt>Bound by treaty</dt><dd>" + t.firm.b + " of " + t.in_ + "</dd></div></dl></button>"; };
     /* 1 · how much is written down */
     const best = ks.slice().sort((a, b) => TL[b.id].firm.b / TL[b.id].in_ - TL[a.id].firm.b / TL[a.id].in_)[0], none = ks.filter(k => !TL[k.id].firm.b).map(tag), FC = { b: "#e8c455", i: "#49c9b8", p: "#8d96af", o: "#b48ef0" };
     const cA = '<section class="bal lu-i"><h4>How much of it is written down<em>' + esc(tag(best)) + ": " + TL[best.id].firm.b + " of the " + TL[best.id].in_ + " taking part are bound by a treaty text. " + (none.length ? esc(list(none)) + " bind" + (none.length === 1 ? "s" : "") + " no one at all." : "") + "</em></h4>"
@@ -180,13 +188,34 @@
   function drawBalance() {
     if (built.bal) return; built.bal = 1;
     const m = D.balance.men, mx = Math.max.apply(null, m.rows.map(r => r[1]));
-    $("bl-pane").innerHTML = sideBar(D.balance.spend) + sideBar(D.balance.nukes)
+    /* v21 · the same question asked of each war, not of two fixed camps */
+    const ks = D.sparks, the = n => (/^United/.test(nm(n)) ? "the " : "") + nm(n), list = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1], W = {}, WF = {};
+    ks.forEach(k => { W[k.id] = weigh(k.id); WF[k.id] = weigh(k.id, 1); });
+    const lead = o => o.f[0] && o.f[1] ? (o.f[0] >= o.f[1] ? 0 : 1) : -1, flips = ks.filter(k => lead(W[k.id]) >= 0 && lead(WF[k.id]) >= 0 && lead(W[k.id]) !== lead(WF[k.id]));
+    const holds = ks.filter(k => WF[k.id].out[0].length + WF[k.id].out[1].length && lead(W[k.id]) >= 0 && lead(W[k.id]) === lead(WF[k.id]));
+    const both = ks.filter(k => W[k.id].w[0] && W[k.id].w[1]), near = both.slice().sort((a, b) => Math.abs(Math.log(W[a.id].w[0] / W[a.id].w[1])) - Math.abs(Math.log(W[b.id].w[0] / W[b.id].w[1])))[0];
+    const hedge = ks.filter(k => W[k.id].h > Math.min(W[k.id].f[0] || 1e9, W[k.id].f[1] || 1e9)), seg = (v, c, o) => v ? '<i style="flex:' + v + ";background:" + c + ";opacity:" + o + '"></i>' : "";
+    const say = [];
+    flips.forEach(k => { const a = W[k.id], b = WF[k.id], L = LS[k.id], who = b.out[0].concat(b.out[1]); const lose = L.short[1 - lead(a)]; say.push("<b>" + esc(cap(tagThe(k.id))) + " turns on " + (who.length === 1 ? "one row" : who.length + " rows") + " marked open.</b> With " + esc(list(who.map(the))) + " in the fight, " + esc(lose) + " is outspent " + ratio(Math.max(a.f[0], a.f[1]), Math.min(a.f[0], a.f[1])) + ". Without, " + esc(lose) + " outspends what is left " + ratio(Math.max(b.f[0], b.f[1]), Math.min(b.f[0], b.f[1])) + "."); });
+    holds.forEach(k => { const a = W[k.id], b = WF[k.id], L = LS[k.id], i = lead(a), who = b.out[0].concat(b.out[1]), share = Math.round((a.f[i] - b.f[i]) / a.f[i] * 100); say.push("<b>" + esc(cap(tagThe(k.id))) + " does not.</b> " + esc(cap(list(who.map(the)))) + (who.length === 1 ? " is " : " are ") + share + "% of the money on " + esc(L.short[i]) + "'s side, and without " + (who.length === 1 ? "it" : "them") + " that side still outspends " + esc(L.short[1 - i]) + "'s " + ratio(b.f[i], b.f[1 - i]) + "."); });
+    if (near) say.push("<b>Warheads are on both fighting sides in " + ["none", "one", "two", "three", "four", "all five"][both.length] + " of the five.</b> The closest to parity is " + esc(tagThe(near.id)) + ": " + W[near.id].w[0].toLocaleString("en") + " against " + W[near.id].w[1].toLocaleString("en") + ".");
+    if (hedge.length) say.push("<b>The hedgers outweigh a fighting side in " + esc(list(hedge.map(k => tagThe(k.id)))) + ".</b> " + hedge.map((k, j) => { const a = W[k.id], i = a.f[0] <= a.f[1] ? 0 : 1; return (j ? "in " : "In ") + esc(tagThe(k.id)) + " those who hedge spend " + money(a.h) + ", against " + money(a.f[i]) + " for " + esc(LS[k.id].short[i]) + "'s side"; }).join("; ") + ".");
+    const wrow = k => { const a = W[k.id], b = WF[k.id], L = LS[k.id], open = b.out[0].concat(b.out[1]);
+      return '<button class="ww-r' + (st.k === k.id ? " on" : "") + '" data-k="' + k.id + '"><span class="ww-n"><b>' + esc(L.tag) + "</b><small>" + esc(cap(L.short[0])) + " against " + esc(L.short[1]) + "</small></span>"
+        + '<span class="ww-b"><span class="lu-bar">' + seg(a.f[0], C1, 1) + seg(a.b[0], C1, 0.4) + seg(a.h, CH, 0.7) + seg(a.b[1], C2, 0.4) + seg(a.f[1], C2, 1) + '</span><small><b style="color:' + C1 + '">' + money(a.f[0]) + "</b> fights" + (a.b[0] ? " · " + money(a.b[0]) + " backs" : "") + (a.h ? ' · <b style="color:' + CH + '">' + money(a.h) + "</b> hedges" : "") + (a.b[1] ? " · " + money(a.b[1]) + " backs" : "") + ' · <b style="color:' + C2 + '">' + (a.f[1] ? money(a.f[1]) : "no figure") + "</b> fights</small></span>"
+        + '<span class="ww-v"><b>' + (ratio(a.f[0], a.f[1]) || "—") + "</b><small>" + (ratio(a.f[0], a.f[1]) ? "in the fight" : "no figure for " + esc(nm((TL[k.id].by.G2 || [""])[0]))) + "</small></span>"
+        + '<span class="ww-v' + (lead(a) >= 0 && lead(b) >= 0 && lead(a) !== lead(b) ? " flip" : "") + '"><b>' + (open.length ? ratio(b.f[0], b.f[1]) || "—" : "the same") + "</b><small>" + (open.length ? "without " + esc(list(open.map(nm))) : "no fighter is open") + "</small></span>"
+        + '<span class="ww-v"><b>' + a.w[0].toLocaleString("en") + " · " + a.w[1].toLocaleString("en") + "</b><small>warheads in the fight</small></span></button>"; };
+    const have = LU.order.filter(n => SP[n]).length, M = LU.spendMeta;
+    const weight = '<section class="bal ww"><h4>The weight of each war<small>military spending, 2025 · who fights, who backs, who hedges</small><em>The camps below are the same whichever war is chosen. A war is not: this is each of the five line-ups, weighed.</em></h4><div class="ww-g"><div class="ww-t">' + ks.map(wrow).join("") + '</div><ul class="ww-s">' + say.map(t => "<li>" + t + "</li>").join("") + "</ul></div>"
+      + '<p class="hint">Spending is SIPRI\'s for 2025 ' + srcIn([M.src]) + ", summed over the presumed line-up of each war; solid is those who fight, pale those who back, amber those who hedge. " + have + " of the " + LU.order.length + " countries are among its forty largest spenders; the rest spend under $" + M.floor + " billion each or are not estimated (" + esc(list(M.none.map(nm))) + "), so every sum is a floor. Money is not strength: it buys no geography and no will. The line-ups are presumed; the ratios are counted from them.</p></section>";
+    $("bl-pane").innerHTML = weight + sideBar(D.balance.spend) + sideBar(D.balance.nukes)
       + '<section class="bal"><h4>' + esc(m.t) + "<small>" + esc(m.unit) + "</small></h4>" + m.rows.map(r => '<div class="mr"><span>' + esc(r[0]) + '</span><div class="bb-t"><i style="width:' + (r[1] / mx * 100).toFixed(1) + "%;background:" + (r[2] ? SD[r[2]].c : "#8d96af") + '"></i></div><b>' + r[1].toFixed(2).replace(/0$/, "") + "</b><small>" + esc(r[3]) + "</small></div>").join("") + '<p class="hint">' + esc(m.note) + " " + srcIn(m.s) + "</p></section>";
     const rows = [["The 32 members of NATO", "A", "treaty", D.natoTie[0], D.natoTie[1]]].concat(D.ties);
     $("bl-pane").innerHTML += '<section class="bal ties"><h4>What binds each country<small>the obligations the map is drawn from</small></h4><table><thead><tr><th>Country</th><th>Camp</th><th>How bound</th><th>By what</th><th>Source</th></tr></thead><tbody>'
       + rows.map(t => '<tr' + (TIE[t[0]] ? ' data-c="' + esc(t[0]) + '"' : "") + '><td class="nm">' + esc(nm(t[0])) + '</td><td style="color:' + SD[t[1]].c + '">' + esc(SD[t[1]].short) + "</td><td>" + esc(D.strength[t[2]]) + "</td><td>" + esc(t[3]) + '</td><td class="sr">' + srcIn(t[4]) + "</td></tr>").join("") + "</tbody></table></section>";
-    $("bl-pane").addEventListener("click", e => { if (e.target.closest("a")) return; const r = e.target.closest("tr[data-c]"); if (r) { st.c = r.dataset.c; sync(); } });
-    $("bl-n").innerHTML = "The camps as they are armed today. Solid segments are bound by treaty or are one of the four; faded ones are backed without a treaty.";
+    $("bl-pane").addEventListener("click", e => { if (e.target.closest("a")) return; const w = e.target.closest("button[data-k]"); if (w) { e.stopPropagation(); st.k = st.k === w.dataset.k ? null : w.dataset.k; st.c = null; sync(); document.querySelectorAll("#bl-pane .ww-r").forEach(b => b.classList.toggle("on", b.dataset.k === st.k)); return; } const r = e.target.closest("tr[data-c]"); if (r) { st.c = r.dataset.c; sync(); } });
+    $("bl-n").innerHTML = "Each of the five wars weighed by its line-up, then the two camps as they are armed today. Solid segments are bound by treaty or are one of the four; faded ones are backed without a treaty.";
   }
 
   /* ---------------- the cost ---------------- */
@@ -240,7 +269,7 @@
     return '<div class="sd-k">The line-up <span class="gr" style="--c:#e8c455">presumed</span></div>' + tallyRow(k.id) + '<p class="lu-read">' + esc(L.read) + "</p>"
       + '<div class="lu-hg"><b>The hinge: ' + esc(L.hinge.slice(0, hi)) + "</b>" + esc(L.hinge.slice(hi + 2)) + "</div>"
       + grp("Fights " + L.short[1], ["G1", "F1"], 1) + grp("Backs " + L.short[0] + ", does not fight", ["B1"], 1) + grp("Fights " + L.short[0], ["G2", "F2"], 1) + grp("Backs " + L.short[1] + ", does not fight", ["B2"], 1) + grp("Hedges", ["H"], 1) + grp("Stays out", ["O"], 0)
-      + '<p class="hint">Presumed: the Archive\'s reading, not a forecast. It rests on ' + srcIn(L.basis) + '.</p><div class="sd-links"><button class="lnk" data-go="lines">All five line-ups side by side ⟶</button></div>';
+      + '<p class="hint">Presumed: the Archive\'s reading, not a forecast. It rests on ' + srcIn(L.basis) + '.</p><div class="sd-links"><button class="lnk" data-go="lines">All five line-ups side by side ⟶</button><button class="lnk" data-go="balance">What each side weighs ⟶</button></div>';
   }
   function countryCard(n) {
     const t = TIE[n], nk = NUKE[n], sp = SPEND[n] || SPEND[nm(n)], ks = D.sparks.filter(k => k.pulls.indexOf(n) >= 0);

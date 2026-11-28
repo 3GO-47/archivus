@@ -1177,7 +1177,11 @@ html.vtf.leaving body > :not(#hdr):not(#omni) { opacity: 0; transition: opacity 
 .vw-t { font: 600 clamp(22px, 2.7vw, 36px)/1.08 var(--engraved); letter-spacing: .11em; text-transform: uppercase; color: var(--paper); margin: 6px 0 7px; text-shadow: 0 0 34px rgba(232,196,85,.24); }
 .vw-l { font: 15.5px/1.55 Georgia, "Times New Roman", serif; color: #d2ccbb; margin: 0; max-width: 104ch; }
 body.has-rail .pane { background-image: radial-gradient(1100px 420px at 50% -130px, rgba(201,162,39,.10), rgba(201,162,39,0) 70%), radial-gradient(900px 480px at 100% 0, rgba(91,147,184,.055), rgba(91,147,184,0) 70%); }
-.vw-top.sec { padding: 14px clamp(12px, 2vw, 26px) 4px; }                      /* at the head of a view that has no scrolling pane */
+.vw-top.sec { padding: 14px clamp(12px, 2vw, 26px) 4px; }
+/* v21 · "tons of empty space": over an instrument the masthead is one line, not a banner. The two reading pages keep theirs (below). */
+.pane > .vw-top, .vw-top.sec { gap: 12px; padding-bottom: 8px; } .pane > .vw-top .vw-emb, .vw-top.sec .vw-emb { width: 34px; height: 34px; box-shadow: inset 0 0 12px rgba(232,196,85,.13); } .pane > .vw-top .vw-emb::after, .vw-top.sec .vw-emb::after { inset: -4px; } .pane > .vw-top .vw-emb svg, .vw-top.sec .vw-emb svg { width: 16px; height: 16px; }
+.pane > .vw-top > div:last-child, .vw-top.sec > div:last-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; min-width: 0; } .pane > .vw-top .vw-k, .vw-top.sec .vw-k { order: 3; font-size: 9px; letter-spacing: .22em; opacity: .8; }
+.pane > .vw-top .vw-t, .vw-top.sec .vw-t { font-size: clamp(15px, 1.5vw, 19px); margin: 0; text-shadow: none; } .pane > .vw-top .vw-l, .vw-top.sec .vw-l { font-size: 13.5px; line-height: 1.4; }                      /* at the head of a view that has no scrolling pane */
 /* the two reading pages: the masthead stands over the page, centred over the Trial's card */
 body.has-rail #tr-stage { flex-direction: column; gap: 26px; } body.has-rail #tr-stage > .vw-top { flex-direction: column; text-align: center; gap: 14px; padding: 0; } body.has-rail #tr-stage > .vw-top .vw-l { margin: 0 auto; }
 body.has-rail #tr-card { box-shadow: 0 22px 60px rgba(0,0,0,.45), 0 0 44px rgba(232,196,85,.08); } body.has-rail #tr-q { font: 400 clamp(20px, 2.6vw, 26px)/1.35 Georgia, "Times New Roman", serif; color: #f4efe0; }
